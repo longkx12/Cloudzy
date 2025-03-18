@@ -6,4 +6,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\" />
+    <Folder Include="Models\Domain\" />
+    <Folder Include="Models\ViewModels\" />
+    <Folder Include="Repositories\Implementations\" />
+    <Folder Include="Repositories\Interfaces\" />
+    <Folder Include="Services\Implementations\" />
+    <Folder Include="Services\Interfaces\" />
+  </ItemGroup>
+
 </Project>
