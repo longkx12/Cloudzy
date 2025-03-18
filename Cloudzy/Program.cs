@@ -1,4 +1,9 @@
-using Cloudzy.Data;
+﻿using Cloudzy.Data;
+using Cloudzy.Repositories.Implementations;
+using Cloudzy.Repositories.Interfaces;
+using Cloudzy.Services.Implementations;
+using Cloudzy.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +13,23 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<DbCloudzyContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/User/Login";
+        options.LogoutPath = "/User/Logout";
+        //options.ExpireTimeSpan = TimeSpan.FromMinutes(1);
+        options.Cookie.HttpOnly = true; // Bảo mật cookie
+        options.Cookie.SameSite = SameSiteMode.Lax; // Ngăn CSRF
+        options.SlidingExpiration = true;
+    });
+
+builder.Services.AddHttpContextAccessor();
+
+//Đăng ký Dependency Injection
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 var app = builder.Build();
 
@@ -24,10 +46,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=User}/{action=Login}/{id?}");
 
 app.Run();
