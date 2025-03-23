@@ -18,6 +18,8 @@ public partial class DbCloudzyContext : DbContext
 
     public virtual DbSet<Brand> Brands { get; set; }
 
+    public virtual DbSet<CartItem> CartItems { get; set; }
+
     public virtual DbSet<Category> Categories { get; set; }
 
     public virtual DbSet<Color> Colors { get; set; }
@@ -39,6 +41,8 @@ public partial class DbCloudzyContext : DbContext
     public virtual DbSet<Review> Reviews { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
+
+    public virtual DbSet<ShoppingCart> ShoppingCarts { get; set; }
 
     public virtual DbSet<Size> Sizes { get; set; }
 
@@ -64,12 +68,33 @@ public partial class DbCloudzyContext : DbContext
             entity.Property(e => e.Description).HasMaxLength(255);
         });
 
+        modelBuilder.Entity<CartItem>(entity =>
+        {
+            entity.HasKey(e => e.CartItemId).HasName("PK__CartItem__488B0B2A0AE1ED13");
+
+            entity.Property(e => e.CartItemId).HasColumnName("CartItemID");
+            entity.Property(e => e.AddedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.CartId).HasColumnName("CartID");
+            entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.Quantity).HasDefaultValue(1);
+            entity.Property(e => e.VariantId).HasColumnName("VariantID");
+
+            entity.HasOne(d => d.Cart).WithMany(p => p.CartItems)
+                .HasForeignKey(d => d.CartId)
+                .HasConstraintName("FK__CartItems__CartI__08B54D69");
+
+            entity.HasOne(d => d.Variant).WithMany(p => p.CartItems)
+                .HasForeignKey(d => d.VariantId)
+                .HasConstraintName("FK__CartItems__Varia__09A971A2");
+        });
+
         modelBuilder.Entity<Category>(entity =>
         {
             entity.HasKey(e => e.CategoryId).HasName("PK__Categori__19093A2BFD74FFEF");
 
             entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
-            entity.Property(e => e.CategoryImg).HasMaxLength(255);
             entity.Property(e => e.CategoryName).HasMaxLength(50);
             entity.Property(e => e.Description).HasMaxLength(255);
         });
@@ -257,6 +282,21 @@ public partial class DbCloudzyContext : DbContext
 
             entity.Property(e => e.RoleId).HasColumnName("RoleID");
             entity.Property(e => e.RoleName).HasMaxLength(20);
+        });
+
+        modelBuilder.Entity<ShoppingCart>(entity =>
+        {
+            entity.HasKey(e => e.CartId).HasName("PK__Shopping__51BCD797732DD354");
+
+            entity.Property(e => e.CartId).HasColumnName("CartID");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.UserId).HasColumnName("UserID");
+
+            entity.HasOne(d => d.User).WithMany(p => p.ShoppingCarts)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK__ShoppingC__UserI__03F0984C");
         });
 
         modelBuilder.Entity<Size>(entity =>
