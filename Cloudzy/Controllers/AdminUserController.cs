@@ -22,8 +22,22 @@ namespace Cloudzy.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var users = await _userService.GetAllUsersAsync();
-            return View(users);
+            return View();
+        }
+
+        public async Task<IActionResult> LoadUsers(int? page)
+        {
+            int pageSize = 5;
+            int pageNumber = page ?? 1;
+
+            var users = await _userService.GetAllUsersAsync(pageNumber, pageSize);
+
+            if (users == null || !users.Any())
+            {
+                return NotFound("Không có dữ liệu.");
+            }
+
+            return PartialView("_UserListPartial", users);
         }
 
         public IActionResult Create()
