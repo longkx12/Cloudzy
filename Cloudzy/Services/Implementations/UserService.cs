@@ -5,6 +5,8 @@ using Cloudzy.Repositories.Interfaces;
 using Cloudzy.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
+using X.PagedList.Extensions;
 
 namespace Cloudzy.Services.Implementations
 {
@@ -19,10 +21,10 @@ namespace Cloudzy.Services.Implementations
             _context = context;
         }
 
-        public async Task<IEnumerable<UserListViewModel>> GetAllUsersAsync()
+        public async Task<IPagedList<UserListViewModel>> GetAllUsersAsync(int pageNumber, int pageSize)
         {
             var users = await _userRepository.GetAllUsersAsync();
-            return users.Select((u, index) => new UserListViewModel
+            var pagedUsers = users.Select((u, index) => new UserListViewModel
             {
                 STT = index + 1,
                 Email = u.Email,
@@ -30,7 +32,9 @@ namespace Cloudzy.Services.Implementations
                 PhoneNumber = u.PhoneNumber,
                 Address = u.Address,
                 RoleName = u.Role?.RoleName ?? "N/A"
-            }).ToList();
+            }).ToPagedList(pageNumber, pageSize);
+
+            return pagedUsers;
         }
 
         public async Task<UserEditViewModel?> GetUserByIdAsync(int id)

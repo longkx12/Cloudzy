@@ -1,0 +1,43 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<Cloudzy.Models.ViewModels.AdminUser.UserListViewModel>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th>Email</th>
+            <th>Họ tên</th>
+            <th>Số điện thoại</th>
+            <th>Địa chỉ</th>
+            <th>Quyền</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.STT</td>
+                <td>@user.Email</td>
+                <td>@user.Fullname</td>
+                <td>@user.PhoneNumber</td>
+                <td>@user.Address</td>
+                <td>@user.RoleName</td>
+                <td>
+                    <a href="@Url.Action("Edit", "AdminUser", new { id = user.STT })" class="btn btn-warning">Sửa</a>
+                    <button class="btn btn-danger delete-user" data-id="@user.STT">Xóa</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Phân trang bằng AJAX -->
+<div class="text-center d-flex justify-content-center mt-3">
+    @Html.PagedListPager(Model, page => "javascript:loadUsers(" + page + ")", new PagedListRenderOptions
+{
+    LiElementClasses = new[] { "page-item" },
+    PageClasses = new[] { "page-link" }
+})
+</div>
