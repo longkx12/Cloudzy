@@ -19,6 +19,8 @@ public partial class ProductVariant
 
     public decimal Price { get; set; }
 
+    public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
     public virtual Color? Color { get; set; }
 
     public virtual ICollection<ImportDetail> ImportDetails { get; set; } = new List<ImportDetail>();
