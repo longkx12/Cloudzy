@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "Quản lý danh mục";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Danh sách danh mục</h2>
+
+<a class="btn btn-primary mb-3" asp-action="Create">Thêm danh mục</a>
+
+<!-- Danh sách danh mục -->
+<div id="categoryList">
+    <p>Đang tải dữ liệu...</p>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        loadUsers(1);
+    });
+
+    function loadUsers(page) {
+        $.ajax({
+            url: '/AdminCategory/LoadUsers?page=' + page,
+            type: 'GET',
+            success: function (data) {
+                $('#categoryList').html(data);
+            },
+            error: function () {
+                $('#categoryList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
+            }
+        });
+    }
+</script>
