@@ -34,6 +34,7 @@ namespace Cloudzy.Services.Implementations
             var category = await _categoryRepository.GetAllAsync();
             var pageCategories = category.Select((c, index) => new CategoryListViewModel
             {
+                CategoryId = c.CategoryId,
                 STT = index + 1,
                 CategoryName = c.CategoryName,
                 Description = c.Description
@@ -41,12 +42,12 @@ namespace Cloudzy.Services.Implementations
             return pageCategories;
         }
 
-        public async Task<CategoryViewModel> GetByIdAsync(int id)
+        public async Task<CategoryEditViewModel> GetByIdAsync(int id)
         {
             var category = await _categoryRepository.GetByIdAsync(id);
             if (category == null) return null;
 
-            return new CategoryViewModel
+            return new CategoryEditViewModel
             {
                 CategoryName = category.CategoryName,
                 Description = category.Description

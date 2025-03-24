@@ -1,14 +1,14 @@
 ﻿@{
-    ViewData["Title"] = "Quản lý tài khoản";
+    ViewData["Title"] = "Quản lý nhãn hàng";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<h2>Danh sách tài khoản</h2>
+<h2>Danh sách nhãn hàng</h2>
 
-<a class="btn btn-primary mb-3" asp-action="Create">Thêm tài khoản</a>
+<a class="btn btn-primary mb-3" asp-action="Create">Thêm nhãn hàng</a>
 
-<!-- Danh sách user -->
-<div id="userList">
+<!-- Danh sách nhãn hàng -->
+<div id="brandList">
     <p>Đang tải dữ liệu...</p>
 </div>
 
@@ -20,13 +20,13 @@
 
     function load(page) {
         $.ajax({
-            url: '/AdminUser/Load?page=' + page,
+            url: '/AdminBrand/Load?page=' + page,
             type: 'GET',
             success: function (data) {
-                $('#userList').html(data);
+                $('#brandList').html(data);
             },
             error: function () {
-                $('#userList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
+                $('#brandList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
             }
         });
     }

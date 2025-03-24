@@ -2,6 +2,7 @@
 {
     public class UserListViewModel
     {
+        public int UserId { get; set; }
         public int STT { get; set; }
         public string Email { get; set; } = null!;
         public string Fullname { get; set; } = null!;

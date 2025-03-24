@@ -25,7 +25,7 @@ namespace Cloudzy.Controllers
             return View();
         }
 
-        public async Task<IActionResult> LoadUsers(int? page)
+        public async Task<IActionResult> Load(int? page)
         {
             int pageSize = 5;
             int pageNumber = page ?? 1;

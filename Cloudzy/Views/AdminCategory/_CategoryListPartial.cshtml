@@ -19,8 +19,13 @@
                 <td>@category.CategoryName</td>
                 <td>@category.Description</td>
                 <td>
-                    <a href="@Url.Action("Edit", "AdminCategory", new { id = category.STT })" class="btn btn-warning">Sửa</a>
-                    <button class="btn btn-danger delete-user" data-id="@category.STT">Xóa</button>
+                    <div class="d-flex gap-2">
+                        <a href="@Url.Action("Edit", "AdminCategory", new { id = category.CategoryId })" class="btn btn-warning">Sửa</a>
+                        <form asp-action="Delete" asp-controller="AdminCategory" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa không?')">
+                            <input type="hidden" name="id" value="@category.CategoryId" />
+                            <button type="submit" class="btn btn-danger">Xóa</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
         }
@@ -29,7 +34,7 @@
 
 <!-- Phân trang bằng AJAX -->
 <div class="text-center d-flex justify-content-center mt-3">
-    @Html.PagedListPager(Model, page => "javascript:loadUsers(" + page + ")", new PagedListRenderOptions
+    @Html.PagedListPager(Model, page => "javascript:load(" + page + ")", new PagedListRenderOptions
 {
     LiElementClasses = new[] { "page-item" },
     PageClasses = new[] { "page-link" }
