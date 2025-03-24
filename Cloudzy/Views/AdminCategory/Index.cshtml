@@ -15,12 +15,12 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
-        loadUsers(1);
+        load(1);
     });
 
-    function loadUsers(page) {
+    function load(page) {
         $.ajax({
-            url: '/AdminCategory/LoadUsers?page=' + page,
+            url: '/AdminCategory/Load?page=' + page,
             type: 'GET',
             success: function (data) {
                 $('#categoryList').html(data);

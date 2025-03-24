@@ -132,9 +132,7 @@
                     <li class="nav-item">
                         <a class="nav-link"
                            asp-controller="AdminUser"
-                           asp-action="Index"
-                           aria-expanded="false"
-                           aria-controls="user-management">
+                           asp-action="Index">
                             <i class="menu-icon mdi mdi-account-circle-outline"></i>
                             <span class="menu-title">Quản lý tài khoản</span>
                         </a>
@@ -142,17 +140,13 @@
                     <li class="nav-item">
                         <a class="nav-link"
                            asp-controller="AdminCategory"
-                           asp-action="Index"
-                           aria-expanded="false"
-                           aria-controls="category-management">
+                           asp-action="Index">
                             <i class="menu-icon mdi mdi-format-list-bulleted"></i>
                             <span class="menu-title">Quản lý danh mục</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link"
-                           data-bs-toggle="collapse"
-                           href="#product-management"
                            aria-expanded="false"
                            aria-controls="product-management">
                             <i class="menu-icon mdi mdi-tshirt-crew-outline"></i>
@@ -161,10 +155,8 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link"
-                           data-bs-toggle="collapse"
-                           href="#brand-management"
-                           aria-expanded="false"
-                           aria-controls="brand-management">
+                           asp-controller="AdminBrand"
+                           asp-action="Index">
                             <i class="menu-icon mdi mdi-trademark"></i>
                             <span class="menu-title">Quản lý nhãn hàng</span>
                         </a>

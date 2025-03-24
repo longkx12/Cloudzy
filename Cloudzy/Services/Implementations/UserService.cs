@@ -26,6 +26,7 @@ namespace Cloudzy.Services.Implementations
             var users = await _userRepository.GetAllUsersAsync();
             var pagedUsers = users.Select((u, index) => new UserListViewModel
             {
+                UserId = u.UserId,
                 STT = index + 1,
                 Email = u.Email,
                 Fullname = u.Fullname,

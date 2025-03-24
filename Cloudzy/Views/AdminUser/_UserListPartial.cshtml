@@ -25,8 +25,13 @@
                 <td>@user.Address</td>
                 <td>@user.RoleName</td>
                 <td>
-                    <a href="@Url.Action("Edit", "AdminUser", new { id = user.STT })" class="btn btn-warning">Sửa</a>
-                    <button class="btn btn-danger delete-user" data-id="@user.STT">Xóa</button>
+                    <div class="d-flex gap-2">
+                        <a href="@Url.Action("Edit", "AdminUser", new { id = user.UserId })" class="btn btn-warning">Sửa</a>
+                        <form asp-action="Delete" asp-controller="AdminUser" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa không?')">
+                            <input type="hidden" name="id" value="@user.UserId" />
+                            <button type="submit" class="btn btn-danger">Xóa</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
         }
@@ -35,7 +40,7 @@
 
 <!-- Phân trang bằng AJAX -->
 <div class="text-center d-flex justify-content-center mt-3">
-    @Html.PagedListPager(Model, page => "javascript:loadUsers(" + page + ")", new PagedListRenderOptions
+    @Html.PagedListPager(Model, page => "javascript:load(" + page + ")", new PagedListRenderOptions
 {
     LiElementClasses = new[] { "page-item" },
     PageClasses = new[] { "page-link" }

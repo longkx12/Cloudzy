@@ -9,13 +9,13 @@
 
 <form asp-action="Create" method="post">
     <div class="mb-3">
-        <label asp-for="CategoryName" class="form-label"></label>
+        <label asp-for="CategoryName" class="form-label">Tên danh mục</label>
         <input asp-for="CategoryName" class="form-control" />
         <span asp-validation-for="CategoryName" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Description" class="form-label"></label>
+        <label asp-for="Description" class="form-label">Mô tả</label>
         <input asp-for="Description" class="form-control" />
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
