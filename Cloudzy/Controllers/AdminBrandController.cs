@@ -48,7 +48,7 @@ namespace Cloudzy.Controllers
             if (ModelState.IsValid)
             {
                 await _brandService.AddAsync(model);
-                TempData["Message"] = "Thêm nhãn hàng thành công!";
+                TempData["SuccessMessage"] = "Thêm nhãn hàng thành công!";
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -68,7 +68,7 @@ namespace Cloudzy.Controllers
             if (ModelState.IsValid)
             {
                 await _brandService.UpdateAsync(model);
-                TempData["Message"] = "Cập nhật nhãn hàng thành công!";
+                TempData["SuccessMessage"] = "Cập nhật nhãn hàng thành công!";
                 return RedirectToAction("Index");
             }
 
@@ -79,7 +79,7 @@ namespace Cloudzy.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _brandService.DeleteAsync(id);
-            TempData["Message"] = "Xóa nhãn hàng thành công!";
+            TempData["SuccessMessage"] = "Xóa nhãn hàng thành công!";
             return RedirectToAction("Index");
         }
     }

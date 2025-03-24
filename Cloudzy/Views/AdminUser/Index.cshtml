@@ -4,7 +4,7 @@
 }
 
 <h2>Danh sách tài khoản</h2>
-
+<div id="alertMessage" class="alert alert-success d-none"></div>
 <a class="btn btn-primary mb-3" asp-action="Create">Thêm tài khoản</a>
 
 <!-- Danh sách user -->
@@ -16,6 +16,11 @@
 <script>
     $(document).ready(function () {
         load(1);
+
+        var message = '@Html.Raw(TempData["SuccessMessage"])';
+        if (message) {
+            showAlert(message);
+        }
     });
 
     function load(page) {
@@ -29,5 +34,13 @@
                 $('#userList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
             }
         });
+    }
+
+    function showAlert(message) {
+        var alertBox = $('#alertMessage');
+        alertBox.text(message).removeClass('d-none');
+        setTimeout(function () {
+            alertBox.addClass('d-none');
+        }, 4000);
     }
 </script>

@@ -44,7 +44,7 @@ namespace Cloudzy.Controllers
             if (ModelState.IsValid)
             {
                 await _categoryService.AddAsync(model);
-                TempData["Message"] = "Thêm danh mục thành công!";
+                TempData["SuccessMessage"] = "Thêm danh mục thành công!";
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -64,7 +64,7 @@ namespace Cloudzy.Controllers
             if (ModelState.IsValid)
             {
                 await _categoryService.UpdateAsync(model);
-                TempData["Message"] = "Cập nhật danh mục thành công!";
+                TempData["SuccessMessage"] = "Cập nhật danh mục thành công!";
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -74,7 +74,7 @@ namespace Cloudzy.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _categoryService.DeleteAsync(id);
-            TempData["Message"] = "Xóa danh mục thành công!";
+            TempData["SuccessMessage"] = "Xóa danh mục thành công!";
             return RedirectToAction("Index");
         }
     }
