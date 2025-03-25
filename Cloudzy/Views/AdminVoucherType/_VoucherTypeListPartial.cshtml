@@ -1,0 +1,46 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+
+@model IPagedList<Cloudzy.Models.ViewModels.AdminVoucherType.VoucherTypeListViewModel>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th>Loại voucher</th>
+            <th>Giá trị</th>
+            <th>Giá trị tối thiếu để áp dụng</th>
+            <th>Giá trị tối đa được giảm</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var voucherType in Model)
+        {
+            <tr>
+                <td>@voucherType.STT</td>
+                <td>@voucherType.VoucherTypeName</td>
+                <td>@voucherType.Value</td>
+                <td>@voucherType.MinimumValue</td>
+                <td>@voucherType.MaximumValue</td>
+                <td>
+                    <div class="d-flex gap-2">
+                        <a href="@Url.Action("Edit", "AdminVoucherType", new { id = voucherType.VoucherTypeId })" class="btn btn-warning">Sửa</a>
+                        <form asp-action="Delete" asp-controller="AdminVoucherType" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa không?')">
+                            <input type="hidden" name="id" value="@voucherType.VoucherTypeId" />
+                            <button type="submit" class="btn btn-danger">Xóa</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Phân trang bằng AJAX -->
+<div class="text-center d-flex justify-content-center mt-3">
+    @Html.PagedListPager(Model, page => "javascript:load(" + page + ")", new PagedListRenderOptions
+{
+    LiElementClasses = new[] { "page-item" },
+    PageClasses = new[] { "page-link" }
+})
+</div>

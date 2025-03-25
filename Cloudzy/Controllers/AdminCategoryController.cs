@@ -1,6 +1,4 @@
 ﻿using Cloudzy.Models.ViewModels.AdminCategory;
-using Cloudzy.Models.ViewModels.AdminUser;
-using Cloudzy.Services.Implementations;
 using Cloudzy.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
