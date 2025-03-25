@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Quản lý loại voucher";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Danh sách loại voucher</h2>
+<div id="alertMessage" class="alert alert-success d-none"></div>
+<a class="btn btn-primary mb-3" asp-action="Create">Thêm loại voucher</a>
+
+<!-- Danh sách loại voucher -->
+<div id="voucherTypeList">
+    <p>Đang tải dữ liệu...</p>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        load(1);
+
+        var message = '@Html.Raw(TempData["SuccessMessage"])';
+        if (message) {
+            showAlert(message);
+        }
+    });
+
+    function load(page) {
+        $.ajax({
+            url: '/AdminVoucherType/Load?page=' + page,
+            type: 'GET',
+            success: function (data) {
+                $('#voucherTypeList').html(data);
+            },
+            error: function () {
+                $('#voucherTypeList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
+            }
+        });
+    }
+
+    function showAlert(message) {
+        var alertBox = $('#alertMessage');
+        alertBox.text(message).removeClass('d-none');
+        setTimeout(function () {
+            alertBox.addClass('d-none');
+        }, 4000);
+    }
+</script>

@@ -177,24 +177,33 @@
                            aria-controls="voucher-management">
                             <i class="menu-icon mdi mdi-ticket-percent-outline"></i>
                             <span class="menu-title">Quản lý voucher</span>
+                            <i class="menu-arrow"></i>
                         </a>
+                        <div class="collapse" id="voucher-management">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="AdminVoucherType" asp-action="Index">
+                                        Loại voucher
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        Voucher
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link"
-                           data-bs-toggle="collapse"
-                           href="#import-management"
-                           aria-expanded="false"
-                           aria-controls="import-management">
+                           href="#">
                             <i class="menu-icon mdi mdi-import"></i>
                             <span class="menu-title">Quản lý nhập hàng</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link"
-                           data-bs-toggle="collapse"
-                           href="#order-management"
-                           aria-expanded="false"
-                           aria-controls="order-management">
+                            href="#">
                             <i class="menu-icon mdi mdi-cart-outline"></i>
                             <span class="menu-title">Quản lý đơn hàng</span>
                         </a>

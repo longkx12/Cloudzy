@@ -1,5 +1,4 @@
-﻿using Cloudzy.Models.ViewModels.AdminBrand;
-using Cloudzy.Models.ViewModels.AdminSupplier;
+﻿using Cloudzy.Models.ViewModels.AdminSupplier;
 using X.PagedList;
 
 namespace Cloudzy.Services.Interfaces

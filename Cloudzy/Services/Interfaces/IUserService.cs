@@ -1,5 +1,4 @@
-﻿using Cloudzy.Models.Domain;
-using Cloudzy.Models.ViewModels.AdminUser;
+﻿using Cloudzy.Models.ViewModels.AdminUser;
 using X.PagedList;
 
 namespace Cloudzy.Services.Interfaces

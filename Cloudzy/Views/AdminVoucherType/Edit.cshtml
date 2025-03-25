@@ -1,0 +1,42 @@
+﻿@model Cloudzy.Models.ViewModels.AdminVoucherType.VoucherTypeEditViewModel
+
+@{
+    ViewData["Title"] = "Sửa loại voucher";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Chỉnh sửa loại voucher</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="VoucherTypeId" />
+
+    <div class="form-group">
+        <label asp-for="VoucherTypeName">Tên loại voucher</label>
+        <input asp-for="VoucherTypeName" class="form-control" required />
+        <span asp-validation-for="VoucherTypeName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Value">Giá trị</label>
+        <input asp-for="Value" type="number" class="form-control" required />
+        <span asp-validation-for="Value" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MinimumValue">Giá trị tối thiểu để áp dụng</label>
+        <input asp-for="MinimumValue" class="form-control" required />
+        <span asp-validation-for="MinimumValue" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MaximumValue">Giá trị tối đa được giảm</label>
+        <input asp-for="MaximumValue" class="form-control" required />
+        <span asp-validation-for="MaximumValue" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-warning mt-3">Cập nhật</button>
+    <a asp-action="Index" class="btn btn-secondary mt-3">Quay lại</a>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
