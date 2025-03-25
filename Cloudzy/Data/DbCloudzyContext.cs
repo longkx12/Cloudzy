@@ -341,6 +341,7 @@ public partial class DbCloudzyContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false);
             entity.Property(e => e.RoleId).HasColumnName("RoleID");
+            entity.Property(e => e.UserImg).HasMaxLength(255);
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)

@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Quản lý nhà cung cấp";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Danh sách nhà cung cấp</h2>
+<div id="alertMessage" class="alert alert-success d-none"></div>
+<a class="btn btn-primary mb-3" asp-action="Create">Thêm nhà cung cấp</a>
+
+<!-- Danh sách nhà cung cấp -->
+<div id="supplierList">
+    <p>Đang tải dữ liệu...</p>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        load(1);
+
+        var message = '@Html.Raw(TempData["SuccessMessage"])';
+        if (message) {
+            showAlert(message);
+        }
+    });
+
+    function load(page) {
+        $.ajax({
+            url: '/AdminSupplier/Load?page=' + page,
+            type: 'GET',
+            success: function (data) {
+                $('#supplierList').html(data);
+            },
+            error: function () {
+                $('#supplierList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
+            }
+        });
+    }
+
+    function showAlert(message) {
+        var alertBox = $('#alertMessage');
+        alertBox.text(message).removeClass('d-none');
+        setTimeout(function () {
+            alertBox.addClass('d-none');
+        }, 4000);
+    }
+</script>
