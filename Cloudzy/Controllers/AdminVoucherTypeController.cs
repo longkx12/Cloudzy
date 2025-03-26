@@ -69,8 +69,15 @@ namespace Cloudzy.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            await _voucherTypeService.DeleteAsync(id);
-            TempData["SuccessMessage"] = "Xóa loại voucher thành công!";
+            try
+            {
+                await _voucherTypeService.DeleteAsync(id);
+                TempData["SuccessMessage"] = "Xóa loại voucher thành công!";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
             return RedirectToAction("Index");
         }
     }

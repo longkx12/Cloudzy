@@ -29,7 +29,14 @@ namespace Cloudzy.Services.Implementations
 
         public async Task DeleteAsync(int id)
         {
-            await _voucherTypeRepository.DeleteAsync(id);
+            try
+            {
+                await _voucherTypeRepository.DeleteAsync(id);
+            }
+            catch (InvalidOperationException ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<IPagedList<VoucherTypeListViewModel>> GetAllAsync(int pageNumber, int pageSize)

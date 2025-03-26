@@ -20,6 +20,13 @@ namespace Cloudzy.Repositories.Implementations
 
         public async Task DeleteAsync(int id)
         {
+            //Kiểm tra xem có voucher nào áp dụng loại voucher cần xóa không
+            bool hasVouchers = await _context.DiscountCodes.AnyAsync(d => d.VoucherTypeId == id);
+            if (hasVouchers)
+            {
+                throw new InvalidOperationException("Không thể xóa vì có voucher đang sử dụng loại voucher này.");
+            }
+
             var voucherType = await _context.VoucherTypes.FindAsync(id);
             if (voucherType != null)
             {
