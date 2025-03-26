@@ -146,9 +146,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link"
-                           aria-expanded="false"
-                           aria-controls="product-management">
+                        <a class="nav-link">
                             <i class="menu-icon mdi mdi-tshirt-crew-outline"></i>
                             <span class="menu-title">Quản lý sản phẩm</span>
                         </a>
@@ -187,7 +185,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">
+                                    <a class="nav-link" asp-controller="AdminDiscountCode" asp-action="Index">
                                         Voucher
                                     </a>
                                 </li>
@@ -234,7 +232,15 @@
             <!-- partial -->
             <div class="main-panel">
                 <div class="content-wrapper">
-                    @RenderBody()
+                    <div class="row">
+                        <div class="col-lg-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    @RenderBody()
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <!-- content-wrapper ends -->
                 <!-- partial:partials/_footer.html -->

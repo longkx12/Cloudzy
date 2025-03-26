@@ -1,0 +1,51 @@
+﻿@model Cloudzy.Models.ViewModels.AdminDiscountCode.DiscountCodeCreateViewModel
+
+@{
+    ViewData["Title"] = "Thêm voucher mới";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Thêm voucher</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="Code" class="form-label">Mã voucher</label>
+        <input asp-for="Code" class="form-control" />
+        <span asp-validation-for="Code" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="VoucherTypeId" class="form-label"></label>
+        <select asp-for="VoucherTypeId" asp-items="Model.VoucherTypes" class="form-control">
+            <option value="">-- Chọn loại --</option>
+        </select>
+        <span asp-validation-for="VoucherTypeId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Quantity" class="form-label">Số lượng</label>
+        <input asp-for="Quantity" type="number" class="form-control" />
+        <span asp-validation-for="Quantity" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StartDate" class="form-label">Ngày bắt đầu</label>
+        <input asp-for="StartDate" type="datetime-local" class="form-control"
+               value="@Model.StartDate.ToString("yyyy-MM-ddTHH:mm")" />
+        <span asp-validation-for="StartDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="EndDate" class="form-label">Ngày kết thúc</label>
+        <input asp-for="EndDate" type="datetime-local" class="form-control"
+               value="@Model.EndDate.ToString("yyyy-MM-ddTHH:mm")"/>
+        <span asp-validation-for="EndDate" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Thêm voucher</button>
+    <a asp-action="Index" class="btn btn-secondary mt-3">Quay lại</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
