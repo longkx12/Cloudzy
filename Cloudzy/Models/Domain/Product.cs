@@ -19,9 +19,15 @@ public partial class Product
 
     public int? SupplierId { get; set; }
 
+    public decimal? Price { get; set; }
+
+    public decimal? DiscountPrice { get; set; }
+
     public virtual Brand? Brand { get; set; }
 
     public virtual Category? Category { get; set; }
+
+    public virtual ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
 
     public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
 

@@ -36,6 +36,7 @@ builder.Services.AddScoped<IBrandRepository, BrandRepository>();
 builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<IVoucherTypeRepository, VoucherTypeRepository>();
 builder.Services.AddScoped<IDiscountCodeRepository, DiscountCodeRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -44,7 +45,7 @@ builder.Services.AddScoped<IBrandService, BrandService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IVoucherTypeService, VoucherTypeService>();
 builder.Services.AddScoped<IDiscountCodeService, DiscountCodeService>();
-
+builder.Services.AddScoped<IProductService, ProductService>();
 
 var app = builder.Build();
 

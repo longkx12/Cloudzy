@@ -16,7 +16,7 @@
 
     <div class="mb-3">
         <label asp-for="BrandImg" class="form-label">Ảnh</label>
-        <input asp-for="BrandImg" type="file" class="form-control" />
+        <input asp-for="BrandImg" type="file" class="form-control" accept="image/*" multiple />
         <span asp-validation-for="BrandImg" class="text-danger"></span>
     </div>
 

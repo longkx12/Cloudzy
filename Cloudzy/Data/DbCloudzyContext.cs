@@ -36,6 +36,8 @@ public partial class DbCloudzyContext : DbContext
 
     public virtual DbSet<Product> Products { get; set; }
 
+    public virtual DbSet<ProductImage> ProductImages { get; set; }
+
     public virtual DbSet<ProductVariant> ProductVariants { get; set; }
 
     public virtual DbSet<Review> Reviews { get; set; }
@@ -211,7 +213,9 @@ public partial class DbCloudzyContext : DbContext
             entity.Property(e => e.ProductId).HasColumnName("ProductID");
             entity.Property(e => e.BrandId).HasColumnName("BrandID");
             entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
+            entity.Property(e => e.DiscountPrice).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.Material).HasMaxLength(50);
+            entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.ProductDescription).HasMaxLength(255);
             entity.Property(e => e.ProductName).HasMaxLength(100);
             entity.Property(e => e.SupplierId).HasColumnName("SupplierID");
@@ -229,16 +233,26 @@ public partial class DbCloudzyContext : DbContext
                 .HasConstraintName("FK__Products__Suppli__48CFD27E");
         });
 
+        modelBuilder.Entity<ProductImage>(entity =>
+        {
+            entity.HasKey(e => e.ImageId).HasName("PK__ProductI__7516F4ECB83A2E9D");
+
+            entity.Property(e => e.ImageId).HasColumnName("ImageID");
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(255)
+                .HasColumnName("ImageURL");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductImages)
+                .HasForeignKey(d => d.ProductId)
+                .HasConstraintName("FK__ProductIm__Produ__18EBB532");
+        });
+
         modelBuilder.Entity<ProductVariant>(entity =>
         {
             entity.HasKey(e => e.VariantId).HasName("PK__ProductV__0EA233E4E825C51E");
 
             entity.Property(e => e.VariantId).HasColumnName("VariantID");
             entity.Property(e => e.ColorId).HasColumnName("ColorID");
-            entity.Property(e => e.ImageUrl)
-                .HasMaxLength(255)
-                .HasColumnName("ImageURL");
-            entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.ProductId).HasColumnName("ProductID");
             entity.Property(e => e.SizeId).HasColumnName("SizeID");
 
