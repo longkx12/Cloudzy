@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Cloudzy.Models.Domain;
+using Microsoft.AspNetCore.Hosting;
+using System.ComponentModel.DataAnnotations;
 
 namespace Cloudzy.Models.ViewModels.AdminBrand
 {

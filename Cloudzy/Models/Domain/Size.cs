@@ -9,5 +9,9 @@ public partial class Size
 
     public string SizeName { get; set; } = null!;
 
+    public int? Height { get; set; }
+
+    public int? Weight { get; set; }
+
     public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
 }

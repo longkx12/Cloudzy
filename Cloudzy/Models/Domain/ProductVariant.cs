@@ -13,11 +13,7 @@ public partial class ProductVariant
 
     public int? ColorId { get; set; }
 
-    public string? ImageUrl { get; set; }
-
     public int Stock { get; set; }
-
-    public decimal Price { get; set; }
 
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 

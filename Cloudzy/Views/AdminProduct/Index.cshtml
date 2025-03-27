@@ -1,14 +1,14 @@
 ﻿@{
-    ViewData["Title"] = "Quản lý voucher";
+    ViewData["Title"] = "Quản lý sản phẩm";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<h2>Danh sách voucher</h2>
+<h2>Danh sách sản phẩm</h2>
 <div id="alertMessage" class="alert alert-success d-none"></div>
-<a class="btn btn-primary mb-3" asp-action="Create">Thêm voucher</a>
+<a class="btn btn-primary mb-3" asp-action="Create">Thêm sản phẩm</a>
 
-<!-- Danh sách loại voucher -->
-<div id="discountCodeList">
+<!-- Danh sách sản phẩm -->
+<div id="productList">
     <p>Đang tải dữ liệu...</p>
 </div>
 
@@ -25,13 +25,13 @@
 
     function load(page) {
         $.ajax({
-            url: '/AdminDiscountCode/Load?page=' + page,
+            url: '/AdminProduct/Load?page=' + page,
             type: 'GET',
             success: function (data) {
-                $('#discountCodeList').html(data);
+                $('#productList').html(data);
             },
             error: function () {
-                $('#discountCodeList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
+                $('#productList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
             }
         });
     }
