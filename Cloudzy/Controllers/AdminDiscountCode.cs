@@ -47,11 +47,6 @@ namespace Cloudzy.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Models.ViewModels.AdminDiscountCode.CreateViewModel model)
         {
-            if (model.EndDate <= model.StartDate)
-            {
-                ModelState.AddModelError("EndDate", "Ngày kết thúc phải lớn hơn ngày bắt đầu");
-            }
-
             // Nếu có lỗi, cần gán lại dữ liệu dropdown
             if (!ModelState.IsValid)
             {
@@ -59,10 +54,20 @@ namespace Cloudzy.Controllers
                 return View(model);
             }
 
-            await _discountCodeService.AddAsync(model);
-            TempData["ToastMessage"] = "Thêm thành công!";
-            TempData["ToastType"] = "success";
-            return RedirectToAction("Index");
+            try
+            {
+                await _discountCodeService.AddAsync(model);
+                TempData["ToastMessage"] = "Thêm thành công!";
+                TempData["ToastType"] = "success";
+                return RedirectToAction("Index");
+            }
+            catch(Exception ex)
+            {
+                TempData["ToastMessage"] = ex.Message;
+                TempData["ToastType"] = "error";
+            }
+
+            return View(model);
         }
 
         public async Task<IActionResult> Edit(int id)
@@ -79,10 +84,18 @@ namespace Cloudzy.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _discountCodeService.UpdateAsync(model);
-                TempData["ToastMessage"] = "Cập nhật thành công!";
-                TempData["ToastType"] = "success";
-                return RedirectToAction("Index");
+                try
+                {
+                    await _discountCodeService.UpdateAsync(model);
+                    TempData["ToastMessage"] = "Cập nhật thành công!";
+                    TempData["ToastType"] = "success";
+                    return RedirectToAction("Index");
+                }
+                catch(Exception ex)
+                {
+                    TempData["ToastMessage"] = ex.Message;
+                    TempData["ToastType"] = "error";
+                }
             }
             return View(model);
         }

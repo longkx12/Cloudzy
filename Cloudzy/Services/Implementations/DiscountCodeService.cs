@@ -19,6 +19,12 @@ namespace Cloudzy.Services.Implementations
         }
         public async Task AddAsync(CreateViewModel model)
         {
+            //Kiểm tra ngày bắt đầu và ngày kết thúc
+            if (model.EndDate <= model.StartDate)
+            {
+                throw new Exception("Ngày kết thúc phải lớn hơn ngày bắt đầu");
+            }
+
             var discountCode = new DiscountCode
             {
                 Code = model.Code,
@@ -69,6 +75,12 @@ namespace Cloudzy.Services.Implementations
 
         public async Task UpdateAsync(EditViewModel model)
         {
+            //Kiểm tra ngày bắt đầu và ngày kết thúc
+            if (model.EndDate <= model.StartDate)
+            {
+                throw new Exception("Ngày kết thúc phải lớn hơn ngày bắt đầu");
+            }
+
             var discountCode = await _discountCodeRepository.GetByIdAsync(model.DiscountCodeId);
             if (discountCode != null)
             {
