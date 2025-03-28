@@ -15,7 +15,7 @@ namespace Cloudzy.Services.Implementations
         {
             _voucherTypeRepository = voucherTypeRepository;
         }
-        public async Task AddAsync(VoucherTypeCreateViewModel model)
+        public async Task AddAsync(CreateViewModel model)
         {
             var voucherType = new VoucherType
             {
@@ -39,10 +39,10 @@ namespace Cloudzy.Services.Implementations
             }
         }
 
-        public async Task<IPagedList<VoucherTypeListViewModel>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<IPagedList<ListViewModel>> GetAllAsync(int pageNumber, int pageSize)
         {
             var voucherTypes = await _voucherTypeRepository.GetAllAsync();
-            var pageVoucherTypes = voucherTypes.Select((v, index) => new VoucherTypeListViewModel
+            var pageVoucherTypes = voucherTypes.Select((v, index) => new ListViewModel
             {
                 VoucherTypeId = v.VoucherTypeId,
                 STT = index + 1,
@@ -54,12 +54,12 @@ namespace Cloudzy.Services.Implementations
             return pageVoucherTypes;
         }
 
-        public async Task<VoucherTypeEditViewModel> GetByIdAsync(int id)
+        public async Task<EditViewModel> GetByIdAsync(int id)
         {
             var voucherType = await _voucherTypeRepository.GetByIdAsync(id);
             if (voucherType == null) return null;
 
-            return new VoucherTypeEditViewModel
+            return new EditViewModel
             {
                 VoucherTypeId = voucherType.VoucherTypeId,
                 VoucherTypeName = voucherType.VoucherTypeName,
@@ -69,7 +69,7 @@ namespace Cloudzy.Services.Implementations
             };
         }
 
-        public async Task UpdateAsync(VoucherTypeEditViewModel model)
+        public async Task UpdateAsync(EditViewModel model)
         {
             var voucherType = await _voucherTypeRepository.GetByIdAsync(model.VoucherTypeId);
             if (voucherType == null) return;

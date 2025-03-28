@@ -4,7 +4,6 @@
 }
 
 <h2>Danh sách nhãn hàng</h2>
-<div id="alertMessage" class="alert alert-success d-none"></div>
 <a class="btn btn-primary mb-3" asp-action="Create">Thêm nhãn hàng</a>
 
 <!-- Danh sách nhãn hàng -->
@@ -34,13 +33,5 @@
                 $('#brandList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
             }
         });
-    }
-
-    function showAlert(message) {
-        var alertBox = $('#alertMessage');
-        alertBox.text(message).removeClass('d-none');
-        setTimeout(function () {
-            alertBox.addClass('d-none');
-        }, 4000);
     }
 </script>

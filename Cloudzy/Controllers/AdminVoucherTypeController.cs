@@ -35,12 +35,13 @@ namespace Cloudzy.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(VoucherTypeCreateViewModel model)
+        public async Task<IActionResult> Create(CreateViewModel model)
         {
             if (ModelState.IsValid)
             {
                 await _voucherTypeService.AddAsync(model);
-                TempData["SuccessMessage"] = "Thêm loại voucher thành công!";
+                TempData["ToastMessage"] = "Thêm thành công!";
+                TempData["ToastType"] = "success";
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -55,12 +56,13 @@ namespace Cloudzy.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(VoucherTypeEditViewModel model)
+        public async Task<IActionResult> Edit(EditViewModel model)
         {
             if (ModelState.IsValid)
             {
                 await _voucherTypeService.UpdateAsync(model);
-                TempData["SuccessMessage"] = "Cập nhật loại voucher thành công!";
+                TempData["ToastMessage"] = "Cập nhật thành công!";
+                TempData["ToastType"] = "success";
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -72,11 +74,13 @@ namespace Cloudzy.Controllers
             try
             {
                 await _voucherTypeService.DeleteAsync(id);
-                TempData["SuccessMessage"] = "Xóa loại voucher thành công!";
+                TempData["ToastMessage"] = "Xóa thành công!";
+                TempData["ToastType"] = "success";
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ToastMessage"] = "Không thể xóa vì có voucher sử dụng loại này!";
+                TempData["ToastType"] = "error";
             }
             return RedirectToAction("Index");
         }

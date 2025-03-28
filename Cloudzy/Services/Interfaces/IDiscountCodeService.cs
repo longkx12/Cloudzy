@@ -6,10 +6,10 @@ namespace Cloudzy.Services.Interfaces
 {
     public interface IDiscountCodeService
     {
-        Task<IPagedList<DiscountCodeListViewModel>> GetAllAsync(int pageNumber, int pageSize);
-        Task<DiscountCodeEditViewModel> GetByIdAsync(int id);
-        Task AddAsync(DiscountCodeCreateViewModel model);
-        Task UpdateAsync(DiscountCodeEditViewModel model);
+        Task<IPagedList<ListViewModel>> GetAllAsync(int pageNumber, int pageSize);
+        Task<EditViewModel> GetByIdAsync(int id);
+        Task AddAsync(CreateViewModel model);
+        Task UpdateAsync(EditViewModel model);
         Task DeleteAsync(int id);
     }
 }

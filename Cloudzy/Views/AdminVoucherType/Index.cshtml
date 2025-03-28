@@ -4,8 +4,6 @@
 }
 
 <h2>Danh sách loại voucher</h2>
-<div id="successAlert" class="alert alert-success d-none"></div>
-<div id="errorAlert" class="alert alert-danger d-none"></div>
 <a class="btn btn-primary mb-3" asp-action="Create">Thêm loại voucher</a>
 
 <!-- Danh sách loại voucher -->
@@ -13,7 +11,7 @@
     <p>Đang tải dữ liệu...</p>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
         load(1);
@@ -40,13 +38,5 @@
                 $('#voucherTypeList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
             }
         });
-    }
-
-    function showAlert(message, type) {
-        var alertBox = type === "success" ? $('#successAlert') : $('#errorAlert');
-        alertBox.text(message).removeClass('d-none');
-        setTimeout(function () {
-            alertBox.addClass('d-none');
-        }, 4000);
     }
 </script>

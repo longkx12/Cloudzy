@@ -37,12 +37,13 @@ namespace Cloudzy.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(SupplierCreateViewModel model)
+        public async Task<IActionResult> Create(CreateViewModel model)
         {
             if (ModelState.IsValid)
             {
                 await _supplierService.AddAsync(model);
-                TempData["SuccessMessage"] = "Thêm nhà cung cấp thành công!";
+                TempData["ToastMessage"] = "Thêm thành công!";
+                TempData["ToastType"] = "success";
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -57,12 +58,13 @@ namespace Cloudzy.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(SupplierEditViewModel model)
+        public async Task<IActionResult> Edit(EditViewModel model)
         {
             if (ModelState.IsValid)
             {
                 await _supplierService.UpdateAsync(model);
-                TempData["SuccessMessage"] = "Cập nhật nhà cung cấp thành công!";
+                TempData["ToastMessage"] = "Cập nhật thành công!";
+                TempData["ToastType"] = "success";
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -72,7 +74,8 @@ namespace Cloudzy.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _supplierService.DeleteAsync(id);
-            TempData["SuccessMessage"] = "Xóa nhà cung cấp thành công!";
+            TempData["ToastMessage"] = "Xóa thành công!";
+            TempData["ToastType"] = "success";
             return RedirectToAction("Index");
         }
     }

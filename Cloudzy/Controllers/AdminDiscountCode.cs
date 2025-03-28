@@ -37,7 +37,7 @@ namespace Cloudzy.Controllers
 
         public IActionResult Create()
         {
-            var model = new DiscountCodeCreateViewModel
+            var model = new Models.ViewModels.AdminDiscountCode.CreateViewModel
             {
                 VoucherTypes = new SelectList(_context.VoucherTypes, "VoucherTypeId", "VoucherTypeName")
             };
@@ -45,7 +45,7 @@ namespace Cloudzy.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(DiscountCodeCreateViewModel model)
+        public async Task<IActionResult> Create(Models.ViewModels.AdminDiscountCode.CreateViewModel model)
         {
             if (model.EndDate <= model.StartDate)
             {
@@ -60,7 +60,8 @@ namespace Cloudzy.Controllers
             }
 
             await _discountCodeService.AddAsync(model);
-            TempData["SuccessMessage"] = "Thêm voucher thành công!";
+            TempData["ToastMessage"] = "Thêm thành công!";
+            TempData["ToastType"] = "success";
             return RedirectToAction("Index");
         }
 
@@ -73,12 +74,13 @@ namespace Cloudzy.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(DiscountCodeEditViewModel model)
+        public async Task<IActionResult> Edit(Models.ViewModels.AdminDiscountCode.EditViewModel model)
         {
             if (ModelState.IsValid)
             {
                 await _discountCodeService.UpdateAsync(model);
-                TempData["SuccessMessage"] = "Cập nhật voucher thành công!";
+                TempData["ToastMessage"] = "Cập nhật thành công!";
+                TempData["ToastType"] = "success";
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -88,7 +90,8 @@ namespace Cloudzy.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _discountCodeService.DeleteAsync(id);
-            TempData["SuccesMessage"] = "Xóa voucher thành công!";
+            TempData["ToastMessage"] = "Xóa thành công!";
+            TempData["ToastType"] = "success";
             return RedirectToAction("Index");
         }
     }

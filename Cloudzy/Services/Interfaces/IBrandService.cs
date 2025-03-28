@@ -5,10 +5,10 @@ namespace Cloudzy.Services.Interfaces
 {
     public interface IBrandService
     {
-        Task<IPagedList<BrandListViewModel>> GetAllAsync(int pageNumber, int pageSize);
-        Task<BrandEditViewModel> GetByIdAsync(int id);
-        Task AddAsync(BrandCreateViewModel model);
-        Task UpdateAsync(BrandEditViewModel model);
+        Task<IPagedList<ListViewModel>> GetAllAsync(int pageNumber, int pageSize);
+        Task<EditViewModel> GetByIdAsync(int id);
+        Task AddAsync(CreateViewModel model);
+        Task UpdateAsync(EditViewModel model);
         Task DeleteAsync(int id);
     }
 }

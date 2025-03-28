@@ -37,13 +37,22 @@ namespace Cloudzy.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CategoryViewModel model)
+        public async Task<IActionResult> Create(CreateViewModel model)
         {
             if (ModelState.IsValid)
             {
-                await _categoryService.AddAsync(model);
-                TempData["SuccessMessage"] = "Thêm danh mục thành công!";
-                return RedirectToAction("Index");
+                try
+                {
+                    await _categoryService.AddAsync(model);
+                    TempData["ToastMessage"] = "Thêm thành công!";
+                    TempData["ToastType"] = "success";
+                    return RedirectToAction("Index");
+                }
+                catch(Exception ex)
+                {
+                    TempData["ToastMessage"] = ex.Message;
+                    TempData["ToastType"] = "error";
+                }
             }
             return View(model);
         }
@@ -57,13 +66,22 @@ namespace Cloudzy.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(CategoryEditViewModel model)
+        public async Task<IActionResult> Edit(EditViewModel model)
         {
             if (ModelState.IsValid)
             {
-                await _categoryService.UpdateAsync(model);
-                TempData["SuccessMessage"] = "Cập nhật danh mục thành công!";
-                return RedirectToAction("Index");
+                try
+                {
+                    await _categoryService.UpdateAsync(model);
+                    TempData["ToastMessage"] = "Cập nhật thành công!";
+                    TempData["ToastType"] = "success";
+                    return RedirectToAction("Index");
+                }
+                catch(Exception ex)
+                {
+                    TempData["ToastMessage"] = ex.Message;
+                    TempData["ToastType"] = "error";
+                }
             }
             return View(model);
         }
@@ -72,7 +90,8 @@ namespace Cloudzy.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _categoryService.DeleteAsync(id);
-            TempData["SuccessMessage"] = "Xóa danh mục thành công!";
+            TempData["ToastMessage"] = "Xóa thành công!";
+            TempData["ToastType"] = "success";
             return RedirectToAction("Index");
         }
     }

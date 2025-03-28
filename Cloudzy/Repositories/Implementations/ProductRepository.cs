@@ -24,7 +24,7 @@ namespace Cloudzy.Repositories.Implementations
         public async Task DeleteAsync(int id)
         {
             var product = await _context.Products
-                .Include(p => p.ProductImages) // Include danh sách ảnh sản phẩm
+                .Include(p => p.ProductImages)
                 .FirstOrDefaultAsync(p => p.ProductId == id);
 
             if (product != null)
