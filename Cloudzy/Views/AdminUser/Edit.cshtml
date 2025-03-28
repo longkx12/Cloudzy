@@ -1,4 +1,4 @@
-﻿@model Cloudzy.Models.ViewModels.AdminUser.UserEditViewModel
+﻿@model Cloudzy.Models.ViewModels.AdminUser.EditViewModel
 
 @{
     ViewData["Title"] = "Sửa tài khoản";
@@ -18,7 +18,7 @@
 
     <div class="form-group">
         <label asp-for="Email">Email</label>
-        <input asp-for="Email" type="email" class="form-control" required />
+        <input asp-for="Email" type="email" class="form-control" maxlength="1000" required />
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
 

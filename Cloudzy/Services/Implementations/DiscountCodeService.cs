@@ -17,7 +17,7 @@ namespace Cloudzy.Services.Implementations
             _discountCodeRepository = discountCodeRepository;
             _context = context;
         }
-        public async Task AddAsync(DiscountCodeCreateViewModel model)
+        public async Task AddAsync(CreateViewModel model)
         {
             var discountCode = new DiscountCode
             {
@@ -35,10 +35,10 @@ namespace Cloudzy.Services.Implementations
             await _discountCodeRepository.DeleteAsync(id);
         }
 
-        public async Task<IPagedList<DiscountCodeListViewModel>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<IPagedList<ListViewModel>> GetAllAsync(int pageNumber, int pageSize)
         {
             var discountCode = await _discountCodeRepository.GetAllAsync();
-            var pageDiscountCode = discountCode.Select((d, index) => new DiscountCodeListViewModel
+            var pageDiscountCode = discountCode.Select((d, index) => new ListViewModel
             {
                 DiscountCodeId = d.DiscountCodeId,
                 STT = index + 1,
@@ -52,18 +52,18 @@ namespace Cloudzy.Services.Implementations
             return pageDiscountCode;
         }
 
-        public async Task<DiscountCodeEditViewModel> GetByIdAsync(int id)
+        public async Task<EditViewModel> GetByIdAsync(int id)
         {
             var discountCode = await _discountCodeRepository.GetByIdAsync(id);
             if (discountCode == null) return null;
-            return new DiscountCodeEditViewModel
+            return new EditViewModel
             {
                 DiscountCodeId = discountCode.DiscountCodeId,
                 
             };
         }
 
-        public async Task UpdateAsync(DiscountCodeEditViewModel model)
+        public async Task UpdateAsync(EditViewModel model)
         {
             var discountCode = await _discountCodeRepository.GetByIdAsync(model.DiscountCodeId);
             if (discountCode != null)

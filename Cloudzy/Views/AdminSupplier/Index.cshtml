@@ -4,7 +4,6 @@
 }
 
 <h2>Danh sách nhà cung cấp</h2>
-<div id="alertMessage" class="alert alert-success d-none"></div>
 <a class="btn btn-primary mb-3" asp-action="Create">Thêm nhà cung cấp</a>
 
 <!-- Danh sách nhà cung cấp -->
@@ -34,13 +33,5 @@
                 $('#supplierList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
             }
         });
-    }
-
-    function showAlert(message) {
-        var alertBox = $('#alertMessage');
-        alertBox.text(message).removeClass('d-none');
-        setTimeout(function () {
-            alertBox.addClass('d-none');
-        }, 4000);
     }
 </script>

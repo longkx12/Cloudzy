@@ -35,7 +35,7 @@ namespace Cloudzy.Controllers
 
         public IActionResult Create()
         {
-            var model = new ProductCreateViewModel
+            var model = new CreateViewModel
             {
                 Category = new SelectList(_context.Categories,"CategoryId","CategoryName"),
                 Brand = new SelectList(_context.Brands,"BrandId","BrandName")
@@ -44,7 +44,7 @@ namespace Cloudzy.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(ProductCreateViewModel model)
+        public async Task<IActionResult> Create(CreateViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -54,7 +54,8 @@ namespace Cloudzy.Controllers
             }
 
             await _productService.AddAsync(model);
-            TempData["SuccessMessage"] = "Thêm sản phẩm thành công!";
+            TempData["ToastMessage"] = "Thêm thành công!";
+            TempData["ToastType"] = "success";
             return RedirectToAction("Index");
         }
 
@@ -71,7 +72,7 @@ namespace Cloudzy.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(ProductEditViewModel model)
+        public async Task<IActionResult> Edit(EditViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -81,7 +82,8 @@ namespace Cloudzy.Controllers
             }
 
             await _productService.UpdateAsync(model);
-            TempData["SuccessMessage"] = "Sửa sản phẩm thành công!";
+            TempData["ToastMessage"] = "Cập nhật thành công!";
+            TempData["ToastType"] = "success";
             return RedirectToAction("Index");
         }
 
@@ -89,7 +91,8 @@ namespace Cloudzy.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _productService.DeleteAsync(id);
-            TempData["SuccessMessage"] = "Xóa sản phẩm thành công!";
+            TempData["ToastMessage"] = "Xóa thành công!";
+            TempData["ToastType"] = "success";
             return RedirectToAction("Index");
         }
     }

@@ -35,7 +35,7 @@ namespace Cloudzy.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Create(BrandCreateViewModel model)
+        public async Task<IActionResult> Create(CreateViewModel model)
         {
             if (model.BrandImg == null || model.BrandImg.Length == 0)
             {
@@ -46,7 +46,8 @@ namespace Cloudzy.Controllers
             if (ModelState.IsValid)
             {
                 await _brandService.AddAsync(model);
-                TempData["SuccessMessage"] = "Thêm nhãn hàng thành công!";
+                TempData["ToastMessage"] = "Thêm thành công!";
+                TempData["ToastType"] = "success";
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -61,12 +62,13 @@ namespace Cloudzy.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(BrandEditViewModel model)
+        public async Task<IActionResult> Edit(EditViewModel model)
         {
             if (ModelState.IsValid)
             {
                 await _brandService.UpdateAsync(model);
-                TempData["SuccessMessage"] = "Cập nhật nhãn hàng thành công!";
+                TempData["ToastMessage"] = "Cập nhật thành công!";
+                TempData["ToastType"] = "success";
                 return RedirectToAction("Index");
             }
 
@@ -77,7 +79,8 @@ namespace Cloudzy.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _brandService.DeleteAsync(id);
-            TempData["SuccessMessage"] = "Xóa nhãn hàng thành công!";
+            TempData["ToastMessage"] = "Xóa thành công!";
+            TempData["ToastType"] = "success";
             return RedirectToAction("Index");
         }
     }

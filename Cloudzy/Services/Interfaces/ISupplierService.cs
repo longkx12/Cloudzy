@@ -5,10 +5,10 @@ namespace Cloudzy.Services.Interfaces
 {
     public interface ISupplierService
     {
-        Task<IPagedList<SupplierListViewModel>> GetAllAsync(int pageNumber, int pageSize);
-        Task<SupplierEditViewModel> GetByIdAsync(int id);
-        Task AddAsync(SupplierCreateViewModel model);
-        Task UpdateAsync(SupplierEditViewModel model);
+        Task<IPagedList<ListViewModel>> GetAllAsync(int pageNumber, int pageSize);
+        Task<EditViewModel> GetByIdAsync(int id);
+        Task AddAsync(CreateViewModel model);
+        Task UpdateAsync(EditViewModel model);
         Task DeleteAsync(int id);
     }
 }

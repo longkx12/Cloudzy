@@ -4,7 +4,6 @@
 }
 
 <h2>Danh sách danh mục</h2>
-<div id="alertMessage" class="alert alert-success d-none"></div>
 <a class="btn btn-primary mb-3" asp-action="Create">Thêm danh mục</a>
 
 <!-- Danh sách danh mục -->
@@ -34,13 +33,5 @@
                 $('#categoryList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
             }
         });
-    }
-
-    function showAlert(message) {
-        var alertBox = $('#alertMessage');
-        alertBox.text(message).removeClass('d-none');
-        setTimeout(function () {
-            alertBox.addClass('d-none');
-        }, 4000);
     }
 </script>

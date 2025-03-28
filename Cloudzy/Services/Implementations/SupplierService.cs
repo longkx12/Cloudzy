@@ -14,7 +14,7 @@ namespace Cloudzy.Services.Implementations
         {
             _supplierRepository = supplierRepository;
         }
-        public async Task AddAsync(SupplierCreateViewModel model)
+        public async Task AddAsync(CreateViewModel model)
         {
             var supplier = new Supplier
             {
@@ -31,10 +31,10 @@ namespace Cloudzy.Services.Implementations
             await _supplierRepository.DeleteAsync(id);
         }
 
-        public async Task<IPagedList<SupplierListViewModel>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<IPagedList<ListViewModel>> GetAllAsync(int pageNumber, int pageSize)
         {
             var suppliers = await _supplierRepository.GetAllAsync();
-            var pageSuppliers = suppliers.Select((s, index) => new SupplierListViewModel
+            var pageSuppliers = suppliers.Select((s, index) => new ListViewModel
             {
                 SupplierId = s.SupplierId,
                 STT = index + 1,
@@ -46,12 +46,12 @@ namespace Cloudzy.Services.Implementations
             return pageSuppliers;
         }
 
-        public async Task<SupplierEditViewModel> GetByIdAsync(int id)
+        public async Task<EditViewModel> GetByIdAsync(int id)
         {
             var supplier = await _supplierRepository.GetByIdAsync(id);
             if (supplier == null) return null;
 
-            return new SupplierEditViewModel
+            return new EditViewModel
             {
                 SupplierId = supplier.SupplierId,
                 SupplierName = supplier.SupplierName,
@@ -61,7 +61,7 @@ namespace Cloudzy.Services.Implementations
             };
         }
 
-        public async Task UpdateAsync(SupplierEditViewModel model)
+        public async Task UpdateAsync(EditViewModel model)
         {
             var supplier = await _supplierRepository.GetByIdAsync(model.SupplierId);
             if (supplier == null) return;

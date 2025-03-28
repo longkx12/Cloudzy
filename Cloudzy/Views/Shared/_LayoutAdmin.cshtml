@@ -23,6 +23,8 @@
     <link rel="stylesheet" href="~/LayoutAdmin/assets/css/style.css" />
     <!-- endinject -->
     <link rel="shortcut icon" href="~/LayoutAdmin/assets/images/favicon.png" />
+    <!-- Toastr CSS -->
+    <link href="~/lib/toastr/toastr.min.css" rel="stylesheet" />
 </head>
 <body class="with-welcome-text">
     <div class="container-scroller">
@@ -259,6 +261,43 @@
     <script src="~/LayoutAdmin/assets/js/dashboard.js"></script>
     <!-- <script src="~/LayoutAdmin/assets/js/Chart.roundedBarCharts.js"></script> -->
     <!-- End custom js for this page-->
+    <!-- jQuery (Toastr jQuery) -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <!-- Toastr JS-->
+    <script src="~/lib/toastr/toastr.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "3000"
+            };
+
+            var toastMessage = '@Html.Raw(TempData["ToastMessage"])';
+            var toastType = '@Html.Raw(TempData["ToastType"])';
+
+            if (toastMessage.trim().length > 0) {
+                switch (toastType) {
+                    case 'success':
+                        toastr.success(toastMessage, "Thành công!");
+                        break;
+                    case 'error':
+                        toastr.error(toastMessage, "Lỗi!");
+                        break;
+                    case 'warning':
+                        toastr.warning(toastMessage, "Cảnh báo!");
+                        break;
+                    case 'info':
+                        toastr.info(toastMessage, "Thông tin!");
+                        break;
+                    default:
+                        toastr.info(toastMessage);
+                }
+            }
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

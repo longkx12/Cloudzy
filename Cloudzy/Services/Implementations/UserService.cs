@@ -21,10 +21,10 @@ namespace Cloudzy.Services.Implementations
             _context = context;
         }
 
-        public async Task<IPagedList<UserListViewModel>> GetAllUsersAsync(int pageNumber, int pageSize)
+        public async Task<IPagedList<ListViewModel>> GetAllUsersAsync(int pageNumber, int pageSize)
         {
             var users = await _userRepository.GetAllUsersAsync();
-            var pagedUsers = users.Select((u, index) => new UserListViewModel
+            var pagedUsers = users.Select((u, index) => new ListViewModel
             {
                 UserId = u.UserId,
                 STT = index + 1,
@@ -38,12 +38,12 @@ namespace Cloudzy.Services.Implementations
             return pagedUsers;
         }
 
-        public async Task<UserEditViewModel?> GetUserByIdAsync(int id)
+        public async Task<EditViewModel?> GetUserByIdAsync(int id)
         {
             var user = await _userRepository.GetUserByIdAsync(id);
             if (user == null) return null;
 
-            return new UserEditViewModel
+            return new EditViewModel
             {
                 UserId = user.UserId,
                 Fullname = user.Fullname,
@@ -55,7 +55,7 @@ namespace Cloudzy.Services.Implementations
             };
         }
 
-        public async Task AddUserAsync(UserCreateViewModel model)
+        public async Task AddUserAsync(CreateViewModel model)
         {
             var user = new User
             {
@@ -70,7 +70,7 @@ namespace Cloudzy.Services.Implementations
             await _userRepository.AddUserAsync(user);
         }
 
-        public async Task UpdateUserAsync(UserEditViewModel model)
+        public async Task UpdateUserAsync(EditViewModel model)
         {
             var user = await _userRepository.GetUserByIdAsync(model.UserId);
             if (user == null) return;

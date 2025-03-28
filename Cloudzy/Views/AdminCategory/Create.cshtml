@@ -1,4 +1,4 @@
-﻿@model Cloudzy.Models.ViewModels.AdminCategory.CategoryViewModel
+﻿@model Cloudzy.Models.ViewModels.AdminCategory.CreateViewModel
 
 @{
     ViewData["Title"] = "Thêm danh mục mới";
@@ -10,7 +10,7 @@
 <form asp-action="Create" method="post">
     <div class="mb-3">
         <label asp-for="CategoryName" class="form-label">Tên danh mục</label>
-        <input asp-for="CategoryName" class="form-control" />
+        <input asp-for="CategoryName" class="form-control" maxlength="100" />
         <span asp-validation-for="CategoryName" class="text-danger"></span>
     </div>
 

@@ -16,7 +16,7 @@ namespace Cloudzy.Services.Implementations
             _brandRepository = brandRepository;
             _webHostEnvironment = webHostEnvironment;
         }
-        public async Task AddAsync(BrandCreateViewModel model)
+        public async Task AddAsync(CreateViewModel model)
         {
             string? imgPath = null;
 
@@ -64,10 +64,10 @@ namespace Cloudzy.Services.Implementations
             await _brandRepository.DeleteAsync(id);
         }
 
-        public async Task<IPagedList<BrandListViewModel>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<IPagedList<ListViewModel>> GetAllAsync(int pageNumber, int pageSize)
         {
             var brands = await _brandRepository.GetAllAsync();
-            var pageBrands = brands.Select((b, index) => new BrandListViewModel
+            var pageBrands = brands.Select((b, index) => new ListViewModel
             {
                 BrandId = b.BrandId,
                 STT = index + 1,
@@ -78,12 +78,12 @@ namespace Cloudzy.Services.Implementations
             return pageBrands;
         }
 
-        public async Task<BrandEditViewModel> GetByIdAsync(int id)
+        public async Task<EditViewModel> GetByIdAsync(int id)
         {
             var brand = await _brandRepository.GetByIdAsync(id);
             if (brand == null) return null;
 
-            return new BrandEditViewModel
+            return new EditViewModel
             {
                 BrandId = brand.BrandId,
                 BrandName = brand.BrandName,
@@ -92,7 +92,7 @@ namespace Cloudzy.Services.Implementations
             };
         }
 
-        public async Task UpdateAsync(BrandEditViewModel model)
+        public async Task UpdateAsync(EditViewModel model)
         {
             var brand = await _brandRepository.GetByIdAsync(model.BrandId);
             if (brand == null) return;

@@ -5,10 +5,10 @@ namespace Cloudzy.Services.Interfaces
 {
     public interface IVoucherTypeService
     {
-        Task<IPagedList<VoucherTypeListViewModel>> GetAllAsync(int pageNumber, int pageSize);
-        Task<VoucherTypeEditViewModel> GetByIdAsync(int id);
-        Task AddAsync(VoucherTypeCreateViewModel model);
-        Task UpdateAsync(VoucherTypeEditViewModel model);
+        Task<IPagedList<ListViewModel>> GetAllAsync(int pageNumber, int pageSize);
+        Task<EditViewModel> GetByIdAsync(int id);
+        Task AddAsync(CreateViewModel model);
+        Task UpdateAsync(EditViewModel model);
         Task DeleteAsync(int id);
     }
 }

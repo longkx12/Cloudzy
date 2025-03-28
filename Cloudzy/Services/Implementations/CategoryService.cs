@@ -14,8 +14,16 @@ namespace Cloudzy.Services.Implementations
         {
             _categoryRepository = categoryRepository;
         }
-        public async Task AddAsync(CategoryViewModel model)
+        public async Task AddAsync(CreateViewModel model)
         {
+            //Kiểm tra tên danh mục đã tồn tại
+            var existingCategory = (await _categoryRepository.GetAllAsync())
+                .FirstOrDefault(c => c.CategoryName.ToLower() == model.CategoryName.ToLower());
+            if (existingCategory != null)
+            {
+                throw new Exception("Tên danh mục đã tồn tại!");
+            }
+
             var category = new Category
             {
                 CategoryName = model.CategoryName,
@@ -29,10 +37,10 @@ namespace Cloudzy.Services.Implementations
             await _categoryRepository.DeleteAsync(id);
         }
 
-        public async Task<IPagedList<CategoryListViewModel>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<IPagedList<ListViewModel>> GetAllAsync(int pageNumber, int pageSize)
         {
             var category = await _categoryRepository.GetAllAsync();
-            var pageCategories = category.Select((c, index) => new CategoryListViewModel
+            var pageCategories = category.Select((c, index) => new ListViewModel
             {
                 CategoryId = c.CategoryId,
                 STT = index + 1,
@@ -42,27 +50,39 @@ namespace Cloudzy.Services.Implementations
             return pageCategories;
         }
 
-        public async Task<CategoryEditViewModel> GetByIdAsync(int id)
+        public async Task<EditViewModel> GetByIdAsync(int id)
         {
             var category = await _categoryRepository.GetByIdAsync(id);
             if (category == null) return null;
 
-            return new CategoryEditViewModel
+            return new EditViewModel
             {
+                CategoryId = category.CategoryId,
                 CategoryName = category.CategoryName,
                 Description = category.Description
             };
         }
 
-        public async Task UpdateAsync(CategoryEditViewModel model)
+        public async Task UpdateAsync(EditViewModel model)
         {
             var category = await _categoryRepository.GetByIdAsync(model.CategoryId);
-            if(category != null)
+            if(category == null)
             {
-                category.CategoryName = model.CategoryName;
-                category.Description = model.Description;
-                await _categoryRepository.UpdateAsync(category);
+                throw new Exception("Danh mục không tồn tại!");    
             }
+
+            // Kiểm tra xem có danh mục khác trùng tên không
+            var existingCategory = (await _categoryRepository.GetAllAsync())
+                .FirstOrDefault(c => c.CategoryName.ToLower() == model.CategoryName.ToLower() && c.CategoryId != model.CategoryId);
+
+            if (existingCategory != null)
+            {
+                throw new Exception("Tên danh mục đã tồn tại!");
+            }
+
+            category.CategoryName = model.CategoryName;
+            category.Description = model.Description;
+            await _categoryRepository.UpdateAsync(category);
         }
     }
 }

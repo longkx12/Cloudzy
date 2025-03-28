@@ -38,13 +38,14 @@ namespace Cloudzy.Controllers
 
             if (user == null)
             {
-                ModelState.AddModelError("", "Email hoặc mật khẩu không đúng!");
+                TempData["ToastMessage"] = "Email hoặc mật khẩu không đúng!";
+                TempData["ToastType"] = "error";
                 return View(model);
             }
+
             return user.Role?.RoleName == "Admin" ? RedirectToAction("Index", "AdminUser") : RedirectToAction("Index", "Home");
         }
 
-       
         public async Task<IActionResult> Logout()
         {
             await _accountService.LogoutAsync();

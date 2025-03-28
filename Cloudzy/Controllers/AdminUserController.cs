@@ -41,7 +41,7 @@ namespace Cloudzy.Controllers
 
         public IActionResult Create()
         {
-            var model = new UserCreateViewModel
+            var model = new CreateViewModel
             {
                 Roles = new SelectList(_context.Roles, "RoleId", "RoleName")
             };
@@ -49,12 +49,13 @@ namespace Cloudzy.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(UserCreateViewModel model)
+        public async Task<IActionResult> Create(CreateViewModel model)
         {
             if (ModelState.IsValid)
             {
                 await _userService.AddUserAsync(model);
-                TempData["SuccessMessage"] = "Thêm tài khoản thành công!";
+                TempData["ToastMessage"] = "Thêm thành công!";
+                TempData["ToastType"] = "success";
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -69,12 +70,13 @@ namespace Cloudzy.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(UserEditViewModel model)
+        public async Task<IActionResult> Edit(EditViewModel model)
         {
             if (ModelState.IsValid)
             {
                 await _userService.UpdateUserAsync(model);
-                TempData["SuccessMessage"] = "Cập nhật tài khoản thành công!";
+                TempData["ToastMessage"] = "Cập nhật thành công!";
+                TempData["ToastType"] = "success"; ;
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -84,7 +86,8 @@ namespace Cloudzy.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _userService.DeleteUserAsync(id);
-            TempData["SuccessMessage"] = "Xóa tài khoản thành công!";
+            TempData["ToastMessage"] = "Xóa thành công!";
+            TempData["ToastType"] = "success"; ;
             return RedirectToAction("Index");
         }
     }

@@ -25,7 +25,7 @@ namespace Cloudzy.Services.Implementations
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public async Task AddAsync(ProductCreateViewModel model)
+        public async Task AddAsync(CreateViewModel model)
         {
             if (model.Images == null)
             {
@@ -85,10 +85,10 @@ namespace Cloudzy.Services.Implementations
             await _productRepository.DeleteAsync(id);
         }
 
-        public async Task<IPagedList<ProductListViewModel>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<IPagedList<ListViewModel>> GetAllAsync(int pageNumber, int pageSize)
         {
             var products = await _productRepository.GetAllAsync();
-            return products.Select((p, index) => new ProductListViewModel
+            return products.Select((p, index) => new ListViewModel
             {
                 ProductId = p.ProductId,
                 STT = index + 1,
@@ -102,12 +102,12 @@ namespace Cloudzy.Services.Implementations
             }).ToPagedList(pageNumber, pageSize);
         }
 
-        public async Task<ProductEditViewModel> GetByIdAsync(int id)
+        public async Task<EditViewModel> GetByIdAsync(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
             if (product == null) return null;
 
-            return new ProductEditViewModel
+            return new EditViewModel
             {
                 ProductId = product.ProductId,
                 ProductName = product.ProductName,
@@ -120,7 +120,7 @@ namespace Cloudzy.Services.Implementations
             };
         }
 
-        public async Task UpdateAsync(ProductEditViewModel model)
+        public async Task UpdateAsync(EditViewModel model)
         {
             var product = await _productRepository.GetByIdAsync(model.ProductId);
             if (product == null)
