@@ -57,6 +57,14 @@ namespace Cloudzy.Services.Implementations
 
         public async Task AddUserAsync(CreateViewModel model)
         {
+            //Kiểm tra email đã tồn tại
+            var existingEmail = (await _userRepository.GetAllUsersAsync())
+                .FirstOrDefault(u => u.Email == model.Email);
+            if (existingEmail != null)
+            {
+                throw new Exception("Email đã tồn tại!");
+            }
+
             var user = new User
             {
                 Fullname = model.Fullname,

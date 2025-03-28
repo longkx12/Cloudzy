@@ -53,10 +53,18 @@ namespace Cloudzy.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _userService.AddUserAsync(model);
-                TempData["ToastMessage"] = "Thêm thành công!";
-                TempData["ToastType"] = "success";
-                return RedirectToAction("Index");
+                try
+                {
+                    await _userService.AddUserAsync(model);
+                    TempData["ToastMessage"] = "Thêm thành công!";
+                    TempData["ToastType"] = "success";
+                    return RedirectToAction("Index");
+                }
+                catch(Exception ex)
+                {
+                    TempData["ToastMessage"] = ex.Message;
+                    TempData["ToastType"] = "error";
+                }
             }
             return View(model);
         }
