@@ -70,6 +70,7 @@ namespace Cloudzy.Controllers
             var discountCode = await _discountCodeService.GetByIdAsync(id);
             if (discountCode == null) return NotFound();
 
+            discountCode.VoucherTypes = new SelectList(_context.VoucherTypes, "VoucherTypeId", "VoucherTypeName", discountCode.VoucherTypeId);
             return View(discountCode);
         }
 

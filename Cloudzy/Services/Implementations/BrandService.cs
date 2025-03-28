@@ -1,5 +1,6 @@
 ﻿using Cloudzy.Models.Domain;
 using Cloudzy.Models.ViewModels.AdminBrand;
+using Cloudzy.Repositories.Implementations;
 using Cloudzy.Repositories.Interfaces;
 using Cloudzy.Services.Interfaces;
 using X.PagedList;
@@ -48,6 +49,15 @@ namespace Cloudzy.Services.Implementations
 
             // Lưu đường dẫn ảnh vào database (chỉ chứa đường dẫn tương đối)
             imgPath = "/images/" + uniqueFileName;
+
+            // Kiểm tra nhãn hàng trùng tên
+            var existingName = (await _brandRepository.GetAllAsync())
+                .FirstOrDefault(b =>  b.BrandName.ToLower()==model.BrandName.ToLower());
+
+            if (existingName != null)
+            {
+                throw new Exception("Tên nhãn hàng đã tồn tại!");
+            }
 
             var brand = new Brand
             {
@@ -132,6 +142,15 @@ namespace Cloudzy.Services.Implementations
                 }
 
                 imgPath = "/images/" + uniqueFileName;
+            }
+
+            //Kiểm tra trùng nhãn hàng
+            var existingName = (await _brandRepository.GetAllAsync())
+                .FirstOrDefault(b => b.BrandName.ToLower() == model.BrandName.ToLower() && b.BrandId != model.BrandId);
+
+            if (existingName != null)
+            {
+                throw new Exception("Tên nhãn hàng đã tồn tại!");
             }
 
             brand.BrandName = model.BrandName;

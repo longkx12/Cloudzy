@@ -59,7 +59,11 @@ namespace Cloudzy.Services.Implementations
             return new EditViewModel
             {
                 DiscountCodeId = discountCode.DiscountCodeId,
-                
+                Code = discountCode.Code,
+                VoucherTypeId = discountCode.VoucherTypeId,
+                Quantity = discountCode.Quantity,
+                StartDate = discountCode.StartDate,
+                EndDate = discountCode.EndDate
             };
         }
 

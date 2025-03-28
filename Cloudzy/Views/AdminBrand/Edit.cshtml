@@ -18,10 +18,10 @@
 
     <div class="form-group">
         <label asp-for="BrandImg">Ảnh</label>
-        <input asp-for="BrandImg" type="file" class="form-control" required />
+        <input asp-for="BrandImg" type="file" class="form-control" accept="image/*" required />
         @if (!string.IsNullOrEmpty(Model.ExistingImg)){
             <div>
-                <img src="@Model.ExistingImg" style="width: 100px; height: auto;" />
+                <img src="@Model.ExistingImg" style="width: 100px; height: auto; margin-top: 10px" />
             </div>
         }
         <span asp-validation-for="BrandImg" class="text-danger"></span>
