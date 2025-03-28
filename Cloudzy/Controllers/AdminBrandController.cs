@@ -45,10 +45,18 @@ namespace Cloudzy.Controllers
 
             if (ModelState.IsValid)
             {
-                await _brandService.AddAsync(model);
-                TempData["ToastMessage"] = "Thêm thành công!";
-                TempData["ToastType"] = "success";
-                return RedirectToAction("Index");
+                try
+                {
+                    await _brandService.AddAsync(model);
+                    TempData["ToastMessage"] = "Thêm thành công!";
+                    TempData["ToastType"] = "success";
+                    return RedirectToAction("Index");
+                }
+                catch(Exception ex)
+                {
+                    TempData["ToastMessage"] = ex.Message;
+                    TempData["ToastType"] = "error";
+                }
             }
             return View(model);
         }
@@ -66,10 +74,18 @@ namespace Cloudzy.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _brandService.UpdateAsync(model);
-                TempData["ToastMessage"] = "Cập nhật thành công!";
-                TempData["ToastType"] = "success";
-                return RedirectToAction("Index");
+                try
+                {
+                    await _brandService.UpdateAsync(model);
+                    TempData["ToastMessage"] = "Cập nhật thành công!";
+                    TempData["ToastType"] = "success";
+                    return RedirectToAction("Index");
+                }
+                catch(Exception ex)
+                {
+                    TempData["ToastMessage"] = ex.Message;
+                    TempData["ToastType"] = "error";
+                }
             }
 
             return View(model);
@@ -78,9 +94,17 @@ namespace Cloudzy.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            await _brandService.DeleteAsync(id);
-            TempData["ToastMessage"] = "Xóa thành công!";
-            TempData["ToastType"] = "success";
+            try
+            {
+                await _brandService.DeleteAsync(id);
+                TempData["ToastMessage"] = "Xóa thành công!";
+                TempData["ToastType"] = "success";
+            }
+            catch(Exception ex)
+            {
+                TempData["ToastMessage"] = ex.Message;
+                TempData["ToastType"] = "error";
+            }
             return RedirectToAction("Index");
         }
     }

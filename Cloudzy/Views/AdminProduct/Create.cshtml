@@ -50,7 +50,7 @@
 
     <div class="mb-3">
         <label asp-for="Images" class="form-label">Hình ảnh</label>
-        <input asp-for="Images" type="file" class="form-control" />
+        <input asp-for="Images" type="file" class="form-control" accept="image/*" />
         <span asp-validation-for="Images" class="text-danger"></span>
     </div>
 

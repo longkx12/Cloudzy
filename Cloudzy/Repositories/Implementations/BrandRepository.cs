@@ -22,10 +22,18 @@ namespace Cloudzy.Repositories.Implementations
 
         public async Task DeleteAsync(int id)
         {
-            var brand = await _context.Brands.FirstOrDefaultAsync(p => p.BrandId == id);
+            var brand = await _context.Brands
+                .Include(b=>b.Products)
+                .FirstOrDefaultAsync(p => p.BrandId == id);
 
             if (brand != null)
             {
+                //Kiểm tra có sản phẩm nào của nhãn hàng này không
+                if (brand.Products.Any())
+                {
+                    throw new Exception("Không thể xóa nhãn hàng vì có sản phẩm liên quan");
+                }
+
                 // Xóa ảnh trong thư mục wwwroot/images
                 if (!string.IsNullOrEmpty(brand.BrandImg))
                 {

@@ -11,7 +11,7 @@ namespace Cloudzy.Models.ViewModels.AdminDiscountCode
         public string Code { get; set; } = null!;
 
         [Required(ErrorMessage = "Vui lòng chọn loại voucher.")]
-        public int VoucherTypeId { get; set; }
+        public int? VoucherTypeId { get; set; }
 
         [Required(ErrorMessage = "Số lượng không được để trống.")]
         [Range(1, int.MaxValue, ErrorMessage = "Số lượng phải lớn hơn 0.")]

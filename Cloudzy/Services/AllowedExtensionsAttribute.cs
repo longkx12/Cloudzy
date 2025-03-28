@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Cloudzy.Models.ViewModels.AdminProduct
+namespace Cloudzy.Services
 {
     public class AllowedExtensionsAttribute : ValidationAttribute
     {
@@ -15,7 +15,7 @@ namespace Cloudzy.Models.ViewModels.AdminProduct
         {
             if (value is IFormFile file)
             {
-                var extension = System.IO.Path.GetExtension(file.FileName).ToLower();
+                var extension = Path.GetExtension(file.FileName).ToLower();
                 if (!_extensions.Contains(extension))
                 {
                     return new ValidationResult($"Chỉ chấp nhận các định dạng: {string.Join(", ", _extensions)}");
