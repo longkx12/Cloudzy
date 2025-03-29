@@ -8,28 +8,30 @@
 <h2>Thêm nhà cung cấp</h2>
 
 <form asp-action="Create" method="post">
-    <div class="mb-3">
-        <label asp-for="SupplierName" class="form-label">Tên nhà cung cấp</label>
-        <input asp-for="SupplierName" class="form-control" />
-        <span asp-validation-for="SupplierName" class="text-danger"></span>
-    </div>
+    <div class="row">
+        <div class="mb-3 col-lg-6">
+            <label asp-for="SupplierName" class="form-label">Tên nhà cung cấp</label>
+            <input asp-for="SupplierName" class="form-control" />
+            <span asp-validation-for="SupplierName" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="Email" class="form-label">Email</label>
-        <input asp-for="Email" type="email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
+        <div class="mb-3 col-lg-6">
+            <label asp-for="Email" class="form-label">Email</label>
+            <input asp-for="Email" type="email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="PhoneNumber" class="form-label">Số điện thoại</label>
-        <input asp-for="PhoneNumber" class="form-control" />
-        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-    </div>
+        <div class="mb-3 col-lg-6">
+            <label asp-for="PhoneNumber" class="form-label">Số điện thoại</label>
+            <input asp-for="PhoneNumber" class="form-control" />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="Address" class="form-label">Địa chỉ</label>
-        <input asp-for="Address" class="form-control" />
-        <span asp-validation-for="Address" class="text-danger"></span>
+        <div class="mb-3 col-lg-6">
+            <label asp-for="Address" class="form-label">Địa chỉ</label>
+            <input asp-for="Address" class="form-control" />
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
     </div>
 
     <button type="submit" class="btn btn-primary mt-3">Thêm nhà cung cấp</button>

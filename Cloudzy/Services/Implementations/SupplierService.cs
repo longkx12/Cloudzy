@@ -16,6 +16,14 @@ namespace Cloudzy.Services.Implementations
         }
         public async Task AddAsync(CreateViewModel model)
         {
+            //Kiểm tra trùng nhà cung cấp
+            var existingSupplier = (await _supplierRepository.GetAllAsync())
+                .FirstOrDefault(s => s.Email == model.Email);
+            if (existingSupplier != null)
+            {
+                throw new Exception("Nhà cung cấp đã tồn tại");
+            }
+
             var supplier = new Supplier
             {
                 SupplierName = model.SupplierName,
@@ -63,8 +71,20 @@ namespace Cloudzy.Services.Implementations
 
         public async Task UpdateAsync(EditViewModel model)
         {
+
             var supplier = await _supplierRepository.GetByIdAsync(model.SupplierId);
-            if (supplier == null) return;
+            if (supplier == null)
+            {
+                throw new Exception("Nhà cung cấp không tồn tại");
+            }
+
+            //Kiểm tra trùng nhà cung cấp
+            var existingSupplier = (await _supplierRepository.GetAllAsync())
+                .FirstOrDefault(s => s.Email == model.Email && s.SupplierId != model.SupplierId);
+            if (existingSupplier != null)
+            {
+                throw new Exception("Nhà cung cấp đã tồn tại");
+            }
 
             supplier.SupplierName = model.SupplierName;
             supplier.Email = model.Email;

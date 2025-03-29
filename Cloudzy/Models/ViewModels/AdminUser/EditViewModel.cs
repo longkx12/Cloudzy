@@ -13,7 +13,7 @@ namespace Cloudzy.Models.ViewModels.AdminUser
 
         [Required(ErrorMessage = "Email không được để trống")]
         [EmailAddress(ErrorMessage = "Email không hợp lệ")]
-        [StringLength(255, ErrorMessage = "Email quá dài!")]
+        [StringLength(100, ErrorMessage = "Email quá dài!")]
         public string Email { get; set; } = null!;
 
         [Required(ErrorMessage = "Số điện thoại không được để trống")]

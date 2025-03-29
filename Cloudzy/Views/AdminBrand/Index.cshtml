@@ -4,14 +4,14 @@
 }
 
 <h2>Danh sách nhãn hàng</h2>
-<a class="btn btn-primary mb-3" asp-action="Create">Thêm nhãn hàng</a>
+<a class="btn btn-primary my-2" asp-action="Create">Thêm nhãn hàng</a>
 
 <!-- Danh sách nhãn hàng -->
 <div id="brandList">
     <p>Đang tải dữ liệu...</p>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
         load(1);

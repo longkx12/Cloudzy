@@ -8,50 +8,52 @@
 <h2>Thêm sản phẩm</h2>
 
 <form asp-action="Create" method="post" enctype="multipart/form-data">
-    <div class="mb-3">
-        <label asp-for="ProductName" class="form-label">Tên sản phẩm</label>
-        <input asp-for="ProductName" class="form-control" />
-        <span asp-validation-for="ProductName" class="text-danger"></span>
-    </div>
+    <div class="row">
+        <div class="mb-3 col-lg-6">
+            <label asp-for="ProductName" class="form-label">Tên sản phẩm</label>
+            <input asp-for="ProductName" class="form-control" />
+            <span asp-validation-for="ProductName" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="CategoryId" class="form-label">Danh mục</label>
-        <select asp-for="CategoryId" asp-items="Model.Category" class="form-control">
-            <option value="">-- Chọn danh mục --</option>
-        </select>
-        <span asp-validation-for="CategoryId" class="text-danger"></span>
-    </div>
+        <div class="mb-3 col-lg-6">
+            <label asp-for="CategoryId" class="form-label">Danh mục</label>
+            <select asp-for="CategoryId" asp-items="Model.Category" class="form-control">
+                <option value="">-- Chọn danh mục --</option>
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="BrandId" class="form-label">Nhãn hàng</label>
-        <select asp-for="BrandId" asp-items="Model.Brand" class="form-control">
-            <option value="">-- Chọn nhãn hàng --</option>
-        </select>
-        <span asp-validation-for="BrandId" class="text-danger"></span>
-    </div>
+        <div class="mb-3 col-lg-6">
+            <label asp-for="BrandId" class="form-label">Nhãn hàng</label>
+            <select asp-for="BrandId" asp-items="Model.Brand" class="form-control">
+                <option value="">-- Chọn nhãn hàng --</option>
+            </select>
+            <span asp-validation-for="BrandId" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="Material" class="form-label">Chất liệu</label>
-        <input asp-for="Material" type="text" class="form-control" />
-        <span asp-validation-for="Material" class="text-danger"></span>
-    </div>
+        <div class="mb-3 col-lg-6">
+            <label asp-for="Material" class="form-label">Chất liệu</label>
+            <input asp-for="Material" type="text" class="form-control" />
+            <span asp-validation-for="Material" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="Price" class="form-label">Giá gốc</label>
-        <input asp-for="Price" type="number" class="form-control" />
-        <span asp-validation-for="Price" class="text-danger"></span>
-    </div>
+        <div class="mb-3 col-lg-4">
+            <label asp-for="Price" class="form-label">Giá gốc</label>
+            <input asp-for="Price" type="number" class="form-control" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="DiscountPrice" class="form-label">Giá khuyến mãi</label>
-        <input asp-for="DiscountPrice" type="number" class="form-control" />
-        <span asp-validation-for="DiscountPrice" class="text-danger"></span>
-    </div>
+        <div class="mb-3 col-lg-4">
+            <label asp-for="DiscountPrice" class="form-label">Giá khuyến mãi</label>
+            <input asp-for="DiscountPrice" type="number" class="form-control" />
+            <span asp-validation-for="DiscountPrice" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="Images" class="form-label">Hình ảnh</label>
-        <input asp-for="Images" type="file" class="form-control" accept="image/*" />
-        <span asp-validation-for="Images" class="text-danger"></span>
+        <div class="mb-3 col-lg-4">
+            <label asp-for="Images" class="form-label">Hình ảnh</label>
+            <input asp-for="Images" type="file" class="form-control" accept="image/*" />
+            <span asp-validation-for="Images" class="text-danger"></span>
+        </div>
     </div>
 
     <button type="submit" class="btn btn-primary mt-3">Thêm sản phẩm</button>

@@ -10,63 +10,65 @@
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="ProductId" />
 
-    <div class="form-group">
-        <label asp-for="ProductName">Tên sản phẩm</label>
-        <input asp-for="ProductName" class="form-control" required />
-        <span asp-validation-for="ProductName" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="CategoryId">Danh mục</label>
-        <select asp-for="CategoryId" asp-items="Model.Category" class="form-control" required>
-        </select>
-        <span asp-validation-for="CategoryId" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="BrandId">Nhãn hàng</label>
-        <select asp-for="BrandId" asp-items="Model.Brand" class="form-control" required>
-        </select>
-        <span asp-validation-for="BrandId" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Material">Chất liệu</label>
-        <input asp-for="Material" class="form-control" required />
-        <span asp-validation-for="Material" class="text-danger"></span>
-    </div>
-
-
-    <div class="form-group">
-        <label asp-for="Price">Giá gốc</label>
-        <input asp-for="Price" type="number" class="form-control" required />
-        <span asp-validation-for="Price" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="DiscountPrice">Giá khuyến mãi</label>
-        <input asp-for="DiscountPrice" type="number" class="form-control" required />
-        <span asp-validation-for="DiscountPrice" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label>Hình ảnh hiện tại</label>
-        <div class="row">
-            @foreach (var img in Model.CurrentImages)
-            {
-                <div class="col-md-2 text-center">
-                    <img src="@img" class="img-thumbnail" style="width: 100px; height: 100px;" />
-                    <br />
-                    <input type="checkbox" name="CurrentImages" value="@img" checked /> Giữ lại
-                </div>
-            }
+    <div class="row">
+        <div class="mb-3 col-lg-6">
+            <label asp-for="ProductName" class="form-label">Tên sản phẩm</label>
+            <input asp-for="ProductName" class="form-control" required />
+            <span asp-validation-for="ProductName" class="text-danger"></span>
         </div>
-    </div>
 
-    <div class="form-group">
-        <label asp-for="NewImages">Thêm ảnh mới</label>
-        <input asp-for="NewImages" type="file" class="form-control" />
-        <span asp-validation-for="NewImages" class="text-danger"></span>
+        <div class="mb-3 col-lg-6">
+            <label asp-for="CategoryId" class="form-label">Danh mục</label>
+            <select asp-for="CategoryId" asp-items="Model.Category" class="form-control" required>
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3 col-lg-6">
+            <label asp-for="BrandId" class="form-label">Nhãn hàng</label>
+            <select asp-for="BrandId" asp-items="Model.Brand" class="form-control" required>
+            </select>
+            <span asp-validation-for="BrandId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3 col-lg-6">
+            <label asp-for="Material" class="form-label">Chất liệu</label>
+            <input asp-for="Material" class="form-control" required />
+            <span asp-validation-for="Material" class="text-danger"></span>
+        </div>
+
+
+        <div class="mb-3 col-lg-6">
+            <label asp-for="Price" class="form-label">Giá gốc</label>
+            <input asp-for="Price" type="number" class="form-control" required />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3 col-lg-6">
+            <label asp-for="DiscountPrice" class="form-label">Giá khuyến mãi</label>
+            <input asp-for="DiscountPrice" type="number" class="form-control" required />
+            <span asp-validation-for="DiscountPrice" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Hình ảnh hiện tại</label>
+            <div class="row">
+                @foreach (var img in Model.CurrentImages)
+                {
+                    <div class="col-md-2 text-center">
+                        <img src="@img" class="img-thumbnail" style="width: 100px; height: 100px;" />
+                        <br />
+                        <input type="checkbox" name="CurrentImages" value="@img" checked /> Giữ lại
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="NewImages" class="form-label">Thêm ảnh mới (tùy chọn)</label>
+            <input asp-for="NewImages" type="file" class="form-control" />
+            <span asp-validation-for="NewImages" class="text-danger"></span>
+        </div>
     </div>
 
     <button type="submit" class="btn btn-warning mt-3">Cập nhật</button>

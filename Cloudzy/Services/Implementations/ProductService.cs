@@ -29,7 +29,7 @@ namespace Cloudzy.Services.Implementations
         {
             if (model.Images == null)
             {
-                throw new ArgumentException("Bạn cần phải tải lên một file ảnh.");
+                throw new Exception("Bạn cần phải tải lên một file ảnh.");
             }
 
             // Lưu ảnh vào thư mục wwwroot/images
@@ -125,7 +125,15 @@ namespace Cloudzy.Services.Implementations
             var product = await _productRepository.GetByIdAsync(model.ProductId);
             if (product == null)
             {
-                throw new ArgumentException("Sản phẩm không tồn tại.");
+                throw new Exception("Sản phẩm không tồn tại.");
+            }
+
+            //Kiểm tra tất cả các ảnh bị chọn xóa và không thêm ảnh mới
+            bool hasRemainingImages = model.CurrentImages != null && model.CurrentImages.Count > 0;
+            bool hasNewImage = model.NewImages != null;
+            if(!hasRemainingImages && !hasNewImage)
+            {
+                throw new Exception("Giữ lại ít nhất 1 ảnh hoặc thêm ảnh mới");
             }
 
             product.ProductName = model.ProductName;

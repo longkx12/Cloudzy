@@ -41,10 +41,18 @@ namespace Cloudzy.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _supplierService.AddAsync(model);
-                TempData["ToastMessage"] = "Thêm thành công!";
-                TempData["ToastType"] = "success";
-                return RedirectToAction("Index");
+                try
+                {
+                    await _supplierService.AddAsync(model);
+                    TempData["ToastMessage"] = "Thêm thành công!";
+                    TempData["ToastType"] = "success";
+                    return RedirectToAction("Index");
+                }
+                catch(Exception ex)
+                {
+                    TempData["ToastMessage"] = ex.Message;
+                    TempData["ToastType"] = "error";
+                }
             }
             return View(model);
         }
@@ -62,10 +70,18 @@ namespace Cloudzy.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _supplierService.UpdateAsync(model);
-                TempData["ToastMessage"] = "Cập nhật thành công!";
-                TempData["ToastType"] = "success";
-                return RedirectToAction("Index");
+                try
+                {
+                    await _supplierService.UpdateAsync(model);
+                    TempData["ToastMessage"] = "Cập nhật thành công!";
+                    TempData["ToastType"] = "success";
+                    return RedirectToAction("Index");
+                }
+                catch(Exception ex)
+                {
+                    TempData["ToastMessage"] = ex.Message;
+                    TempData["ToastType"] = "error";
+                }
             }
             return View(model);
         }

@@ -8,22 +8,24 @@
 <h2>Thêm nhãn hàng</h2>
 
 <form asp-action="Create" method="post" enctype="multipart/form-data">
-    <div class="mb-3">
-        <label asp-for="BrandName" class="form-label">Tên nhãn hàng</label>
-        <input asp-for="BrandName" class="form-control" />
-        <span asp-validation-for="BrandName" class="text-danger"></span>
-    </div>
+    <div class="row">
+        <div class="mb-3">
+            <label asp-for="BrandName" class="form-label">Tên nhãn hàng</label>
+            <input asp-for="BrandName" class="form-control" />
+            <span asp-validation-for="BrandName" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="BrandImg" class="form-label">Ảnh</label>
-        <input asp-for="BrandImg" type="file" class="form-control" accept="image/*" multiple />
-        <span asp-validation-for="BrandImg" class="text-danger"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="BrandImg" class="form-label">Ảnh</label>
+            <input asp-for="BrandImg" type="file" class="form-control" accept="image/*" multiple />
+            <span asp-validation-for="BrandImg" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="Description" class="form-label">Mô tả</label>
-        <input asp-for="Description" class="form-control" />
-        <span asp-validation-for="Description" class="text-danger"></span>
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Mô tả</label>
+            <input asp-for="Description" class="form-control" />
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
     </div>
 
     <button type="submit" class="btn btn-primary mt-3">Thêm nhãn hàng</button>

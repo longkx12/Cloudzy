@@ -2,48 +2,50 @@
 @using X.PagedList.Mvc.Core
 
 @model IPagedList<Cloudzy.Models.ViewModels.AdminBrand.ListViewModel>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>STT</th>
-            <th>Tên nhãn hàng</th>
-            <th>Ảnh</th>
-            <th>Mô tả</th>
-            <th>Thao tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var brand in Model)
-        {
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
             <tr>
-                <td>@brand.STT</td>
-                <td>@brand.BrandName</td>
-                <td>
-                    @if (!string.IsNullOrEmpty(brand.BrandImg))
-                    {
-                        <img src="@brand.BrandImg" alt="Ảnh @brand.BrandName" style="width: 40px; height: auto; border-radius: 0; object-fit: contain;" />
-                    }
-                </td>
-                <td>@brand.Description</td>
-                <td>
-                    <div class="d-flex gap-2">
-                        <a href="@Url.Action("Edit", "AdminBrand", new { id = brand.BrandId })" class="btn btn-warning">Sửa</a>
-                        <form asp-action="Delete" asp-controller="AdminBrand" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa không?')">
-                            <input type="hidden" name="id" value="@brand.BrandId" />
-                            <button type="submit" class="btn btn-danger">Xóa</button>
-                        </form>
-                    </div>
-                </td>
+                <th>STT</th>
+                <th>Tên nhãn hàng</th>
+                <th>Ảnh</th>
+                <th>Mô tả</th>
+                <th>Thao tác</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var brand in Model)
+            {
+                <tr>
+                    <td>@brand.STT</td>
+                    <td>@brand.BrandName</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(brand.BrandImg))
+                        {
+                            <img src="@brand.BrandImg" alt="Ảnh @brand.BrandName" style="width: 40px; height: auto; border-radius: 0; object-fit: contain;" />
+                        }
+                    </td>
+                    <td>@brand.Description</td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a href="@Url.Action("Edit", "AdminBrand", new { id = brand.BrandId })" class="btn btn-warning">Sửa</a>
+                            <form asp-action="Delete" asp-controller="AdminBrand" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa không?')">
+                                <input type="hidden" name="id" value="@brand.BrandId" />
+                                <button type="submit" class="btn btn-danger">Xóa</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
-<!-- Phân trang bằng AJAX -->
-<div class="text-center d-flex justify-content-center mt-3">
-    @Html.PagedListPager(Model, page => "javascript:load(" + page + ")", new PagedListRenderOptions
-{
-    LiElementClasses = new[] { "page-item" },
-    PageClasses = new[] { "page-link" }
-})
+    <!-- Phân trang bằng AJAX -->
+    <div class="text-center d-flex justify-content-center mt-3">
+        @Html.PagedListPager(Model, page => "javascript:load(" + page + ")", new PagedListRenderOptions
+   {
+       LiElementClasses = new[] { "page-item" },
+       PageClasses = new[] { "page-link" }
+   })
+    </div>
 </div>
