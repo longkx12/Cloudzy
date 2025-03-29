@@ -13,13 +13,13 @@
     <div class="row">
         <div class="mb-3">
             <label asp-for="BrandName" class="form-label">Tên nhãn hàng</label>
-            <input asp-for="BrandName" class="form-control" required />
+            <input asp-for="BrandName" class="form-control" maxlength="100" required />
             <span asp-validation-for="BrandName" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
             <label asp-for="BrandImg" class="form-label">Ảnh</label>
-            <input asp-for="BrandImg" type="file" class="form-control" accept="image/*" required />
+            <input asp-for="BrandImg" type="file" class="form-control" accept="image/*" />
             @if (!string.IsNullOrEmpty(Model.ExistingImg))
             {
                 <div>
