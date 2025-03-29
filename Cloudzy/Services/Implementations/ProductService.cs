@@ -27,6 +27,14 @@ namespace Cloudzy.Services.Implementations
 
         public async Task AddAsync(CreateViewModel model)
         {
+            //Kiểm tra trùng tên sản phẩm
+            var existingProduct = (await _productRepository.GetAllAsync())
+                .FirstOrDefault(p => p.ProductName == model.ProductName);
+            if (existingProduct != null)
+            {
+                throw new Exception("Tên sản phẩm đã tồn tại");
+            }
+
             if (model.Images == null)
             {
                 throw new Exception("Bạn cần phải tải lên một file ảnh.");
@@ -122,6 +130,14 @@ namespace Cloudzy.Services.Implementations
 
         public async Task UpdateAsync(EditViewModel model)
         {
+            //Kiểm tra trùng tên sản phẩm
+            var existingProduct = (await _productRepository.GetAllAsync())
+                .FirstOrDefault(p => p.ProductName == model.ProductName && p.ProductId != model.ProductId);
+            if (existingProduct != null)
+            {
+                throw new Exception("Tên sản phẩm đã tồn tại");
+            }
+
             var product = await _productRepository.GetByIdAsync(model.ProductId);
             if (product == null)
             {
