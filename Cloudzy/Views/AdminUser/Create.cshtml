@@ -8,42 +8,44 @@
 <h2>Thêm tài khoản</h2>
 
 <form asp-action="Create" method="post">
-    <div class="mb-3">
-        <label asp-for="Fullname" class="form-label">Họ tên</label>
-        <input asp-for="Fullname" class="form-control" />
-        <span asp-validation-for="Fullname" class="text-danger"></span>
-    </div>
+    <div class="row">
+        <div class="mb-3 col-lg-6">
+            <label asp-for="Fullname" class="form-label">Họ tên</label>
+            <input asp-for="Fullname" class="form-control" />
+            <span asp-validation-for="Fullname" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="Email" class="form-label">Email</label>
-        <input asp-for="Email" class="form-control" maxlength="1000" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
+        <div class="mb-3 col-lg-6">
+            <label asp-for="Email" class="form-label">Email</label>
+            <input asp-for="Email" class="form-control" maxlength="1000" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="Password" class="form-label">Mật khẩu</label>
-        <input asp-for="Password" class="form-control" type="password" maxlength="500" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
+        <div class="mb-3 col-lg-6">
+            <label asp-for="Password" class="form-label">Mật khẩu</label>
+            <input asp-for="Password" class="form-control" type="password" maxlength="500" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="PhoneNumber" class="form-label">Số điện thoại</label>
-        <input asp-for="PhoneNumber" class="form-control" />
-        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-    </div>
+        <div class="mb-3 col-lg-6">
+            <label asp-for="PhoneNumber" class="form-label">Số điện thoại</label>
+            <input asp-for="PhoneNumber" class="form-control" />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="Address" class="form-label">Địa chỉ</label>
-        <input asp-for="Address" class="form-control" />
-        <span asp-validation-for="Address" class="text-danger"></span>
-    </div>
+        <div class="mb-3 col-lg-6">
+            <label asp-for="Address" class="form-label">Địa chỉ</label>
+            <input asp-for="Address" class="form-control" />
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="RoleId" class="form-label">Quyền</label>
-        <select asp-for="RoleId" asp-items="Model.Roles" class="form-control">
-            <option value="">-- Chọn quyền --</option>
-        </select>
-        <span asp-validation-for="RoleId" class="text-danger"></span>
+        <div class="mb-3 col-lg-6">
+            <label asp-for="RoleId" class="form-label">Quyền</label>
+            <select asp-for="RoleId" asp-items="Model.Roles" class="form-control">
+                <option value="">-- Chọn quyền --</option>
+            </select>
+            <span asp-validation-for="RoleId" class="text-danger"></span>
+        </div>
     </div>
 
     <button type="submit" class="btn btn-primary mt-3">Thêm người dùng</button>

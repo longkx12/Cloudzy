@@ -2,41 +2,43 @@
 @using X.PagedList.Mvc.Core
 
 @model IPagedList<Cloudzy.Models.ViewModels.AdminCategory.ListViewModel>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>STT</th>
-            <th>Tên danh mục</th>
-            <th>Mô tả</th>
-            <th>Thao tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var category in Model)
-        {
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
             <tr>
-                <td>@category.STT</td>
-                <td>@category.CategoryName</td>
-                <td>@category.Description</td>
-                <td>
-                    <div class="d-flex gap-2">
-                        <a href="@Url.Action("Edit", "AdminCategory", new { id = category.CategoryId })" class="btn btn-warning">Sửa</a>
-                        <form asp-action="Delete" asp-controller="AdminCategory" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa không?')">
-                            <input type="hidden" name="id" value="@category.CategoryId" />
-                            <button type="submit" class="btn btn-danger">Xóa</button>
-                        </form>
-                    </div>
-                </td>
+                <th>STT</th>
+                <th>Tên danh mục</th>
+                <th>Mô tả</th>
+                <th>Thao tác</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var category in Model)
+            {
+                <tr>
+                    <td>@category.STT</td>
+                    <td>@category.CategoryName</td>
+                    <td>@category.Description</td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a href="@Url.Action("Edit", "AdminCategory", new { id = category.CategoryId })" class="btn btn-warning">Sửa</a>
+                            <form asp-action="Delete" asp-controller="AdminCategory" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa không?')">
+                                <input type="hidden" name="id" value="@category.CategoryId" />
+                                <button type="submit" class="btn btn-danger">Xóa</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
-<!-- Phân trang bằng AJAX -->
-<div class="text-center d-flex justify-content-center mt-3">
-    @Html.PagedListPager(Model, page => "javascript:load(" + page + ")", new PagedListRenderOptions
-{
-    LiElementClasses = new[] { "page-item" },
-    PageClasses = new[] { "page-link" }
-})
+    <!-- Phân trang bằng AJAX -->
+    <div class="text-center d-flex justify-content-center mt-3">
+        @Html.PagedListPager(Model, page => "javascript:load(" + page + ")", new PagedListRenderOptions
+   {
+       LiElementClasses = new[] { "page-item" },
+       PageClasses = new[] { "page-link" }
+   })
+    </div>
 </div>

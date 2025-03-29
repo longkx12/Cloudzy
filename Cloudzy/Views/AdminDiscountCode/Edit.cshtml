@@ -10,37 +10,39 @@
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="DiscountCodeId" />
 
-    <div class="form-group">
-        <label asp-for="Code">Mã voucher</label>
-        <input asp-for="Code" class="form-control" required />
-        <span asp-validation-for="Code" class="text-danger"></span>
-    </div>
+    <div class="row">
+        <div class="mb-3 col-lg-6">
+            <label asp-for="Code" class="form-label">Mã voucher</label>
+            <input asp-for="Code" class="form-control" required />
+            <span asp-validation-for="Code" class="text-danger"></span>
+        </div>
 
-    <div class="form-group">
-        <label asp-for="VoucherTypeId">Loại voucher</label>
-        <select asp-for="VoucherTypeId" asp-items="Model.VoucherTypes" class="form-control" required>
-        </select>
-        <span asp-validation-for="VoucherTypeId" class="text-danger"></span>
-    </div>
+        <div class="mb-3 col-lg-6">
+            <label asp-for="VoucherTypeId" class="form-label">Loại voucher</label>
+            <select asp-for="VoucherTypeId" asp-items="Model.VoucherTypes" class="form-control" required>
+            </select>
+            <span asp-validation-for="VoucherTypeId" class="text-danger"></span>
+        </div>
 
-    <div class="form-group">
-        <label asp-for="Quantity">Số lượng</label>
-        <input asp-for="Quantity" type="number" class="form-control" required />
-        <span asp-validation-for="Quantity" class="text-danger"></span>
-    </div>
+        <div class="mb-3 col-lg-2">
+            <label asp-for="Quantity" class="form-label">Số lượng</label>
+            <input asp-for="Quantity" type="number" class="form-control" required />
+            <span asp-validation-for="Quantity" class="text-danger"></span>
+        </div>
 
-    <div class="form-group">
-        <label asp-for="StartDate">Ngày bắt đầu</label>
-        <input asp-for="StartDate" type="datetime-local" class="form-control"
-               value="@Model.StartDate.ToString("yyyy-MM-ddTHH:mm")" required />
-        <span asp-validation-for="StartDate" class="text-danger"></span>
-    </div>
+        <div class="mb-3 col-lg-5">
+            <label asp-for="StartDate" class="form-label">Ngày bắt đầu</label>
+            <input asp-for="StartDate" type="datetime-local" class="form-control"
+                   value="@Model.StartDate.ToString("yyyy-MM-ddTHH:mm")" required />
+            <span asp-validation-for="StartDate" class="text-danger"></span>
+        </div>
 
-    <div class="form-group">
-        <label asp-for="EndDate">Ngày kết thúc</label>
-        <input asp-for="EndDate" type="datetime-local" class="form-control"
-               value="@Model.EndDate.ToString("yyyy-MM-ddTHH:mm")" required />
-        <span asp-validation-for="EndDate" class="text-danger"></span>
+        <div class="mb-3 col-lg-5">
+            <label asp-for="EndDate" class="form-label">Ngày kết thúc</label>
+            <input asp-for="EndDate" type="datetime-local" class="form-control"
+                   value="@Model.EndDate.ToString("yyyy-MM-ddTHH:mm")" required />
+            <span asp-validation-for="EndDate" class="text-danger"></span>
+        </div>
     </div>
 
     <button type="submit" class="btn btn-warning mt-3">Cập nhật</button>
