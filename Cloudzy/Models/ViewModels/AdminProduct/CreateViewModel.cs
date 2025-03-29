@@ -16,6 +16,9 @@ namespace Cloudzy.Models.ViewModels.AdminProduct
         [Required(ErrorMessage = "Vui lòng chọn nhãn hàng")]
         public int BrandId { get; set; }
 
+        [Required(ErrorMessage = "Vui lòng chọn nhà cung cấp")]
+        public int SupplierId { get; set; }
+
         [Required(ErrorMessage = "Chất liệu không được để trống")]
         [StringLength(50, ErrorMessage = "Chất liệu không được vượt quá 50 ký tự")]
         public string? Material { get; set; }
@@ -28,10 +31,13 @@ namespace Cloudzy.Models.ViewModels.AdminProduct
         [Range(0.01, double.MaxValue, ErrorMessage = "Giá khuyến mãi phải lớn hơn 0")]
         public decimal? DiscountPrice { get; set; }
 
+        public string? ProductDescription { get; set; }
+
         [Required(ErrorMessage = "Vui lòng chọn hình ảnh")]
         [AllowedExtensions(new string[] { ".png", ".jpg", ".jpeg", ".gif" })]
         public IFormFile Images { get; set; }
         public IEnumerable<SelectListItem> Category { get; set; } = new List<SelectListItem>();
         public IEnumerable<SelectListItem> Brand { get; set; } = new List<SelectListItem>();
+        public IEnumerable<SelectListItem> Supplier { get; set; } = new List<SelectListItem>();
     }
 }

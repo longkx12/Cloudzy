@@ -55,6 +55,7 @@ namespace Cloudzy.Repositories.Implementations
             return await _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Brand)
+                .Include(p => p.Supplier)
                 .Include(p => p.ProductImages)
                 .ToListAsync();
         }
