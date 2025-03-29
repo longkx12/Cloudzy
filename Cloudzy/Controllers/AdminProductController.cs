@@ -53,10 +53,19 @@ namespace Cloudzy.Controllers
                 return View(model);
             }
 
-            await _productService.AddAsync(model);
-            TempData["ToastMessage"] = "Thêm thành công!";
-            TempData["ToastType"] = "success";
-            return RedirectToAction("Index");
+            try
+            {
+                await _productService.AddAsync(model);
+                TempData["ToastMessage"] = "Thêm thành công!";
+                TempData["ToastType"] = "success";
+                return RedirectToAction("Index");
+            }
+            catch(Exception ex)
+            {
+                TempData["ToastMessage"] = ex.Message;
+                TempData["ToastType"] = "error";
+            }
+            return View(model);
         }
 
         public async Task<IActionResult> Edit(int id)
@@ -74,17 +83,37 @@ namespace Cloudzy.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(EditViewModel model)
         {
+            // Lấy dữ liệu dropdown
+            var categories = new SelectList(_context.Categories, "CategoryId", "CategoryName", model.CategoryId);
+            var brands = new SelectList(_context.Brands, "BrandId", "BrandName", model.BrandId);
             if (!ModelState.IsValid)
             {
-                model.Category = new SelectList(_context.Categories, "CategoryId", "CategoryName", model.CategoryId);
-                model.Brand = new SelectList(_context.Brands, "BrandId", "BrandName", model.BrandId);
+                model.Category = categories;
+                model.Brand = brands;
                 return View(model);
             }
 
-            await _productService.UpdateAsync(model);
-            TempData["ToastMessage"] = "Cập nhật thành công!";
-            TempData["ToastType"] = "success";
-            return RedirectToAction("Index");
+            try
+            {
+                await _productService.UpdateAsync(model);
+                TempData["ToastMessage"] = "Cập nhật thành công!";
+                TempData["ToastType"] = "success";
+                return RedirectToAction("Index");
+            }
+            catch(Exception ex)
+            {
+                model.Category = categories;
+                model.Brand = brands;
+
+                //Giữ lại danh sách ảnh nếu lỗi
+                var product = await _productService.GetByIdAsync(model.ProductId);
+                model.CurrentImages = product.CurrentImages;
+
+                TempData["ToastMessage"] = ex.Message;
+                TempData["ToastType"] = "error";
+            }
+
+            return View(model);
         }
 
         [HttpPost]

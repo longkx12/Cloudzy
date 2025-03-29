@@ -80,7 +80,7 @@ namespace Cloudzy.Services.Implementations
 
             //Kiểm tra trùng nhà cung cấp
             var existingSupplier = (await _supplierRepository.GetAllAsync())
-                .FirstOrDefault(s => s.Email == model.Email);
+                .FirstOrDefault(s => s.Email == model.Email && s.SupplierId != model.SupplierId);
             if (existingSupplier != null)
             {
                 throw new Exception("Nhà cung cấp đã tồn tại");

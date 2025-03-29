@@ -8,28 +8,30 @@
 <h2>Thêm loại voucher</h2>
 
 <form asp-action="Create" method="post">
-    <div class="mb-3">
-        <label asp-for="VoucherTypeName" class="form-label">Tên loại voucher</label>
-        <input asp-for="VoucherTypeName" class="form-control" />
-        <span asp-validation-for="VoucherTypeName" class="text-danger"></span>
-    </div>
+    <div class="row">
+        <div class="mb-3 col-lg-6">
+            <label asp-for="VoucherTypeName" class="form-label">Tên loại voucher</label>
+            <input asp-for="VoucherTypeName" class="form-control" />
+            <span asp-validation-for="VoucherTypeName" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="Value" class="form-label">Giá trị</label>
-        <input asp-for="Value" type="number" class="form-control" />
-        <span asp-validation-for="Value" class="text-danger"></span>
-    </div>
+        <div class="mb-3 col-lg-6">
+            <label asp-for="Value" class="form-label">Giá trị</label>
+            <input asp-for="Value" type="number" class="form-control" />
+            <span asp-validation-for="Value" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="MinimumValue" class="form-label">Giá trị tối thiếu để áp dụng</label>
-        <input asp-for="MinimumValue" class="form-control" />
-        <span asp-validation-for="MinimumValue" class="text-danger"></span>
-    </div>
+        <div class="mb-3 col-lg-6">
+            <label asp-for="MinimumValue" class="form-label">Giá trị tối thiếu để áp dụng</label>
+            <input asp-for="MinimumValue" class="form-control" />
+            <span asp-validation-for="MinimumValue" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="MaximumValue" class="form-label">Giá trị tối đa được giảm</label>
-        <input asp-for="MaximumValue" class="form-control" />
-        <span asp-validation-for="MaximumValue" class="text-danger"></span>
+        <div class="mb-3 col-lg-6">
+            <label asp-for="MaximumValue" class="form-label">Giá trị tối đa được giảm</label>
+            <input asp-for="MaximumValue" class="form-control" />
+            <span asp-validation-for="MaximumValue" class="text-danger"></span>
+        </div>
     </div>
 
     <button type="submit" class="btn btn-primary mt-3">Thêm loại voucher</button>

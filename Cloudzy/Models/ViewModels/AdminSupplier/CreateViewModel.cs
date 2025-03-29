@@ -9,6 +9,7 @@ namespace Cloudzy.Models.ViewModels.AdminSupplier
 
         [Required(ErrorMessage = "Email không được để trống")]
         [EmailAddress(ErrorMessage = "Email không hợp lệ")]
+        [StringLength(100, ErrorMessage = "Email quá dài!")]
         public string? Email { get; set; }
 
         [Required(ErrorMessage = "Số điện thoại không được để trống")]
