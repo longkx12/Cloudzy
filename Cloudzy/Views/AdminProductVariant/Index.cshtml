@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Quản lý chi tiết";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<h2>Danh sách chi tiết</h2>
+<input type="hidden" id="productId" value="@ViewBag.ProductId" />
+<a asp-action="Index" asp-controller="AdminProduct" class="btn btn-secondary my-2">Quay lại</a>
+
+<a href="@Url.Action("Create", "AdminProductVariant", new { productId = ViewBag.ProductId })"
+   class="btn btn-primary">
+    Thêm chi tiết
+</a>
+
+<!-- Danh sách chi tiết -->
+<div id="productVariantList">
+    <p>Đang tải dữ liệu...</p>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        load(1);
+        var message = '@Html.Raw(TempData["SuccessMessage"])';
+        if (message) {
+            showAlert(message);
+        }
+    });
+    function load(page) {
+        var productId = $("#productId").val();
+        console.log("ProductId:", productId);
+        $.ajax({
+            url: '/AdminProductVariant/Load',
+            data: { page: page, productId: productId },
+            success: function (data) {
+                $('#productVariantList').html(data);
+            },
+            error: function () {
+                $('#productVariantList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
+            }
+        });
+    }
+</script>

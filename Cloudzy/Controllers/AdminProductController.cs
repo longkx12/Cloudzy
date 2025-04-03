@@ -38,7 +38,8 @@ namespace Cloudzy.Controllers
             var model = new CreateViewModel
             {
                 Category = new SelectList(_context.Categories,"CategoryId","CategoryName"),
-                Brand = new SelectList(_context.Brands,"BrandId","BrandName")
+                Brand = new SelectList(_context.Brands,"BrandId","BrandName"),
+                Supplier = new SelectList(_context.Suppliers,"SupplierId","SupplierName")
             };
             return View(model);
         }
@@ -50,6 +51,7 @@ namespace Cloudzy.Controllers
             {
                 model.Category = new SelectList(_context.Categories, "CategoryId", "CategoryName");
                 model.Brand = new SelectList(_context.Brands, "BrandId", "BrandName");
+                model.Supplier = new SelectList(_context.Suppliers, "SupplierId", "SupplierName");
                 return View(model);
             }
 
@@ -75,7 +77,7 @@ namespace Cloudzy.Controllers
 
             product.Category = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
             product.Brand = new SelectList(_context.Brands, "BrandId", "BrandName", product.BrandId);
-
+            product.Supplier = new SelectList(_context.Suppliers, "SupplierId", "SupplierName", product.SupplierId);
 
             return View(product);
         }
@@ -86,10 +88,12 @@ namespace Cloudzy.Controllers
             // Lấy dữ liệu dropdown
             var categories = new SelectList(_context.Categories, "CategoryId", "CategoryName", model.CategoryId);
             var brands = new SelectList(_context.Brands, "BrandId", "BrandName", model.BrandId);
+            var suppliers = new SelectList(_context.Suppliers, "SupplierId", "SupplierName", model.SupplierId);
             if (!ModelState.IsValid)
             {
                 model.Category = categories;
                 model.Brand = brands;
+                model.Supplier = suppliers;
                 return View(model);
             }
 
@@ -104,6 +108,7 @@ namespace Cloudzy.Controllers
             {
                 model.Category = categories;
                 model.Brand = brands;
+                model.Supplier = suppliers;
 
                 //Giữ lại danh sách ảnh nếu lỗi
                 var product = await _productService.GetByIdAsync(model.ProductId);

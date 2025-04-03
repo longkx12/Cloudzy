@@ -36,6 +36,7 @@
                     </td>
                     <td>
                         <div class="d-flex gap-2">
+                            <a href="@Url.Action("Index", "AdminProductVariant", new { productId = product.ProductId })" class="btn btn-info">Xem</a>
                             <a href="@Url.Action("Edit", "AdminProduct", new { id = product.ProductId })" class="btn btn-warning">Sửa</a>
                             <form asp-action="Delete" asp-controller="AdminProduct" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa không?')">
                                 <input type="hidden" name="id" value="@product.ProductId" />

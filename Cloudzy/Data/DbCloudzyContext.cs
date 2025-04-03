@@ -22,8 +22,6 @@ public partial class DbCloudzyContext : DbContext
 
     public virtual DbSet<Category> Categories { get; set; }
 
-    public virtual DbSet<Color> Colors { get; set; }
-
     public virtual DbSet<DiscountCode> DiscountCodes { get; set; }
 
     public virtual DbSet<Import> Imports { get; set; }
@@ -99,14 +97,6 @@ public partial class DbCloudzyContext : DbContext
             entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
             entity.Property(e => e.CategoryName).HasMaxLength(50);
             entity.Property(e => e.Description).HasMaxLength(255);
-        });
-
-        modelBuilder.Entity<Color>(entity =>
-        {
-            entity.HasKey(e => e.ColorId).HasName("PK__Colors__8DA7676D470C28F7");
-
-            entity.Property(e => e.ColorId).HasColumnName("ColorID");
-            entity.Property(e => e.ColorName).HasMaxLength(10);
         });
 
         modelBuilder.Entity<DiscountCode>(entity =>
@@ -252,13 +242,8 @@ public partial class DbCloudzyContext : DbContext
             entity.HasKey(e => e.VariantId).HasName("PK__ProductV__0EA233E4E825C51E");
 
             entity.Property(e => e.VariantId).HasColumnName("VariantID");
-            entity.Property(e => e.ColorId).HasColumnName("ColorID");
             entity.Property(e => e.ProductId).HasColumnName("ProductID");
             entity.Property(e => e.SizeId).HasColumnName("SizeID");
-
-            entity.HasOne(d => d.Color).WithMany(p => p.ProductVariants)
-                .HasForeignKey(d => d.ColorId)
-                .HasConstraintName("FK__ProductVa__Color__4E88ABD4");
 
             entity.HasOne(d => d.Product).WithMany(p => p.ProductVariants)
                 .HasForeignKey(d => d.ProductId)
@@ -319,6 +304,8 @@ public partial class DbCloudzyContext : DbContext
 
             entity.Property(e => e.SizeId).HasColumnName("SizeID");
             entity.Property(e => e.SizeName).HasMaxLength(20);
+            entity.Property(e => e.WeightMax).HasColumnType("decimal(5, 2)");
+            entity.Property(e => e.WeightMin).HasColumnType("decimal(5, 2)");
         });
 
         modelBuilder.Entity<Supplier>(entity =>

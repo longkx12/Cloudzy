@@ -63,9 +63,11 @@ namespace Cloudzy.Services.Implementations
                 ProductName = model.ProductName,
                 CategoryId = model.CategoryId,
                 BrandId = model.BrandId,
+                SupplierId = model.SupplierId,
                 Material = model.Material,
                 Price = model.Price ?? 0,
                 DiscountPrice = model.DiscountPrice ?? 0,
+                ProductDescription = model.ProductDescription,
                 ProductImages = new List<ProductImage>
                 {
                     new ProductImage { ImageUrl = "/images/" + uniqueFileName }
@@ -121,9 +123,11 @@ namespace Cloudzy.Services.Implementations
                 ProductName = product.ProductName,
                 CategoryId = product.CategoryId,
                 BrandId = product.BrandId,
+                SupplierId = product.SupplierId,
                 Material = product.Material,
                 Price = product.Price,
                 DiscountPrice = product.DiscountPrice,
+                ProductDescription = product.ProductDescription,
                 CurrentImages = product.ProductImages.Select(img => img.ImageUrl).ToList()
             };
         }
@@ -155,9 +159,11 @@ namespace Cloudzy.Services.Implementations
             product.ProductName = model.ProductName;
             product.CategoryId = model.CategoryId ?? product.CategoryId;
             product.BrandId = model.BrandId ?? product.BrandId;
+            product.SupplierId = model.SupplierId;
             product.Material = model.Material ?? product.Material;
             product.Price = model.Price ?? product.Price;
             product.DiscountPrice = model.DiscountPrice ?? product.DiscountPrice;
+            product.ProductDescription = model.ProductDescription;
 
             string uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
 

@@ -1,0 +1,47 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<Cloudzy.Models.ViewModels.AdminProductVariant.ListViewModel>
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Tên size</th>
+                <th>Chiều cao</th>
+                <th>Cân nặng</th>
+                <th>Số lượng</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var variant in Model)
+            {
+                <tr>
+                    <td>@variant.STT</td>
+                    <td>@variant.SizeName</td>
+                    <td>@variant.HeightRange</td>
+                    <td>@variant.WeightRange</td>
+                    <td>@variant.Stock</td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a href="@Url.Action("Edit", "AdminProductVariant", new { id = variant.VariantId })" class="btn btn-warning">Sửa</a>
+                            <form asp-action="Delete" asp-controller="AdminProductVariant" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa không?')">
+                                <input type="hidden" name="id" value="@variant.VariantId" />
+                                <input type="hidden" name="productId" value="@variant.ProductId" />
+                                <button type="submit" class="btn btn-danger">Xóa</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <!-- Phân trang bằng AJAX -->
+    <div class="text-center d-flex justify-content-center mt-3">
+        @Html.PagedListPager(Model, page => "javascript:load(" + page + ")", new PagedListRenderOptions
+   {
+       LiElementClasses = new[] { "page-item" },
+       PageClasses = new[] { "page-link" }
+   })
+    </div>
+</div>

@@ -32,22 +32,41 @@
         </div>
 
         <div class="mb-3 col-lg-6">
+            <label asp-for="SupplierId" class="form-label">Nhà cung cấp</label>
+            <select asp-for="SupplierId" asp-items="Model.Supplier" class="form-control" required>
+            </select>
+            <span asp-validation-for="SupplierId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3 col-lg-4">
             <label asp-for="Material" class="form-label">Chất liệu</label>
             <input asp-for="Material" class="form-control" required />
             <span asp-validation-for="Material" class="text-danger"></span>
         </div>
 
 
-        <div class="mb-3 col-lg-6">
+        <div class="mb-3 col-lg-4">
             <label asp-for="Price" class="form-label">Giá gốc</label>
             <input asp-for="Price" type="number" class="form-control" required />
             <span asp-validation-for="Price" class="text-danger"></span>
         </div>
 
-        <div class="mb-3 col-lg-6">
+        <div class="mb-3 col-lg-4">
             <label asp-for="DiscountPrice" class="form-label">Giá khuyến mãi</label>
             <input asp-for="DiscountPrice" type="number" class="form-control" required />
             <span asp-validation-for="DiscountPrice" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3 col-lg-8">
+            <label asp-for="ProductDescription" class="form-label">Mô tả</label>
+            <input asp-for="ProductDescription" type="text" class="form-control" required />
+            <span asp-validation-for="ProductDescription" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3 col-lg-4">
+            <label asp-for="NewImages" class="form-label">Thêm ảnh mới (tùy chọn)</label>
+            <input asp-for="NewImages" type="file" class="form-control" />
+            <span asp-validation-for="NewImages" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
@@ -62,12 +81,6 @@
                     </div>
                 }
             </div>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="NewImages" class="form-label">Thêm ảnh mới (tùy chọn)</label>
-            <input asp-for="NewImages" type="file" class="form-control" />
-            <span asp-validation-for="NewImages" class="text-danger"></span>
         </div>
     </div>
 
