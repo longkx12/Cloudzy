@@ -11,13 +11,9 @@ public partial class ProductVariant
 
     public int? SizeId { get; set; }
 
-    public int? ColorId { get; set; }
-
     public int Stock { get; set; }
 
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
-
-    public virtual Color? Color { get; set; }
 
     public virtual ICollection<ImportDetail> ImportDetails { get; set; } = new List<ImportDetail>();
 

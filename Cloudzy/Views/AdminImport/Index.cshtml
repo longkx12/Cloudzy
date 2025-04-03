@@ -1,0 +1,37 @@
+﻿@{
+    ViewData["Title"] = "Quản lý nhập hàng";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Danh sách nhập hàng</h2>
+<a class="btn btn-primary my-2" asp-action="Create">Thêm nhập hàng</a>
+
+<!-- Danh sách loại nhập hàng -->
+<div id="importList">
+    <p>Đang tải dữ liệu...</p>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        load(1);
+
+        var message = '@Html.Raw(TempData["SuccessMessage"])';
+        if (message) {
+            showAlert(message);
+        }
+    });
+
+    function load(page) {
+        $.ajax({
+            url: '/AdminImport/Load?page=' + page,
+            type: 'GET',
+            success: function (data) {
+                $('#importList').html(data);
+            },
+            error: function () {
+                $('#importList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
+            }
+        });
+    }
+</script>

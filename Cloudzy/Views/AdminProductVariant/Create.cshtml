@@ -1,0 +1,28 @@
+﻿@model Cloudzy.Models.ViewModels.AdminProductVariant.CreateViewModel
+@{
+    ViewData["Title"] = "Thêm chi tiết mới";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<h2>Thêm chi tiết</h2>
+<form asp-action="Create" method="post">
+    <input type="hidden" asp-for="ProductId" value="@ViewBag.ProductId" />
+    <div class="row">
+        <div class="mb-3 col-lg-6">
+            <label asp-for="SizeId" class="form-label">Size</label>
+            <select asp-for="SizeId" asp-items="Model.SizeList" class="form-control">
+                <option value="">-- Chọn size --</option>
+            </select>
+            <span asp-validation-for="SizeId" class="text-danger"></span>
+        </div>
+        <div class="mb-3 col-lg-2">
+            <label asp-for="Stock" class="form-label">Số lượng</label>
+            <input asp-for="Stock" type="number" class="form-control" />
+            <span asp-validation-for="Stock" class="text-danger"></span>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Thêm chi tiết</button>
+    <a asp-action="Index" asp-route-productId="@Model.ProductId" class="btn btn-secondary mt-3">Quay lại</a>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

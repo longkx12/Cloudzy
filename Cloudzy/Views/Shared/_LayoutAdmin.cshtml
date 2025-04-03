@@ -37,9 +37,9 @@
                     </button>
                 </div>
                 <div>
-                    <a class="navbar-brand brand-logo" href="#">
-                        <!--<img src="~/LayoutAdmin/assets/images/b8RsGs01.svg" alt="logo" />-->
-                    </a>
+                    <!--<a class="navbar-brand brand-logo" href="#">
+                        <img src="~/LayoutAdmin/assets/images/b8RsGs01.svg" alt="logo" />
+                    </a>-->
                     <a class="navbar-brand brand-logo-mini"
                        href="#">
                         <img src="~/LayoutAdmin/assets/images/logo-mini.svg" alt="logo" />
@@ -171,7 +171,8 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link"
-                           href="#">
+                           asp-controller="AdminImport"
+                           asp-action="Index">
                             <i class="menu-icon mdi mdi-import"></i>
                             <span class="menu-title">Quản lý nhập hàng</span>
                         </a>

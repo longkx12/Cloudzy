@@ -9,9 +9,13 @@ public partial class Size
 
     public string SizeName { get; set; } = null!;
 
-    public int? Height { get; set; }
+    public int HeightMin { get; set; }
 
-    public int? Weight { get; set; }
+    public int HeightMax { get; set; }
+
+    public decimal WeightMin { get; set; }
+
+    public decimal WeightMax { get; set; }
 
     public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
 }
