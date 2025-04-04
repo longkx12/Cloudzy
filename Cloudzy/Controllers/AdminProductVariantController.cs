@@ -95,7 +95,7 @@ namespace Cloudzy.Controllers
             if (variant == null) return NotFound();
 
             variant.SizeList = new SelectList(_context.Sizes, "SizeId", "SizeName", variant.SizeId);
-
+            ViewBag.ProductId = variant.ProductId;
             return View(variant);
         }
 
@@ -130,13 +130,6 @@ namespace Cloudzy.Controllers
                 TempData["ToastType"] = "success";
                 return RedirectToAction("Index", new { productId = model.ProductId });
             }
-            catch (DbUpdateException dbEx)
-            {
-                Debug.WriteLine($"Database error: {dbEx.InnerException?.Message}");
-                TempData["ToastMessage"] = "Lỗi cơ sở dữ liệu: " + dbEx.InnerException?.Message;
-                TempData["ToastType"] = "error";
-                model.SizeList = sizes;
-            }
             catch (Exception ex)
             {
                 model.SizeList = sizes;
@@ -152,7 +145,7 @@ namespace Cloudzy.Controllers
         {
             try
             {
-                // Get the variant to retrieve its productId before deletion
+                // Lấy productId của Variant trước khi xóa
                 var variant = await _context.ProductVariants.FindAsync(id);
                 int productId = variant?.ProductId ?? 0;
 
@@ -164,11 +157,9 @@ namespace Cloudzy.Controllers
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Delete error: {ex.Message}");
                 TempData["ToastMessage"] = "Lỗi khi xóa: " + ex.Message;
                 TempData["ToastType"] = "error";
 
-                // Redirect back to the list
                 return RedirectToAction("Index", new { productId = _context.ProductVariants.Find(id)?.ProductId ?? 0 });
             }
         }
