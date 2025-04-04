@@ -35,8 +35,7 @@ namespace Cloudzy.Repositories.Implementations
 
         public async Task<Import> GetByIdAsync(int id)
         {
-            return await _context.Imports.Include(i => i.Supplier)
-                                         .FirstOrDefaultAsync(i => i.ImportId == id);
+            return await _context.Imports.FindAsync(id);
         }
 
         public async Task UpdateAsync(Import entity)
