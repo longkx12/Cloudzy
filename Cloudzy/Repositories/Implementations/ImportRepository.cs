@@ -5,43 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cloudzy.Repositories.Implementations
 {
-    public class ImportRepository : IImportRepository
+    public class ImportRepository : Repository<Import>, IImportRepository
     {
-        private readonly DbCloudzyContext _context;
-        public ImportRepository(DbCloudzyContext context)
+        public ImportRepository(DbCloudzyContext dbCloudzyContext) : base(dbCloudzyContext)
         {
-            _context = context;
-        }
-        public async Task AddAsync(Import entity)
-        {
-            _context.Imports.Add(entity);
-            await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public override async Task<IEnumerable<Import>> GetAllAsync()
         {
-            var import = await _context.Imports.FindAsync(id);
-            if (import != null)
-            {
-                _context.Imports.Remove(import);
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        public async Task<IEnumerable<Import>> GetAllAsync()
-        {
-            return await _context.Imports.Include(i => i.Supplier).ToListAsync();
-        }
-
-        public async Task<Import> GetByIdAsync(int id)
-        {
-            return await _context.Imports.FindAsync(id);
-        }
-
-        public async Task UpdateAsync(Import entity)
-        {
-            _context.Imports.Update(entity);
-            await _context.SaveChangesAsync();
+            return await _dbSet.Include(i => i.Supplier).ToListAsync();
         }
     }
 }

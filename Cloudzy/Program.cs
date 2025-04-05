@@ -39,6 +39,7 @@ builder.Services.AddScoped<IDiscountCodeRepository, DiscountCodeRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductVariantRepository, ProductVariantRepository>();
 builder.Services.AddScoped<IImportRepository, ImportRepository>();
+builder.Services.AddScoped<IImportDetailRepository, ImportDetailRepository>();
 
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -50,6 +51,7 @@ builder.Services.AddScoped<IDiscountCodeService, DiscountCodeService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductVariantService, ProductVariantService>();
 builder.Services.AddScoped<IImportService, ImportService>();
+builder.Services.AddScoped<IImportDetailService, ImportDetailService>();
 
 var app = builder.Build();
 
