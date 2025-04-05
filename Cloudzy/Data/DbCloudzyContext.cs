@@ -140,15 +140,14 @@ public partial class DbCloudzyContext : DbContext
             entity.Property(e => e.ImportDetailId).HasColumnName("ImportDetailID");
             entity.Property(e => e.ImportId).HasColumnName("ImportID");
             entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
-            entity.Property(e => e.VariantId).HasColumnName("VariantID");
 
             entity.HasOne(d => d.Import).WithMany(p => p.ImportDetails)
                 .HasForeignKey(d => d.ImportId)
                 .HasConstraintName("FK__ImportDet__Impor__6477ECF3");
 
-            entity.HasOne(d => d.Variant).WithMany(p => p.ImportDetails)
-                .HasForeignKey(d => d.VariantId)
-                .HasConstraintName("FK__ImportDet__Varia__656C112C");
+            entity.HasOne(d => d.Product).WithMany(p => p.ImportDetails)
+                .HasForeignKey(d => d.ProductId)
+                .HasConstraintName("FK_ImportDetail_Product");
         });
 
         modelBuilder.Entity<Order>(entity =>
