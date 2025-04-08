@@ -88,6 +88,16 @@ namespace Cloudzy.Services.Implementations
             return pageBrands;
         }
 
+        public async Task<IEnumerable<ListViewModel>> GetAllAsync()
+        {
+            var brands = await _brandRepository.GetAllAsync();
+            return brands.Select(b => new ListViewModel
+            {
+                BrandId = b.BrandId,
+                BrandName = b.BrandName
+            }).ToList();
+        }
+
         public async Task<EditViewModel> GetByIdAsync(int id)
         {
             var brand = await _brandRepository.GetByIdAsync(id);

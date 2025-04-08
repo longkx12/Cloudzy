@@ -45,10 +45,5 @@ namespace Cloudzy.Repositories.Implementations
             _dbSet.Update(entity);
             await _dbCloudzyContext.SaveChangesAsync();
         }
-
-        //public async Task<T> GetByEmailAsync(string email)
-        //{
-        //    return await _dbSet.FindAsync(email);
-        //}
     }
 }

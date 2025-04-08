@@ -1,5 +1,7 @@
 ﻿using Cloudzy.Data;
 using Cloudzy.Models.Domain;
+using Cloudzy.Models.ViewModels.AdminProduct;
+using Cloudzy.Models.ViewModels.Product;
 using Cloudzy.Repositories.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -63,8 +65,41 @@ namespace Cloudzy.Repositories.Implementations
         public async Task<Product> GetByIdAsync(int id)
         {
             return await _context.Products
-                .Include(p=> p.ProductImages)
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .Include(p => p.ProductImages)
+                .Include(p => p.ProductVariants)
                 .FirstOrDefaultAsync(p => p.ProductId == id);
+        }
+
+        public async Task<IEnumerable<Product>> GetFilteredProductsAsync(int? categoryId, int? brandId, string? searchTerm)
+        {
+            var query = _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .Include(p => p.ProductImages)
+                .AsQueryable();
+
+            // Apply category filter
+            if (categoryId.HasValue && categoryId.Value > 0)
+            {
+                query = query.Where(p => p.CategoryId == categoryId.Value);
+            }
+
+            // Apply brand filter
+            if (brandId.HasValue && brandId.Value > 0)
+            {
+                query = query.Where(p => p.BrandId == brandId.Value);
+            }
+
+            // Apply search filter
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(p => p.ProductName.Contains(searchTerm) ||
+                                      (p.ProductDescription != null && p.ProductDescription.Contains(searchTerm)));
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task UpdateAsync(Product entity)
