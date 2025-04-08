@@ -1,0 +1,22 @@
+﻿@if (Context.User.Identity.IsAuthenticated)
+{
+    @if (User.IsInRole("Admin")) {
+        <li>
+            <a class="dropdown-item" href="@Url.Action("Index","AdminUser")">Quản trị</a>
+        </li>
+    }
+    <li>
+        <a class="dropdown-item" href="#">Thông tin</a>
+    </li>
+    <li>
+        <a class="dropdown-item" href="@Url.Action("Logout","User")">Đăng xuất</a>
+    </li>
+}
+else {
+    <li>
+        <a class="dropdown-item" href="@Url.Action("Login","User")">Đăng nhập</a>
+    </li>
+    <li>
+        <a class="dropdown-item" href="@Url.Action("Register","User")">Đăng ký</a>
+    </li>
+}

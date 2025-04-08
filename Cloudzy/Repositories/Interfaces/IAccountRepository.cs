@@ -7,5 +7,6 @@ namespace Cloudzy.Repositories.Interfaces
     {
         Task<IEnumerable<User>> GetAllUserAsync();
         Task<User> GetUserByEmailAsync(string email);
+        Task AddUserAsync(User user);
     }
 }

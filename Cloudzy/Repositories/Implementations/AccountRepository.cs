@@ -6,10 +6,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cloudzy.Repositories.Implementations
 {
-    public class AccountRepository : Repository<User>, IAccountRepository
+    public class AccountRepository : IAccountRepository
     {
-        public AccountRepository(DbCloudzyContext dbCloudzyContext) : base(dbCloudzyContext)
+        private readonly DbCloudzyContext _dbCloudzyContext;
+        public AccountRepository(DbCloudzyContext dbCloudzyContext)
         {
+            _dbCloudzyContext = dbCloudzyContext;
+        }
+
+        public async Task AddUserAsync(User user)
+        {
+            await _dbCloudzyContext.AddAsync(user);
+            await _dbCloudzyContext.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<User>> GetAllUserAsync()

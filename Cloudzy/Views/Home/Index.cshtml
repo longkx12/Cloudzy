@@ -1,8 +1,35 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Trang chủ";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button"
+                data-bs-target="#heroCarousel"
+                data-bs-slide-to="0"
+                class="active"></button>
+        <button type="button"
+                data-bs-target="#heroCarousel"
+                data-bs-slide-to="1"></button>
+        <button type="button"
+                data-bs-target="#heroCarousel"
+                data-bs-slide-to="2"></button>
+    </div>
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="~/LayoutAdmin/assets/images/banner_1.jpg"
+                 class="d-block w-100"
+                 alt="New Collection" />
+        </div>
+        <div class="carousel-item">
+            <img src="~/LayoutAdmin/assets/images/banner_2.jpg"
+                 class="d-block w-100"
+                 alt="Season Sale" />
+        </div>
+        <div class="carousel-item">
+            <img src="~/LayoutAdmin/assets/images/banner_4.jpg"
+                 class="d-block w-100"
+                 alt="Premium Collection" />
+        </div>
+    </div>
 </div>
