@@ -1,11 +1,13 @@
 ﻿using Cloudzy.Data;
 using Cloudzy.Models.ViewModels.AdminProduct;
 using Cloudzy.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Cloudzy.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminProductController : Controller
     {
         private readonly IProductService _productService;
@@ -15,7 +17,7 @@ namespace Cloudzy.Controllers
             _productService = productService;
             _context = context;
         }
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             return View();
         }

@@ -2,12 +2,14 @@
 using Cloudzy.Models.ViewModels.AdminDiscountCode;
 using Cloudzy.Models.ViewModels.AdminUser;
 using Cloudzy.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cloudzy.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminDiscountCode : Controller
     {
         private readonly IDiscountCodeService _discountCodeService;
@@ -17,7 +19,7 @@ namespace Cloudzy.Controllers
             _discountCodeService = discountCodeService;
             _context = context;
         }
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             return View();
         }

@@ -2,6 +2,7 @@
 using Cloudzy.Models.ViewModels.AdminProductVariant;
 using Cloudzy.Services.Implementations;
 using Cloudzy.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using System.Diagnostics;
 
 namespace Cloudzy.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminProductVariantController : Controller
     {
         private readonly IProductVariantService _productVariantService;
@@ -18,7 +20,7 @@ namespace Cloudzy.Controllers
             _productVariantService = productVariantService;
             _context = context;
         }
-        public async Task<IActionResult> Index(int productId)
+        public IActionResult Index(int productId)
         {
             ViewBag.ProductId = productId;
             return View();
