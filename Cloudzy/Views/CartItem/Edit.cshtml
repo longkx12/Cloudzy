@@ -1,0 +1,32 @@
+﻿@model Cloudzy.Models.ViewModels.Cart.CartItemEditViewModel
+
+@{
+    ViewData["Title"] = "Sửa chi tiết";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Chỉnh sửa chi tiết</h2>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="CartItemId" />
+    <input type="hidden" asp-for="CartId" />
+
+    <div class="row">
+        <div class="mb-3 col-lg-3">
+            <label asp-for="VariantId" class="form-label">Chi tiết sản phẩm</label>
+            <input asp-for="VariantId" type="number" class="form-control" />
+            <span asp-validation-for="VariantId" class="text-danger"></span>
+        </div>
+        <div class="mb-3 col-lg-3">
+            <label asp-for="Quantity" class="form-label">Số lượng</label>
+            <input asp-for="Quantity" type="number" class="form-control" />
+            <span asp-validation-for="Quantity" class="text-danger"></span>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-warning mt-3">Cập nhật</button>
+    <a asp-action="Index" asp-route-cartId="@Model.CartId" class="btn btn-secondary mt-3">Quay lại</a>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

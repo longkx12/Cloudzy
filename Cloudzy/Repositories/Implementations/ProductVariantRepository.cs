@@ -15,6 +15,10 @@ namespace Cloudzy.Repositories.Implementations
         {
             return await _dbSet
                 .Include(pv => pv.Size)
+                .Include(pv => pv.Product)
+                    .ThenInclude(pv => pv.ProductImages)
+                .Include(pv => pv.Product.Category)
+                .Include(pv => pv.Product.Brand)
                 .Where(pv => pv.ProductId == productId)
                 .ToListAsync();
         }

@@ -140,6 +140,30 @@
             }
         });
     </script>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <script>
+            // Hàm để tải số lượng sản phẩm trong giỏ hàng
+            async function loadCartCount() {
+                try {
+                    const response = await fetch('/api/Cart/GetCartCount');
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const data = await response.json();
+
+                    if (data.success) {
+                        document.querySelector('.cart-badge').textContent = data.totalItems;
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi tải số lượng giỏ hàng:', error);
+                }
+            }
+
+            // Tải số lượng giỏ hàng khi trang được tải
+            document.addEventListener('DOMContentLoaded', loadCartCount);
+        </script>
+    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

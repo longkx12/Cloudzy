@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Quản lý chi tiết giỏ hàng";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<h2>Danh sách chi tiết giỏ hàng</h2>
+<input type="hidden" id="cartId" value="@ViewBag.CartId" />
+<a asp-action="Index" asp-controller="ShoppingCart" class="btn btn-secondary my-2">Quay lại</a>
+
+<a href="@Url.Action("Create", "CartItem", new { cartId = ViewBag.CartId })"
+   class="btn btn-primary">
+    Thêm chi tiết giỏ hàng
+</a>
+
+<!-- Danh sách chi tiết -->
+<div id="cartItemList">
+    <p>Đang tải dữ liệu...</p>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        load(1);
+        var message = '@Html.Raw(TempData["SuccessMessage"])';
+        if (message) {
+            showAlert(message);
+        }
+    });
+    function load(page) {
+        var cartId = $("#cartId").val();
+        console.log("CartId:", cartId);
+        $.ajax({
+            url: '/CartItem/Load',
+            data: { page: page, cartId: cartId },
+            success: function (data) {
+                $('#cartItemList').html(data);
+            },
+            error: function () {
+                $('#cartItemList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
+            }
+        });
+    }
+</script>

@@ -87,7 +87,7 @@ namespace Cloudzy.Controllers
         public async Task<IActionResult> Logout()
         {
             await _accountService.LogoutAsync();
-            return RedirectToAction("Login", "User");
+            return RedirectToAction("Index", "Home");
         }
     }
 }

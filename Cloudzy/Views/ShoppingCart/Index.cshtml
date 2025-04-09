@@ -1,0 +1,37 @@
+﻿@{
+    ViewData["Title"] = "Quản lý giỏ hàng";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Danh sách giỏ hàng</h2>
+<a class="btn btn-primary my-2" asp-action="Create">Thêm giỏ hàng</a>
+
+<!-- Danh sách giỏ hàng -->
+<div id="cartList">
+    <p>Đang tải dữ liệu...</p>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        load(1);
+
+        var message = '@Html.Raw(TempData["SuccessMessage"])';
+        if (message) {
+            showAlert(message);
+        }
+    });
+
+    function load(page) {
+        $.ajax({
+            url: '/ShoppingCart/Load?page=' + page,
+            type: 'GET',
+            success: function (data) {
+                $('#cartList').html(data);
+            },
+            error: function () {
+                $('#cartList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
+            }
+        });
+    }
+</script>

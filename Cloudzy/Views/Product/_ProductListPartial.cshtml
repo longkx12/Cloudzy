@@ -14,7 +14,7 @@ else
     {
         <div class="col-md-4 mb-4">
             <div class="card product-card h-100">
-                <a href="/Product/Details/@product.ProductId" class="text-decoration-none text-reset">
+                <a href="@Url.Action("Index", "ProductDetail", new { productId = product.ProductId })" class="text-decoration-none text-reset">
                     @if (product.ProductImages.Any())
                     {
                         <img src="@product.ProductImages.First()" class="card-img-top" alt="@product.ProductName" style="height: 200px; object-fit: cover;">
