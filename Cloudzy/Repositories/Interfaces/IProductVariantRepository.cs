@@ -2,12 +2,8 @@
 
 namespace Cloudzy.Repositories.Interfaces
 {
-    public interface IProductVariantRepository
+    public interface IProductVariantRepository : IRepository<ProductVariant>
     {
         Task<IEnumerable<ProductVariant>> GetAllAsync(int productId);
-        Task<ProductVariant> GetByIdAsync(int variantId);
-        Task AddAsync(ProductVariant productVariant);
-        Task UpdateAsync(ProductVariant productVariant);
-        Task DeleteAsync(int id);
     }
 }

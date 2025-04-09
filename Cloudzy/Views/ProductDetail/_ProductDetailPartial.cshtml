@@ -1,0 +1,239 @@
+﻿@model IEnumerable<Cloudzy.Models.ViewModels.ProductDetail.ProductDetailViewModel>
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{
+    var token = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+<input type="hidden" name="__RequestVerificationToken" value="@token" />
+
+@{
+    var firstVariant = Model.FirstOrDefault();
+    var jsonData = System.Text.Json.JsonSerializer.Serialize(Model);
+}
+
+@if (firstVariant != null)
+{
+    <div class="container my-5">
+        <div class="row">
+            <!-- Hình ảnh sản phẩm -->
+            <div class="col-lg-6 mb-4">
+                <div class="row">
+                    <div class="col-12 mb-4 position-relative overflow-hidden" style="height: 400px;">
+                        <img id="mainProductImage" src="@firstVariant.ProductImages.FirstOrDefault()" alt="@firstVariant.ProductName"
+                             class="img-fluid rounded shadow position-absolute w-100 h-100 object-fit-contain" />
+                    </div>
+                    @for (int i = 0; i < firstVariant.ProductImages.Count; i++)
+                    {
+                        <div class="col-2 mb-2">
+                            <img src="@firstVariant.ProductImages[i]" data-index="@i" alt="Thumbnail"
+                                 class="img-thumbnail product-thumbnail" style="cursor:pointer;" />
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Thông tin chi tiết -->
+            <div class="col-lg-6">
+                <p class="product-title mb-2">@firstVariant.ProductName</p>
+                <p class="product-price mb-4 text-danger">
+                    @if (firstVariant.DiscountPrice.HasValue)
+                    {
+                        <span>₫@firstVariant.DiscountPrice.Value.ToString("N0")</span>
+                        <del class="text-muted ms-2">₫@firstVariant.Price?.ToString("N0")</del>
+                    }
+                    else
+                    {
+                        <span>₫@firstVariant.Price?.ToString("N0")</span>
+                    }
+                </p>
+
+                <div class="mb-3">
+                    <div class="row product-info-row mb-2">
+                        <div class="col-4">Loại</div>
+                        <div class="col-8">@firstVariant.CategoryName</div>
+                    </div>
+                    <div class="row product-info-row mb-2">
+                        <div class="col-4">Nhãn hàng</div>
+                        <div class="col-8">@firstVariant.BrandName</div>
+                    </div>
+                    <div class="row product-info-row mb-2">
+                        <div class="col-4">Chất liệu</div>
+                        <div class="col-8">@firstVariant.Material</div>
+                    </div>
+                    <div class="row product-info-row mb-2">
+                        <div class="col-4">Trạng thái</div>
+                        <div class="col-8" id="stock-status">@((firstVariant.Stock > 0) ? "Còn hàng" : "Hết hàng")</div>
+                    </div>
+                    <div class="row product-info-row mb-2">
+                        <div class="col-4">Size</div>
+                        <div class="col-8 d-flex flex-wrap gap-2">
+                            @foreach (var variant in Model)
+                            {
+                                <button type="button" class="btn btn-outline-secondary btn-sm size-btn @(variant.VariantId == firstVariant.VariantId ? "active" : "")"
+                                        data-variant-id="@variant.VariantId">
+                                    @variant.SizeName
+                                </button>
+                            }
+                        </div>
+                    </div>
+                    <div class="row product-info-row mb-2">
+                        <div class="col-4">Chiều cao</div>
+                        <div class="col-8" id="height-range">@firstVariant.HeightRange</div>
+                    </div>
+                    <div class="row product-info-row mb-2">
+                        <div class="col-4">Cân nặng</div>
+                        <div class="col-8" id="weight-range">@firstVariant.WeightRange</div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p class="mb-2"><span id="stock-count">@firstVariant.Stock</span> sản phẩm có sẵn</p>
+                    <p class="mb-3 text-muted">
+                        <i class="fas fa-envelope text-warning"></i>
+                        Đặt hàng liền tay
+                    </p>
+                </div>
+
+                <div class="d-flex align-items-center mb-4">
+                    <div class="me-3">
+                        <label class="me-2">Số lượng</label>
+                        <input type="number" id="quantity" class="form-control quantity-input" value="1" min="1" max="@firstVariant.Stock" />
+                    </div>
+                </div>
+
+                <div class="d-flex mb-4">
+                    <button class="btn btn-add-cart me-2">THÊM VÀO GIỎ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const productVariants = @Html.Raw(jsonData);
+        const mainImage = document.getElementById('mainProductImage');
+        const thumbnails = document.querySelectorAll('.product-thumbnail');
+        const imageSources = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(firstVariant.ProductImages));
+        let currentIndex = 0;
+
+        thumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', function () {
+                const newIndex = parseInt(this.dataset.index);
+                if (newIndex === currentIndex) return;
+
+                const direction = newIndex > currentIndex ? 'left' : 'right';
+
+                const newImg = document.createElement('img');
+                newImg.src = imageSources[newIndex];
+                newImg.className = "img-fluid rounded shadow position-absolute w-100 h-100 object-fit-contain";
+                newImg.style.transition = "transform 0.5s ease-in-out";
+                newImg.style.position = "absolute";
+                newImg.style.top = "0";
+                newImg.style.left = "0";
+
+                if (direction === 'left') {
+                    newImg.style.transform = "translateX(100%)";
+                    mainImage.parentNode.appendChild(newImg);
+
+                    requestAnimationFrame(() => {
+                        mainImage.style.transform = "translateX(-100%)";
+                        newImg.style.transform = "translateX(0)";
+                    });
+                } else {
+                    newImg.style.transform = "translateX(-100%)";
+                    mainImage.parentNode.appendChild(newImg);
+
+                    requestAnimationFrame(() => {
+                        mainImage.style.transform = "translateX(100%)";
+                        newImg.style.transform = "translateX(0)";
+                    });
+                }
+
+                setTimeout(() => {
+                    mainImage.src = imageSources[newIndex];
+                    mainImage.style.transform = "translateX(0)";
+                    newImg.remove();
+                    currentIndex = newIndex;
+                }, 500);
+            });
+        });
+
+        document.querySelectorAll('.size-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const variantId = parseInt(this.dataset.variantId);
+            const selectedVariant = productVariants.find(v => v.VariantId === variantId);
+
+                if (selectedVariant) {
+                    document.getElementById('height-range').innerText = selectedVariant.HeightRange;
+                    document.getElementById('weight-range').innerText = selectedVariant.WeightRange;
+                    document.getElementById('stock-count').innerText = selectedVariant.Stock;
+                    document.getElementById('stock-status').innerText = selectedVariant.Stock > 0 ? "Còn hàng" : "Hết hàng";
+                    document.getElementById('quantity').max = selectedVariant.Stock;
+                }
+
+             document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('btn-secondary'));
+             this.classList.add('btn-secondary');
+            });
+        });
+
+        // Thêm xử lý cho nút "THÊM VÀO GIỎ"
+        document.querySelector('.btn-add-cart').addEventListener('click', async function() {
+            try {
+                // Lấy variant ID đã chọn
+                const selectedVariantBtn = document.querySelector('.size-btn.active') || document.querySelector('.size-btn.btn-secondary');
+                if (!selectedVariantBtn) {
+                    toastr.warning('Vui lòng chọn size trước khi thêm vào giỏ');
+                    return;
+                }
+
+                const variantId = parseInt(selectedVariantBtn.dataset.variantId);
+                const quantity = parseInt(document.getElementById('quantity').value);
+
+                // Kiểm tra số lượng hợp lệ
+                if (quantity <= 0) {
+                    toastr.warning('Số lượng phải lớn hơn 0');
+                    return;
+                }
+
+                // Kiểm tra người dùng đã đăng nhập chưa
+                const isAuthenticated = @Json.Serialize(User.Identity.IsAuthenticated);
+                if (!isAuthenticated) {
+                    toastr.warning('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng',"Cảnh báo");
+                    // Có thể thêm chuyển hướng đến trang đăng nhập ở đây
+                    return;
+                }
+
+                // Gửi yêu cầu thêm vào giỏ hàng
+                const response = await fetch('/api/Cart/AddToCart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({
+                        variantId: variantId,
+                        quantity: quantity
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    toastr.success(data.message);
+
+                    // Cập nhật số lượng trên biểu tượng giỏ hàng
+                    document.querySelector('.cart-badge').textContent = data.totalItems;
+                } else {
+                    toastr.error(data.message);
+                }
+            } catch (error) {
+                toastr.error('Có lỗi xảy ra khi thêm vào giỏ hàng');
+                console.error(error);
+            }
+        });
+    </script>
+}
+else
+{
+    <div class="container my-5">
+        <div class="alert alert-warning">Không tìm thấy thông tin sản phẩm.</div>
+    </div>
+}

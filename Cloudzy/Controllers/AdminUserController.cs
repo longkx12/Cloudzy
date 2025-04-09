@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cloudzy.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminUserController : Controller
     {
         private readonly IUserService _userService;
@@ -19,7 +20,7 @@ namespace Cloudzy.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             return View();
         }

@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Quản lý chi tiết nhập hàng";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<h2>Danh sách chi tiết nhập hàng</h2>
+<input type="hidden" id="importId" value="@ViewBag.ImportId" />
+<a asp-action="Index" asp-controller="AdminImport" class="btn btn-secondary my-2">Quay lại</a>
+
+<a href="@Url.Action("Create", "AdminImportDetail", new { importId = ViewBag.ImportId })"
+   class="btn btn-primary">
+    Thêm chi tiết nhập hàng
+</a>
+
+<!-- Danh sách chi tiết -->
+<div id="importDetailList">
+    <p>Đang tải dữ liệu...</p>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        load(1);
+        var message = '@Html.Raw(TempData["SuccessMessage"])';
+        if (message) {
+            showAlert(message);
+        }
+    });
+    function load(page) {
+        var importId = $("#importId").val();
+        console.log("ImportId:", importId);
+        $.ajax({
+            url: '/AdminImportDetail/Load',
+            data: { page: page, importId: importId },
+            success: function (data) {
+                $('#importDetailList').html(data);
+            },
+            error: function () {
+                $('#importDetailList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
+            }
+        });
+    }
+</script>

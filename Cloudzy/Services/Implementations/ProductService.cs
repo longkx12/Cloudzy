@@ -1,5 +1,6 @@
 ﻿using Cloudzy.Models.Domain;
 using Cloudzy.Models.ViewModels.AdminProduct;
+using Cloudzy.Models.ViewModels.Product;
 using Cloudzy.Repositories.Interfaces;
 using Cloudzy.Services.Interfaces;
 using Microsoft.AspNetCore.Hosting;
@@ -130,6 +131,24 @@ namespace Cloudzy.Services.Implementations
                 ProductDescription = product.ProductDescription,
                 CurrentImages = product.ProductImages.Select(img => img.ImageUrl).ToList()
             };
+        }
+
+        public async Task<IPagedList<ProductListViewModel>> GetFilteredProductsAsync(int pageNumber, int pageSize, int? categoryId, int? brandId, string? searchTerm)
+        {
+            var products = await _productRepository.GetFilteredProductsAsync(categoryId, brandId, searchTerm);
+            return products.Select(p => new ProductListViewModel
+            {
+                ProductId = p.ProductId,
+                ProductName = p.ProductName,
+                Price = p.Price,
+                DiscountPrice = p.DiscountPrice,
+                Material = p.Material,
+                CategoryId = p.CategoryId,
+                CategoryName = p.Category?.CategoryName,
+                BrandId = p.BrandId,
+                BrandName = p.Brand?.BrandName,
+                ProductImages = p.ProductImages.Select(pi => pi.ImageUrl).ToList()
+            }).ToPagedList(pageNumber,pageSize);
         }
 
         public async Task UpdateAsync(EditViewModel model)

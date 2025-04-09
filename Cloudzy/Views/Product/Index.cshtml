@@ -1,0 +1,188 @@
+﻿@model Cloudzy.Models.ViewModels.Product.FilterViewModel
+
+@{
+    ViewData["Title"] = "Sản phẩm";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3">
+            <!-- Mobile Toggle Buttons (visible only on small screens) -->
+            <div class="d-lg-none mb-3">
+                <button class="btn btn-outline-secondary w-100 mb-2 d-flex justify-content-between align-items-center"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#categoriesCollapse"
+                        aria-expanded="false">
+                    Các danh mục
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+
+                <button class="btn btn-outline-secondary w-100 d-flex justify-content-between align-items-center"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#brandsCollapse"
+                        aria-expanded="false">
+                    Các thương hiệu
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+
+            <!-- Categories -->
+            <div class="sidebar-section mb-4 collapse d-lg-block" id="categoriesCollapse">
+                <h3 class="category-title d-none d-lg-block">Các danh mục</h3>
+                <ul class="category-list">
+                    <li>
+                        <input type="radio" id="category-0" name="category" value="0"
+                        @if (Model.CategoryId == null || Model.CategoryId == 0)
+                        {
+                            <text>checked</text>
+                        } />
+                        <label for="category-0">Tất cả</label>
+                    </li>
+
+                    @foreach (var category in Model.Categories)
+                    {
+                        <li>
+                            <input type="radio" id="category-@category.CategoryId" name="category" value="@category.CategoryId" @if (category.CategoryId == Model.CategoryId)
+                            {
+                                <text>checked</text>
+                            } />
+                            <label for="category-@category.CategoryId">@category.CategoryName</label>
+                        </li>
+                    }
+                </ul>
+            </div>
+
+            <!-- Brands -->
+            <div class="sidebar-section mb-4 collapse d-lg-block" id="brandsCollapse">
+                <h3 class="category-title d-none d-lg-block">Các thương hiệu</h3>
+                <ul class="category-list">
+                    <li>
+                        <input type="radio" id="all-brands" name="brand" value="0"
+                        @if (Model.BrandId == null || Model.BrandId == 0)
+                        {
+                            <text>checked</text>
+                        } />
+                        <label for="all-brands">Tất cả</label>
+
+                        @foreach (var brand in Model.Brands)
+                        {
+                        <li>
+                            <input type="radio" id="brand-@brand.BrandId" name="brand" value="@brand.BrandId"
+                                @if (brand.BrandId == Model.BrandId)
+                                {
+                                    <text>checked</text>
+                                } />
+                            <label for="brand-@brand.BrandId">@brand.BrandName</label>
+                        </li>
+                        }
+                </ul>
+            </div>
+        </div>
+
+        <!-- Products -->
+        <div class="col-lg-9">
+            <!-- Filters -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex">
+                    <div class="search-box d-flex">
+                        <input type="text" class="form-control" placeholder="Tìm kiếm">
+                        <button class="btn btn-outline-secondary">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="row" id="productList">
+                <p>Đang tải dữ liệu...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Tải dữ liệu ban đầu
+        load(1, false);
+
+        // Xử lý thay đổi bộ lọc category và brand
+        $('input[name="category"], input[name="brand"]').change(function () {
+            load(1, true);
+        });
+
+        // Xử lý nút tìm kiếm
+        $('.search-box button').click(function() {
+            load(1, true);
+        });
+
+        // Cho phép nhấn Enter trong ô tìm kiếm
+        $('.search-box input').keypress(function(e) {
+            if(e.which == 13) {
+                load(1, true);
+                e.preventDefault();
+            }
+        });
+    });
+
+        function load(page, isFilter) {
+        // Lấy categoryId từ radio button đã chọn
+        var categoryId = 0;
+        var categoryElement = $('input[name="category"]:checked');
+        if (categoryElement.length > 0) {
+            categoryId = categoryElement.val();
+        }
+
+        // Lấy brandId từ radio button đã chọn
+        var brandId = 0;
+        var brandElement = $('input[name="brand"]:checked');
+        if (brandElement.length > 0) {
+            brandId = brandElement.val();
+        }
+
+        // Lấy từ khóa tìm kiếm
+        var searchTerm = $('.search-box input').val();
+
+        // Cache kết quả trước đó
+        var currentContent = $('#productList').html();
+
+        // Hiệu ứng làm mờ khi chọn
+        if (isFilter) {
+            $('#productList').css('opacity', '0.6');
+        }
+
+        // Thực hiện AJAX request
+        $.ajax({
+            url: '/Product/Load',
+            type: 'GET',
+            data: {
+                page: page,
+                categoryId: categoryId,
+                brandId: brandId,
+                searchTerm: searchTerm
+            },
+            success: function (data) {
+                // Hiệu ứng fade để làm mượt quá trình thay đổi nội dung
+                $('#productList').fadeOut(200, function() {
+                    $(this).html(data).fadeIn(200);
+                    // Khôi phục độ mờ
+                    $(this).css('opacity', '1');
+                });
+            },
+            error: function () {
+                // Trong trường hợp lỗi, khôi phục nội dung trước đó nếu có
+                if (isFilter && currentContent) {
+                    $('#productList').html(currentContent);
+                } else {
+                    $('#productList').html('<p class="text-danger text-center">Không thể tải dữ liệu.</p>');
+                }
+                // Khôi phục độ mờ
+                $('#productList').css('opacity', '1');
+            }
+        });
+    }
+</script>

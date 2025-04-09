@@ -1,0 +1,33 @@
+﻿@model Cloudzy.Models.ViewModels.Cart.ShoppingCartCreateViewModel
+
+@{
+    ViewData["Title"] = "Thêm giỏ hàng mới";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Thêm giỏ hàng</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="row">
+        <div class="mb-3 col-lg-6">
+            <label asp-for="UserId" class="form-label">Người dùng</label>
+            <select asp-for="UserId" asp-items="Model.Users" class="form-control">
+                <option value="">-- Chọn danh mục --</option>
+            </select>
+            <span asp-validation-for="UserId" class="text-danger"></span>
+        </div>
+        
+        <div class="mb-3 col-lg-4">
+            <label asp-for="CreatedAt" class="form-label">Ngày tạo</label>
+            <input asp-for="CreatedAt" type="datetime-local" class="form-control" />
+            <span asp-validation-for="CreatedAt" class="text-danger"></span>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Thêm giỏ hàng</button>
+    <a asp-action="Index" class="btn btn-secondary mt-3">Quay lại</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,9 +1,11 @@
 ﻿using Cloudzy.Models.ViewModels.AdminSupplier;
 using Cloudzy.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cloudzy.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminSupplierController : Controller
     {
         private readonly ISupplierService _supplierService;
@@ -11,7 +13,7 @@ namespace Cloudzy.Controllers
         {
             _supplierService = supplierService;
         }
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             return View();
         }

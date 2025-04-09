@@ -14,13 +14,13 @@ namespace Cloudzy.Repositories.Implementations
             _dbSet = dbCloudzyContext.Set<T>();
         }
 
-        public async Task AddAsync(T entity)
+        public virtual async Task AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
             await _dbCloudzyContext.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public virtual async Task DeleteAsync(int id)
         {
             var entity = await GetByIdAsync(id);
             if (entity != null)
@@ -30,25 +30,20 @@ namespace Cloudzy.Repositories.Implementations
             }
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public virtual async Task<T> GetByIdAsync(int id)
         {
             return await _dbSet.FindAsync(id);
         }
 
-        public async Task UpdateAsync(T entity)
+        public virtual async Task UpdateAsync(T entity)
         {
             _dbSet.Update(entity);
             await _dbCloudzyContext.SaveChangesAsync();
         }
-
-        //public async Task<T> GetByEmailAsync(string email)
-        //{
-        //    return await _dbSet.FindAsync(email);
-        //}
     }
 }

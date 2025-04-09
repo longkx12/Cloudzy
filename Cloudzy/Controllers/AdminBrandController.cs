@@ -1,9 +1,11 @@
 ﻿using Cloudzy.Models.ViewModels.AdminBrand;
 using Cloudzy.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cloudzy.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminBrandController : Controller
     {
         private readonly IBrandService _brandService;
@@ -11,7 +13,7 @@ namespace Cloudzy.Controllers
         {
             _brandService = brandService;
         }
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             return View();
         }

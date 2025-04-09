@@ -1,0 +1,46 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+
+@model IPagedList<Cloudzy.Models.ViewModels.AdminImportDetail.ListViewModel>
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Tên sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Giá</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var detail in Model)
+            {
+                <tr>
+                    <td>@detail.STT</td>
+                    <td>@detail.ProductName</td>
+                    <td>@detail.Quantity</td>
+                    <td>@detail.Price</td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a href="@Url.Action("Edit", "AdminImportDetail", new { id = detail.ImportDetailId })" class="btn btn-warning">Sửa</a>
+                            <form asp-action="Delete" asp-controller="AdminImportDetail" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa không?')">
+                                <input type="hidden" name="id" value="@detail.ImportDetailId" />
+                                <input type="hidden" name="importId" value="@detail.ImportId" />
+                                <button type="submit" class="btn btn-danger">Xóa</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <!-- Phân trang bằng AJAX -->
+    <div class="text-center d-flex justify-content-center mt-3">
+        @Html.PagedListPager(Model, page => "javascript:load(" + page + ")", new PagedListRenderOptions
+   {
+       LiElementClasses = new[] { "page-item" },
+       PageClasses = new[] { "page-link" }
+   })
+    </div>
+</div>

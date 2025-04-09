@@ -20,7 +20,7 @@
         <div class="mb-3 col-lg-6">
             <label asp-for="ImportDate" class="form-label">Ngày nhập</label>
             <input asp-for="ImportDate" type="datetime-local" class="form-control"
-                   value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                   value="@Model.ImportDate.ToString("yyyy-MM-ddTHH:mm")" />
             <span asp-validation-for="ImportDate" class="text-danger"></span>
         </div>
     </div>

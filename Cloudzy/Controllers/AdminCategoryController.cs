@@ -1,9 +1,11 @@
 ﻿using Cloudzy.Models.ViewModels.AdminCategory;
 using Cloudzy.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cloudzy.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminCategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
@@ -11,7 +13,7 @@ namespace Cloudzy.Controllers
         {
             _categoryService = categoryService;
         }
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             return View();
         }

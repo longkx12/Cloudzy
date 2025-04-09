@@ -2,11 +2,13 @@
 using Cloudzy.Models.ViewModels.AdminImport;
 using Cloudzy.Services.Implementations;
 using Cloudzy.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Cloudzy.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminImportController : Controller
     {
         private readonly IImportService _service;
@@ -16,7 +18,7 @@ namespace Cloudzy.Controllers
             _context = context;
             _service = service;
         }
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             return View();
         }

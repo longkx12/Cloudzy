@@ -50,6 +50,16 @@ namespace Cloudzy.Services.Implementations
             return pageCategories;
         }
 
+        public async Task<IEnumerable<ListViewModel>> GetAllAsync()
+        {
+            var categorys = await _categoryRepository.GetAllAsync();
+            return categorys.Select(c => new ListViewModel
+            {
+                CategoryId = c.CategoryId,
+                CategoryName = c.CategoryName
+            }).ToList();
+        }
+
         public async Task<EditViewModel> GetByIdAsync(int id)
         {
             var category = await _categoryRepository.GetByIdAsync(id);

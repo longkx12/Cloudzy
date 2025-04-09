@@ -7,5 +7,6 @@ namespace Cloudzy.Services.Interfaces
     {
         Task<User?> LoginAsync(LoginViewModel model);
         Task LogoutAsync();
+        Task<User?> RegisterAsync(RegisterViewModel model);
     }
 }

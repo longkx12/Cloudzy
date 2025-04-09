@@ -62,5 +62,45 @@ namespace Cloudzy.Services.Implementations
             }
         }
 
+        public async Task<User?> RegisterAsync(RegisterViewModel model)
+        {
+            var existingUser = await _accountRepository.GetUserByEmailAsync(model.Email);
+            if (existingUser != null)
+            {
+                throw new Exception("Email đã tồn tại!");
+            }
+
+            var user = new User
+            {
+                Fullname = model.Fullname,
+                Email = model.Email,
+                PhoneNumber = model.PhoneNumber,
+                Password = model.Password,
+                RoleId = 2
+            };
+            await _accountRepository.AddUserAsync(user);
+
+            //Đăng ký xong sẽ tự đăng nhập 
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name,user.Fullname),
+                new Claim(ClaimTypes.Email,user.Email),
+                new Claim("UserId",user.UserId.ToString()),
+                new Claim(ClaimTypes.Role,user.Role?.RoleName??"User")
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
+            };
+
+            var httpContext = _httpContextAccessor.HttpContext;
+            await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity), authProperties);
+
+            return user;
+        }
     }
 }

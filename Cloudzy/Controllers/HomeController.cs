@@ -1,5 +1,12 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using System.Linq;
+using Cloudzy.Data;
 using Cloudzy.Models;
+using Cloudzy.Models.Domain;
+using Cloudzy.Models.ViewModels.Product;
+using Cloudzy.Repositories.Interfaces;
+using Cloudzy.Services.Implementations;
+using Cloudzy.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cloudzy.Controllers
@@ -12,7 +19,6 @@ namespace Cloudzy.Controllers
         {
             _logger = logger;
         }
-
         public IActionResult Index()
         {
             return View();

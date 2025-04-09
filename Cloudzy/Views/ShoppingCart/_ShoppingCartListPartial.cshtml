@@ -1,0 +1,45 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+
+@model IPagedList<Cloudzy.Models.ViewModels.Cart.ShoppingCartListViewModel>
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Tên người dùng</th>
+                <th>Ngày tạo</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cart in Model)
+            {
+                <tr>
+                    <td>@cart.STT</td>
+                    <td>@cart.Fullname</td>
+                    <td>@cart.CreatedAt</td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a href="@Url.Action("Index", "CartItem", new { cartId = cart.CartId })" class="btn btn-info">Xem</a>
+                            <form asp-action="Delete" asp-controller="ShoppingCart" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa không?')">
+                                <input type="hidden" name="id" value="@cart.CartId" />
+                                <button type="submit" class="btn btn-danger">Xóa</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Phân trang bằng AJAX -->
+    <div class="text-center d-flex justify-content-center mt-3">
+        @Html.PagedListPager(Model, page => "javascript:load(" + page + ")", new PagedListRenderOptions
+   {
+       LiElementClasses = new[] { "page-item" },
+       PageClasses = new[] { "page-link" }
+   })
+    </div>
+
+</div>
