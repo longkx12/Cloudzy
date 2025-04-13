@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Models\Domain\" />
-    <Folder Include="Views\UserCart\" />
     <Folder Include="wwwroot\images\" />
 
   </ItemGroup>

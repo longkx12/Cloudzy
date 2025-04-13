@@ -1,4 +1,5 @@
 ﻿using Cloudzy.Models.ViewModels.Cart;
+using Cloudzy.Models.ViewModels.CartDetails;
 using X.PagedList;
 
 namespace Cloudzy.Services.Interfaces
