@@ -107,7 +107,7 @@
                     </li>
                     <li class="nav-item nav-category">Quản lý</li>
                     <li class="nav-item">
-                        <a class="nav-link"
+                        <a class="nav-link ajax-link"
                            asp-controller="AdminUser"
                            asp-action="Index">
                             <i class="menu-icon mdi mdi-account-circle-outline"></i>
@@ -115,7 +115,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link"
+                        <a class="nav-link ajax-link"
                            asp-controller="AdminCategory"
                            asp-action="Index">
                             <i class="menu-icon mdi mdi-format-list-bulleted"></i>
@@ -123,7 +123,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link"
+                        <a class="nav-link ajax-link"
                            asp-controller="AdminProduct"
                            asp-action="Index">
                             <i class="menu-icon mdi mdi-tshirt-crew-outline"></i>
@@ -131,7 +131,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link"
+                        <a class="nav-link ajax-link"
                            asp-controller="AdminBrand"
                            asp-action="Index">
                             <i class="menu-icon mdi mdi-trademark"></i>
@@ -139,7 +139,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link"
+                        <a class="nav-link ajax-link"
                            asp-controller="AdminSupplier"
                            asp-action="Index">
                             <i class="menu-icon mdi mdi-account-tie-woman"></i>
@@ -172,7 +172,7 @@
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link"
+                        <a class="nav-link ajax-link"
                            asp-controller="AdminImport"
                            asp-action="Index">
                             <i class="menu-icon mdi mdi-import"></i>
@@ -180,7 +180,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link"
+                        <a class="nav-link ajax-link"
                            asp-controller="ShoppingCart"
                            asp-action="Index">
                             <i class="menu-icon mdi mdi-cart-outline"></i>
@@ -188,7 +188,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link"
+                        <a class="nav-link ajax-link"
                            data-bs-toggle="collapse"
                            href="#statistical"
                            aria-expanded="false"
@@ -216,7 +216,7 @@
                     <div class="row">
                         <div class="col-lg-12 grid-margin stretch-card">
                             <div class="card">
-                                <div class="card-body">
+                                <div class="card-body" id="ajax-content">
                                     @RenderBody()
                                 </div>
                             </div>
@@ -226,16 +226,15 @@
                 <!-- content-wrapper ends -->
                 <!-- partial:partials/_footer.html -->
                 <footer class="footer">
-                 <!--   <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
                         <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
-                            Premium
+                            Trần Quốc Long
                             <a href="#"
                                target="_blank"></a>
                            
                         </span>
-                        <span class="float-none float-sm-end d-block mt-1 mt-sm-0 text-center">Copyright © 2023. All rights reserved.</span>
+                        <span class="float-none float-sm-end d-block mt-1 mt-sm-0 text-center">BTL Web nâng cao - Khóa luận tốt nghiệp</span>
                     </div>
-                    -->
                 </footer>
                 <!-- partial -->
             </div>
@@ -300,6 +299,24 @@
                         toastr.info(toastMessage);
                 }
             }
+
+            // $(document).on('click', '.ajax-link', function (e) {
+            //     e.preventDefault();
+
+            //     var url = $(this).attr('href');
+
+            //     $.ajax({
+            //         url: url,
+            //         type: 'GET',
+            //         success: function (data) {
+            //             $('#ajax-content').html($(data).find('#ajax-content').html());
+            //             window.history.pushState({}, '', url);
+            //         },
+            //         error: function () {
+            //             alert("Có lỗi xảy ra khi tải nội dung.");
+            //         }
+            //     });
+            // });
         });
     </script>
     @await RenderSectionAsync("Scripts", required: false)

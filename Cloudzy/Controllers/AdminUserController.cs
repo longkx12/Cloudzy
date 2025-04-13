@@ -19,12 +19,12 @@ namespace Cloudzy.Controllers
             _userService = userService;
             _context = context;
         }
-
+        
         public IActionResult Index()
         {
             return View();
         }
-
+        
         public async Task<IActionResult> Load(int? page)
         {
             int pageSize = 5;
@@ -39,7 +39,7 @@ namespace Cloudzy.Controllers
 
             return PartialView("_UserListPartial", users);
         }
-
+        
         public IActionResult Create()
         {
             var model = new CreateViewModel
@@ -48,7 +48,7 @@ namespace Cloudzy.Controllers
             };
             return View(model);
         }
-
+        
         [HttpPost]
         public async Task<IActionResult> Create(CreateViewModel model)
         {
@@ -69,7 +69,7 @@ namespace Cloudzy.Controllers
             }
             return View(model);
         }
-
+        
         public async Task<IActionResult> Edit(int id)
         {
             var model = await _userService.GetUserByIdAsync(id);
@@ -77,7 +77,7 @@ namespace Cloudzy.Controllers
 
             return View(model);
         }
-
+        
         [HttpPost]
         public async Task<IActionResult> Edit(EditViewModel model)
         {
@@ -90,7 +90,7 @@ namespace Cloudzy.Controllers
             }
             return View(model);
         }
-
+        
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {

@@ -13,11 +13,12 @@ namespace Cloudzy.Controllers
         {
             _brandService = brandService;
         }
+        
         public IActionResult Index()
         {
             return View();
         }
-
+        
         public async Task<IActionResult> Load(int? page)
         {
             int pageSize = 5;
@@ -32,10 +33,12 @@ namespace Cloudzy.Controllers
 
             return PartialView("_BrandListPartial", brands);
         }
+        
         public IActionResult Create()
         {
             return View();
         }
+        
         [HttpPost]
         public async Task<IActionResult> Create(CreateViewModel model)
         {
@@ -62,7 +65,7 @@ namespace Cloudzy.Controllers
             }
             return View(model);
         }
-
+        
         public async Task<IActionResult> Edit(int id)
         {
             var model = await _brandService.GetByIdAsync(id);
@@ -70,7 +73,7 @@ namespace Cloudzy.Controllers
 
             return View(model);
         }
-
+        
         [HttpPost]
         public async Task<IActionResult> Edit(EditViewModel model)
         {

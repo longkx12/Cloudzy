@@ -1,6 +1,7 @@
 ﻿using Cloudzy.Data;
 using Cloudzy.Models.Domain;
 using Cloudzy.Models.ViewModels.Cart;
+using Cloudzy.Models.ViewModels.CartDetails;
 using Cloudzy.Repositories.Interfaces;
 using Cloudzy.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
