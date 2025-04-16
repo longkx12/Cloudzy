@@ -82,6 +82,7 @@ namespace Cloudzy.Services.Implementations
                 BrandName = pv.Product.Brand.BrandName,
                 Material = pv.Product.Material,
                 Price = pv.Product.Price,
+                DiscountPrice = pv.Product.DiscountPrice,
                 SizeName = pv.Size.SizeName,
                 HeightRange = $"{pv.Size.HeightMin} - {pv.Size.HeightMax} cm",
                 WeightRange = $"{pv.Size.WeightMin} - {pv.Size.WeightMax} kg",

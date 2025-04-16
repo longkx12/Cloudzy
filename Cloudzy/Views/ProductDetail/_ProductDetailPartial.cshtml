@@ -35,7 +35,7 @@
             <div class="col-lg-6">
                 <p class="product-title mb-2">@firstVariant.ProductName</p>
                 <p class="product-price mb-4 text-danger">
-                    @if (firstVariant.DiscountPrice.HasValue)
+                    @if (firstVariant.DiscountPrice.HasValue && firstVariant.DiscountPrice.Value < firstVariant.Price.Value)
                     {
                         <span>₫@firstVariant.DiscountPrice.Value.ToString("N0")</span>
                         <del class="text-muted ms-2">₫@firstVariant.Price?.ToString("N0")</del>

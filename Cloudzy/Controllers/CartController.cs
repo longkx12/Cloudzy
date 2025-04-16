@@ -63,9 +63,9 @@ namespace Cloudzy.Controllers
                     ProductName = ci.Variant.Product.ProductName,
                     ProductImage = ci.Variant.Product.ProductImages.Select(img => img.ImageUrl).FirstOrDefault() ?? "",
                     SizeName = ci.Variant.Size.SizeName,
-                    Price = ci.Variant.Product.Price,
+                    Price = ci.Variant.Product.DiscountPrice,
                     Quantity = ci.Quantity,
-                    TotalPrice = ci.Variant.Product.Price * ci.Quantity,
+                    TotalPrice = ci.Variant.Product.DiscountPrice * ci.Quantity,
                     VariantId = ci.VariantId,
                     Stock = ci.Variant.Stock
                 }).ToList()
