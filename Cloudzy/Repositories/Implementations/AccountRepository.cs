@@ -31,5 +31,11 @@ namespace Cloudzy.Repositories.Implementations
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
+
+        public async Task UpdateUserAsync(User user)
+        {
+            _dbCloudzyContext.Users.Update(user);
+            await _dbCloudzyContext.SaveChangesAsync();
+        }
     }
 }

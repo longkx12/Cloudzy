@@ -3,6 +3,8 @@ using Cloudzy.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Cloudzy.Models.Domain;
+using Microsoft.AspNetCore.Identity;
 
 namespace Cloudzy.Controllers
 {
@@ -89,5 +91,78 @@ namespace Cloudzy.Controllers
             await _accountService.LogoutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _accountService.GetUserByEmailAsync(model.Email);
+            if (user == null)
+            {
+                TempData["ToastMessage"] = "Email không tồn tại trong hệ thống!";
+                TempData["ToastType"] = "error";
+                return View();
+            }
+
+            var token = Guid.NewGuid().ToString();
+            user.ResetPasswordToken = token;
+            user.ResetPasswordExpiry = DateTime.UtcNow.AddHours(1); // Hạn token 1 tiếng
+
+            await _accountService.UpdateUserAsync(user);
+
+            var resetLink = Url.Action("ResetPassword", "User", new { token = token, email = model.Email }, Request.Scheme);
+
+            await _accountService.SendResetPasswordEmailAsync(model.Email, resetLink);
+
+            TempData["ToastMessage"] = "Link đặt lại mật khẩu đã được gửi tới email của bạn!";
+            TempData["ToastType"] = "success";
+            return RedirectToAction("Login");
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string token, string email)
+        {
+            var model = new ResetPasswordViewModel { Token = token, Email = email };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid || model.NewPassword != model.ConfirmPassword)
+            {
+                TempData["ToastMessage"] = "Xác nhận mật khẩu không khớp!";
+                TempData["ToastType"] = "error";
+                return View(model);
+            }
+
+            var user = await _accountService.GetUserByEmailAsync(model.Email);
+            if (user == null || user.ResetPasswordToken != model.Token || user.ResetPasswordExpiry < DateTime.UtcNow)
+            {
+                TempData["ToastMessage"] = "Token không hợp lệ hoặc đã hết hạn!";
+                TempData["ToastType"] = "error";
+                return RedirectToAction("ForgotPassword");
+            }
+
+            user.Password = new PasswordHasher<User>().HashPassword(user, model.NewPassword);
+            user.ResetPasswordToken = null;
+            user.ResetPasswordExpiry = null;
+            await _accountService.UpdateUserAsync(user);
+
+            TempData["ToastMessage"] = "Đổi mật khẩu thành công!";
+            TempData["ToastType"] = "success";
+            return RedirectToAction("Login");
+        }
+
     }
 }

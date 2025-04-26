@@ -8,5 +8,8 @@ namespace Cloudzy.Services.Interfaces
         Task<User?> LoginAsync(LoginViewModel model);
         Task LogoutAsync();
         Task<User?> RegisterAsync(RegisterViewModel model);
+        Task<User?> GetUserByEmailAsync(string email);
+        Task UpdateUserAsync(User user);
+        Task SendResetPasswordEmailAsync(string toEmail, string resetLink);
     }
 }

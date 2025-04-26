@@ -335,11 +335,13 @@ public partial class DbCloudzyContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.Fullname).HasMaxLength(100);
             entity.Property(e => e.Password)
-                .HasMaxLength(20)
+                .HasMaxLength(256)
                 .IsUnicode(false);
             entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(20)
                 .IsUnicode(false);
+            entity.Property(e => e.ResetPasswordExpiry).HasColumnType("datetime");
+            entity.Property(e => e.ResetPasswordToken).HasMaxLength(255);
             entity.Property(e => e.RoleId).HasColumnName("RoleID");
             entity.Property(e => e.UserImg).HasMaxLength(255);
 
