@@ -1,0 +1,282 @@
+﻿@model Cloudzy.Models.ViewModels.Order.CheckoutViewModel
+@{
+    ViewData["Title"] = "Thanh toán";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <form id="orderForm" method="post" asp-action="PlaceOrder" asp-controller="Order">
+        <input type="hidden" name="VoucherCode" value="@Model.VoucherCode" />
+        <input type="hidden" name="VoucherTypeId" value="@Model.VoucherTypeId" />
+        <input type="hidden" name="VoucherDiscount" value="@Model.VoucherDiscount" />
+        <input type="hidden" id="selectedAddress" name="Address" value="" />
+        <input type="hidden" id="selectedPaymentMethod" name="PaymentMethod" value="COD" />
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">
+                                <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                Địa Chỉ Nhận Hàng
+                            </h5>
+                            <div>
+                                <button type="button" class="btn btn-outline-secondary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#newAddressModal">
+                                    <i class="fas fa-plus"></i> Thêm Địa Chỉ Mới
+                                </button>
+                                <!--<button type="button" class="btn btn-outline-secondary btn-sm">
+                                    Thiết Lập Địa Chỉ
+                                </button>-->
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            @foreach (var address in Model.Addresses)
+                            {
+                                <div class="form-check mb-2 address-option" data-address="@address.Address">
+                                    <input class="form-check-input" type="radio" name="addressOption" id="address@(address.Id)" @(address.IsDefault ? "checked" : "")>
+                                    <label class="form-check-label" for="address@(address.Id)">
+                                        <strong>@address.FullName (@address.PhoneNumber)</strong> @address.Address
+                                    </label>
+                                    @if (address.IsDefault)
+                                    {
+                                        <span class="badge bg-secondary float-end">Mặc định</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                        <!--<div class="mt-3">
+                               <a href="/Cart/Details" class="btn btn-outline-secondary btn-sm">
+                                   <i class="fas fa-arrow-left me-1"></i> Trở Về
+                               </a>
+                           </div>-->
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">Sản Phẩm</h5>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr class="border-bottom">
+                                        <th class="text-start">Sản phẩm</th>
+                                        <th class="text-center">Giá</th>
+                                        <th class="text-center">Số lượng</th>
+                                        <th class="text-end">Tổng tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.OrderItems)
+                                    {
+                                        <tr class="border-bottom">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="product-info">
+                                                        <p class="product-name mb-0">@item.ProductName - @item.SizeName</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center align-middle">@item.Price.ToString("N0") VND</td>
+                                            <td class="text-center align-middle">@item.Quantity</td>
+                                            <td class="text-end align-middle">@item.TotalPrice.ToString("N0") VND</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-4">Phương Thức Thanh Toán</h5>
+
+                        <div class="d-flex flex-wrap mb-4">
+                            <div class="payment-option active me-2 mb-2" data-payment="COD">
+                                <i class="fas fa-money-bill-wave me-2"></i>Thanh toán khi nhận hàng
+                            </div>
+                            <div class="payment-option me-2 mb-2" data-payment="VNPAY">
+                                <i class="fas fa-credit-card me-2"></i>Thanh toán VNPAY
+                            </div>
+                            <!--<div class="payment-option me-2 mb-2" data-payment="PAYPAL">
+                                <i class="fab fa-paypal me-2"></i>Thanh toán PAYPAL
+                            </div>
+                            <div class="payment-option mb-2" data-payment="ONLINE">
+                                <i class="fas fa-university me-2"></i>Thanh toán Online
+                            </div>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="mb-3">Tổng kết đơn hàng</h5>
+
+                        @if (!string.IsNullOrEmpty(Model.VoucherCode))
+                        {
+                            <div class="voucher-info mb-3 pb-3 border-bottom">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Mã giảm giá:</span>
+                                    <span class="text-success">@Model.VoucherCode</span>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="summary-section">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tổng tiền hàng:</span>
+                                <span>@Model.SubTotal.ToString("N0")đ</span>
+                            </div>
+
+                            @if (Model.VoucherDiscount > 0)
+                            {
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Giảm giá:</span>
+                                    <span class="text-danger">-@Model.VoucherDiscount.ToString("N0")đ</span>
+                                </div>
+                            }
+
+                            <div class="d-flex justify-content-between mb-2 pt-2 border-top">
+                                <span class="fw-bold">Tổng thanh toán:</span>
+                                <span class="fw-bold text-danger fs-5">@Model.Total.ToString("N0")đ</span>
+                            </div>
+
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-danger w-100 py-3 fw-bold" id="placeOrderBtn">
+                                    ĐẶT HÀNG
+                                </button>
+                                <p class="text-muted small text-center mt-2">
+                                    Bằng cách đặt hàng, bạn đồng ý với các Điều khoản và Điều kiện của chúng tôi
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal fade" id="newAddressModal" tabindex="-1" aria-labelledby="newAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newAddressModalLabel">Thêm địa chỉ mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="newAddressForm">
+                    <div class="mb-3">
+                        <label for="fullName" class="form-label">Họ và tên</label>
+                        <input type="text" class="form-control" id="fullName" value="@Model.FullName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phoneNumber" class="form-label">Số điện thoại</label>
+                        <input type="tel" class="form-control" id="phoneNumber" value="@Model.PhoneNumber" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addressLine" class="form-label">Địa chỉ chi tiết</label>
+                        <textarea class="form-control" id="addressLine" rows="3" required>@Model.Address</textarea>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="defaultAddress">
+                        <label class="form-check-label" for="defaultAddress">
+                            Đặt làm địa chỉ mặc định
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" id="saveAddressBtn">Lưu địa chỉ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const defaultAddress = $('.address-option input:checked').closest('.address-option').data('address');
+            $('#selectedAddress').val(defaultAddress);
+
+            $('.address-option input').on('change', function() {
+                const selectedAddress = $(this).closest('.address-option').data('address');
+                $('#selectedAddress').val(selectedAddress);
+            });
+
+            $('.payment-option').on('click', function() {
+                $('.payment-option').removeClass('active');
+                $(this).addClass('active');
+
+                const paymentMethod = $(this).data('payment');
+                $('#selectedPaymentMethod').val(paymentMethod);
+            });
+
+            $('#saveAddressBtn').on('click', function() {
+                const form = document.getElementById('newAddressForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                const fullName = $('#fullName').val();
+                const phoneNumber = $('#phoneNumber').val();
+                const address = $('#addressLine').val();
+                const isDefault = $('#defaultAddress').is(':checked');
+
+                const newAddressId = $('.address-option').length + 1;
+                const newAddressHtml = `
+                    <div class="form-check mb-2 address-option" data-address="${address}">
+                        <input class="form-check-input" type="radio" name="addressOption" id="address${newAddressId}" ${isDefault ? 'checked' : ''}>
+                        <label class="form-check-label" for="address${newAddressId}">
+                            <strong>${fullName} (${phoneNumber})</strong> ${address}
+                        </label>
+                        ${isDefault ? '<span class="badge bg-secondary float-end">Mặc định</span>' : ''}
+                    </div>
+                `;
+
+                if (isDefault) {
+                    $('.address-option input').prop('checked', false);
+                    $('.address-option .badge').remove();
+                }
+
+                $('.address-option').last().after(newAddressHtml);
+
+                if (isDefault) {
+                    $('#selectedAddress').val(address);
+                }
+
+                $(`#address${newAddressId}`).on('change', function() {
+                    const selectedAddress = $(this).closest('.address-option').data('address');
+                    $('#selectedAddress').val(selectedAddress);
+                });
+
+                $('#newAddressModal').modal('hide');
+            });
+
+            $('#orderForm').on('submit', function(e) {
+                const selectedAddress = $('#selectedAddress').val();
+                if (!selectedAddress) {
+                    e.preventDefault();
+                    alert('Vui lòng chọn địa chỉ giao hàng');
+                    return false;
+                }
+
+                const selectedPayment = $('#selectedPaymentMethod').val();
+                if (!selectedPayment) {
+                    e.preventDefault();
+                    alert('Vui lòng chọn phương thức thanh toán');
+                    return false;
+                }
+
+                return true;
+            });
+        });
+    </script>
+}

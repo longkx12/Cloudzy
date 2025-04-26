@@ -1,0 +1,194 @@
+﻿@model Cloudzy.Models.ViewModels.MyOrder.DetailViewModel
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<main class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white p-4 border-bottom">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Chi tiết đơn hàng #@Model.Order.OrderId</h5>
+                            <span class="@GetStatusClass(Model.Order.Status) fw-medium">@GetStatusText(Model.Order.Status)</span>
+                        </div>
+                        <div class="text-muted small">
+                            Ngày đặt hàng: @Model.Order.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <h6>Địa chỉ giao hàng</h6>
+                                <p class="mb-0">@Model.Order.Address</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Phương thức thanh toán</h6>
+                                <p class="mb-0">@GetPaymentMethodText(Model.Order.PaymentMethod)</p>
+                            </div>
+                        </div>
+
+                        <h6 class="mb-3">Sản phẩm</h6>
+                        @foreach (var item in Model.Order.Items)
+                        {
+                            <div class="d-flex py-3 border-bottom">
+                                <div class="me-3" style="width: 80px; height: 80px;">
+                                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl" alt="@item.ProductName" class="img-fluid rounded">
+                                    }
+                                    else
+                                    {
+                                        <img src="~/images/placeholder-product.png" alt="Product" class="img-fluid rounded">
+                                    }
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-medium">@item.ProductName</div>
+                                    <div class="text-muted small">Phân loại: @item.Size</div>
+                                    <div class="small">@item.Quantity</div>
+                                </div>
+                                <div class="text-end align-self-center">
+                                    <div class="fw-medium text-danger">@item.Price.ToString("N0") VND</div>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="mt-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tổng tiền hàng:</span>
+                                <span>@GetSubtotal(Model.Order.Items).ToString("N0") VND</span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.Order.DiscountCode))
+                            {
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Giảm giá (Mã: @Model.Order.DiscountCode):</span>
+                                    <span>- @GetDiscountAmount(Model.Order.TotalPrice, GetSubtotal(Model.Order.Items)).ToString("N0")</span>
+                                </div>
+                            }
+                            <div class="d-flex justify-content-between mt-3 pt-3 border-top">
+                                <span class="fw-bold">Tổng thanh toán:</span>
+                                <span class="fw-bold text-danger fs-5">@Model.Order.TotalPrice.ToString("N0") VND</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-white p-4 d-flex justify-content-between">
+                        <a asp-action="MyOrders" class="btn btn-outline-secondary px-4">
+                            <i class="fas fa-arrow-left me-2"></i> Quay lại
+                        </a>
+                        @if (Model.Order.Status.ToLower() == "pending")
+                        {
+                            <button type="button" class="btn btn-danger px-4" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+                                Hủy đơn hàng
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm p-4">
+                    <h5 class="mb-3">Danh mục</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item px-0 py-2 border-0">
+                            <a asp-controller="UserProfile" asp-action="Profile" class="text-decoration-none text-dark">
+                                <i class="fas fa-user text-secondary me-2"></i>
+                                Tài khoản của tôi
+                            </a>
+                        </li>
+                        <li class="list-group-item px-0 py-2 border-0">
+                            <a asp-controller="UserProfile" asp-action="ChangePassword" class="text-decoration-none text-dark">
+                                <i class="fas fa-key text-secondary me-2"></i>
+                                Đổi mật khẩu
+                            </a>
+                        </li>
+                        <li class="list-group-item px-0 py-2 border-0 active">
+                            <a asp-controller="Order" asp-action="MyOrders" class="text-decoration-none text-dark">
+                                <i class="fas fa-shopping-bag text-primary me-2"></i>
+                                Đơn mua
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+@if (Model.Order.Status.ToLower() == "pending")
+{
+    <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cancelOrderModalLabel">Xác nhận hủy đơn hàng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn hủy đơn hàng #@Model.Order.OrderId?</p>
+                    <p class="text-muted small">Lưu ý: Hành động này không thể hoàn tác.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <form asp-action="CancelOrder" asp-route-id="@Model.Order.OrderId" method="post">
+                        <button type="submit" class="btn btn-danger">Hủy đơn hàng</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@functions {
+    string GetStatusClass(string status)
+    {
+        return status.ToLower() switch
+        {
+            "pending" => "text-warning",
+            "processing" => "text-primary",
+            "shipping" => "text-info",
+            "delivered" => "text-success",
+            "cancelled" => "text-danger",
+            _ => "text-secondary"
+        };
+    }
+
+    string GetStatusText(string status)
+    {
+        return status.ToLower() switch
+        {
+            "pending" => "Chờ xác nhận",
+            "processing" => "Đang xử lý",
+            "shipping" => "Đang giao hàng",
+            "delivered" => "Đã giao hàng",
+            "cancelled" => "Đã hủy",
+            _ => status
+        };
+    }
+
+    string GetPaymentMethodText(string paymentMethod)
+    {
+        return paymentMethod.ToLower() switch
+        {
+            "cod" => "Thanh toán khi nhận hàng (COD)",
+            "momo" => "Ví điện tử MoMo",
+            "vnpay" => "VNPay",
+            "banking" => "Chuyển khoản ngân hàng",
+            _ => paymentMethod
+        };
+    }
+
+    decimal GetSubtotal(List<Cloudzy.Models.ViewModels.MyOrder.ItemViewModel> items)
+    {
+        return items.Sum(i => i.Price * i.Quantity);
+    }
+
+    decimal GetDiscountAmount(decimal totalPrice, decimal subtotalWithShipping)
+    {
+        return subtotalWithShipping - totalPrice;
+    }
+}

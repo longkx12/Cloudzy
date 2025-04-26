@@ -1,0 +1,34 @@
+﻿@{
+    ViewData["Title"] = "Quản lý giỏ hàng";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<!-- Danh sách giỏ hàng -->
+<div id="orderList">
+    <p>Đang tải dữ liệu...</p>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        load(1);
+
+        var message = '@Html.Raw(TempData["SuccessMessage"])';
+        if (message) {
+            showAlert(message);
+        }
+    });
+
+    function load(page) {
+        $.ajax({
+            url: '/AdminOrder/Load?page=' + page,
+            type: 'GET',
+            success: function (data) {
+                $('#orderList').html(data);
+            },
+            error: function () {
+                $('#orderList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
+            }
+        });
+    }
+</script>

@@ -22,7 +22,6 @@ namespace Cloudzy.Controllers
 
         public async Task<IActionResult> Details()
         {
-            // Lấy ID của người dùng đã đăng nhập
             var userIdClaim = User.FindFirstValue("UserId");
             if (string.IsNullOrEmpty(userIdClaim))
             {
@@ -63,16 +62,15 @@ namespace Cloudzy.Controllers
                     ProductName = ci.Variant.Product.ProductName,
                     ProductImage = ci.Variant.Product.ProductImages.Select(img => img.ImageUrl).FirstOrDefault() ?? "",
                     SizeName = ci.Variant.Size.SizeName,
-                    Price = ci.Variant.Product.Price,
+                    Price = ci.Variant.Product.DiscountPrice,
                     Quantity = ci.Quantity,
-                    TotalPrice = ci.Variant.Product.Price * ci.Quantity,
+                    TotalPrice = ci.Variant.Product.DiscountPrice * ci.Quantity,
                     VariantId = ci.VariantId,
                     Stock = ci.Variant.Stock
                 }).ToList()
             };
 
             viewModel.SubTotal = viewModel.CartItems.Sum(item => item.TotalPrice) ?? 0;
-            viewModel.ShippingCost = 20000; // Mặc định phí vận chuyển
 
             // Kiểm tra voucher trong session
             if (HttpContext.Session.GetString("VoucherCode") is string voucherCode && !string.IsNullOrEmpty(voucherCode))
@@ -86,11 +84,7 @@ namespace Cloudzy.Controllers
                 }
             }
 
-            // Lấy ID phương thức vận chuyển nếu có
-            viewModel.ShippingMethodId = HttpContext.Session.GetInt32("ShippingMethodId") ?? 2;
-
-            // Tính tổng dựa trên tổng phụ, phí vận chuyển và bất kỳ giảm giá nào
-            viewModel.Total = viewModel.SubTotal + viewModel.ShippingCost - viewModel.VoucherDiscount;
+            viewModel.Total = viewModel.SubTotal - viewModel.VoucherDiscount;
 
             return View(viewModel);
         }
@@ -126,7 +120,6 @@ namespace Cloudzy.Controllers
 
                 await _context.SaveChangesAsync();
 
-                // Lấy tổng giỏ hàng đã cập nhật
                 var cartId = cartItem.CartId;
                 var cartItems = await _context.CartItems
                     .Include(ci => ci.Variant)
@@ -134,15 +127,14 @@ namespace Cloudzy.Controllers
                     .Where(ci => ci.CartId == cartId)
                     .ToListAsync();
 
-                var subTotal = cartItems.Sum(ci => ci.Variant.Product.Price * ci.Quantity);
-                var shippingCost = 20000;
-                var total = subTotal + shippingCost;
+                var subTotal = cartItems.Sum(ci => ci.Variant.Product.DiscountPrice * ci.Quantity);
+                var total = subTotal;
 
                 return Json(new
                 {
                     success = true,
                     message = "Cập nhật số lượng thành công!",
-                    itemTotal = cartItem.Variant.Product.Price * quantity,
+                    itemTotal = cartItem.Variant.Product.DiscountPrice * quantity,
                     subTotal = subTotal,
                     total = total
                 });
@@ -168,18 +160,15 @@ namespace Cloudzy.Controllers
                 _context.CartItems.Remove(cartItem);
                 await _context.SaveChangesAsync();
 
-                // Lấy tổng giỏ hàng đã cập nhật
                 var cartItems = await _context.CartItems
                     .Include(ci => ci.Variant)
                         .ThenInclude(v => v.Product)
                     .Where(ci => ci.CartId == cartId)
                     .ToListAsync();
 
-                var subTotal = cartItems.Sum(ci => ci.Variant.Product.Price * ci.Quantity);
-                var shippingCost = cartItems.Any() ? 20000 : 0;
-                var total = subTotal + shippingCost;
+                var subTotal = cartItems.Sum(ci => ci.Variant.Product.DiscountPrice * ci.Quantity);
+                var total = subTotal;
 
-                // Lấy tổng số mục để cập nhật giỏ hàng
                 var totalItems = cartItems.Sum(ci => ci.Quantity);
 
                 return Json(new
@@ -202,7 +191,6 @@ namespace Cloudzy.Controllers
         {
             try
             {
-                // Lấy ID của người dùng đã đăng nhập
                 var userIdClaim = User.FindFirstValue("UserId");
                 if (string.IsNullOrEmpty(userIdClaim))
                 {
@@ -211,7 +199,6 @@ namespace Cloudzy.Controllers
 
                 var userId = int.Parse(userIdClaim);
 
-                // Lấy tổng phụ của giỏ hàng để kiểm tra giá trị đơn hàng tối thiểu cho voucher
                 var cart = await _context.ShoppingCarts
                     .FirstOrDefaultAsync(c => c.UserId == userId);
 
@@ -226,7 +213,6 @@ namespace Cloudzy.Controllers
                     .Where(ci => ci.CartId == cart.CartId)
                     .SumAsync(ci => ci.Variant.Product.Price * ci.Quantity);
 
-                // Lấy các mã giảm giá khả dụng (voucher)
                 var availableVouchers = await _context.DiscountCodes
                     .Include(d => d.VoucherType)
                     .Where(d =>
@@ -297,11 +283,9 @@ namespace Cloudzy.Controllers
 
                 if (value > 0 && value < 1)
                 {
-                    // Phần trăm
                     voucherType = 1;
                     discountAmount = subtotal * value;
 
-                    // Áp dụng giới hạn tối đa nếu có
                     if (voucher.VoucherType.MaximumValue.HasValue && discountAmount > voucher.VoucherType.MaximumValue.Value)
                     {
                         discountAmount = voucher.VoucherType.MaximumValue.Value;
@@ -309,11 +293,9 @@ namespace Cloudzy.Controllers
                 }
                 else if (value >= 1)
                 {
-                    // Số tiền cố định
                     voucherType = 3;
                     discountAmount = value;
 
-                    // Đảm bảo không vượt quá giá trị đơn hàng
                     if (discountAmount > subtotal)
                     {
                         discountAmount = subtotal;
@@ -346,6 +328,24 @@ namespace Cloudzy.Controllers
                 HttpContext.Session.SetString("VoucherCode", code);
                 HttpContext.Session.SetInt32("VoucherType", voucherType);
                 HttpContext.Session.SetString("VoucherDiscount", discountAmount.ToString());
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult RemoveVoucher()
+        {
+            try
+            {
+                // Xóa thông tin voucher khỏi session
+                HttpContext.Session.Remove("VoucherCode");
+                HttpContext.Session.Remove("VoucherType");
+                HttpContext.Session.Remove("VoucherDiscount");
 
                 return Json(new { success = true });
             }

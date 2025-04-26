@@ -497,3 +497,44 @@ body {
         transform: scale(1);
     }
 }
+
+/*Pay*/
+.payment-option {
+    padding: 12px 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+    .payment-option:hover {
+        border-color: #4caf50;
+    }
+
+    .payment-option.active {
+        border-color: #4caf50;
+        background-color: rgba(76, 175, 80, 0.1);
+    }
+
+.address-option {
+    padding: 10px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    transition: all 0.3s;
+}
+
+    .address-option:hover {
+        background-color: #f8f9fa;
+    }
+
+    .address-option input:checked + label {
+        font-weight: 500;
+    }
+
+/* Profile */
+.profile-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    object-position: center;
+}

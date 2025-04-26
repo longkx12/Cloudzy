@@ -107,5 +107,16 @@ namespace Cloudzy.Repositories.Implementations
             _context.Products.Update(entity);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<Product> GetProductByVariantIdAsync(int variantId)
+        {
+            var variant = await _context.ProductVariants
+                .Include(v => v.Product)
+                    .ThenInclude(p => p.ProductImages)
+                .Include(v => v.Size)
+                .FirstOrDefaultAsync(v => v.VariantId == variantId);
+
+            return variant?.Product;
+        }
     }
 }

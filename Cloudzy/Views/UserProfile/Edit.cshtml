@@ -1,0 +1,104 @@
+﻿@model Cloudzy.Models.ViewModels.UserProfile.EditViewModel
+
+@{
+    ViewData["Title"] = "Sửa thông tin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<main class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="card border-0 shadow-sm text-center p-4">
+                    <div class="profile-image-container mx-auto mb-3">
+                        @if (!string.IsNullOrEmpty(Model.ExistingImg))
+                        {
+                            <img src="@Model.ExistingImg" alt="Profile" class="rounded-circle profile-image" />
+                        }
+                        else
+                        {
+                            <img src="~/images/placeholder-profile.png" alt="Profile" class="rounded-circle profile-image" />
+                        }
+                    </div>
+                    <h5 class="mb-1">@Model.Fullname</h5>
+                    <p class="text-muted small mb-1">@Model.Email</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card border-0 shadow-sm p-4">
+                    <h4 class="mb-4">Thông tin cá nhân</h4>
+                    <form asp-action="UpdateProfile" method="post" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="UserId" />
+                        <input type="hidden" asp-for="Email" />
+                        <input type="hidden" asp-for="RoleId" />
+                        <input type="hidden" asp-for="ExistingImg" />
+
+                        <div class="mb-3">
+                            <label asp-for="Fullname" class="form-label">Tên</label>
+                            <input asp-for="Fullname" class="form-control" />
+                            <span asp-validation-for="Fullname" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" value="@Model.Email" disabled />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label">Số điện thoại</label>
+                            <input asp-for="PhoneNumber" class="form-control" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label">Địa chỉ</label>
+                            <input asp-for="Address" class="form-control" />
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Chọn ảnh</label>
+                            <div class="upload-btn-wrapper">
+                                <input type="file" name="profileImage" id="profileImage" />
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary px-4">
+                                Lưu thông tin
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm p-4">
+                    <h5 class="mb-3">Danh mục</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item px-0 py-2 border-0">
+                            <a asp-action="Profile" class="text-decoration-none text-dark">
+                                <i class="fas fa-user text-primary me-2"></i>
+                                Tài khoản của tôi
+                            </a>
+                        </li>
+                        <li class="list-group-item px-0 py-2 border-0">
+                            <a asp-action="ChangePassword" class="text-decoration-none text-dark">
+                                <i class="fas fa-key text-secondary me-2"></i>
+                                Đổi mật khẩu
+                            </a>
+                        </li>
+                        <li class="list-group-item px-0 py-2 border-0">
+                            <a asp-controller="MyOrder" asp-action="MyOrders" class="text-decoration-none text-dark">
+                                <i class="fas fa-shopping-bag text-secondary me-2"></i>
+                                Đơn mua
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
