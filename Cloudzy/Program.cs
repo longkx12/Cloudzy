@@ -28,7 +28,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // thời gian timeout
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
@@ -49,6 +49,8 @@ builder.Services.AddScoped<IImportRepository, ImportRepository>();
 builder.Services.AddScoped<IImportDetailRepository, ImportDetailRepository>();
 builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
 builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IMyOrderRepository, MyOrderRepository>();
 
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -63,6 +65,9 @@ builder.Services.AddScoped<IImportService, ImportService>();
 builder.Services.AddScoped<IImportDetailService, ImportDetailService>();
 builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 builder.Services.AddScoped<ICartItemService, CartItemService>();
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IMyOrderService, MyOrderService>();
 
 var app = builder.Build();
 
