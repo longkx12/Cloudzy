@@ -538,3 +538,21 @@ body {
     object-fit: cover;
     object-position: center;
 }
+
+/* Product Review */
+.tab-btn {
+    border: 1px solid #dee2e6;
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.tab-content {
+    display: none;
+    border: 1px solid #dee2e6;
+    border-radius: 0 0 .25rem .25rem;
+}
+
+    .tab-content.active {
+        display: block;
+    }
