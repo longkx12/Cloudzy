@@ -1,0 +1,199 @@
+﻿@model Cloudzy.Models.Domain.Order
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng #" + Model.OrderId;
+    Layout = "~/Views/Shared/_ShipperLayout.cshtml";
+
+    // Tính toán số tiền cần thu
+    decimal amountToCollect = 0;
+    if (Model.PaymentMethod == "COD")
+    {
+        amountToCollect = Model.TotalPrice;
+    }
+}
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Shipper")">Danh sách đơn hàng</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Chi tiết đơn hàng #@Model.OrderId</li>
+        </ol>
+    </nav>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Chi tiết đơn hàng #@Model.OrderId</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Kích thước</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn giá</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.OrderDetails)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                @if (item.Variant?.Product?.ProductImages.FirstOrDefault() != null)
+                                                {
+                                                    <img src="@item.Variant.Product.ProductImages.First().ImageUrl" alt="@item.Variant.Product.ProductName"
+                                                         class="me-2" style="width: 50px; height: 50px; object-fit: cover;">
+                                                }
+                                                @item.Variant?.Product?.ProductName
+                                            </div>
+                                        </td>
+                                        <td>@item.Variant?.Size?.SizeName</td>
+                                        <td>@item.Quantity</td>
+                                        <td>@item.Price.ToString("N0") đ</td>
+                                        <td>@((item.Price * item.Quantity).ToString("N0")) đ</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Thông tin người nhận</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold">Tên người nhận:</span>
+                            <span>@Model.User?.Fullname</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold">Số điện thoại:</span>
+                            <span>@Model.User?.PhoneNumber</span>
+                        </li>
+                        <li class="list-group-item">
+                            <span class="fw-bold">Địa chỉ giao hàng:</span>
+                            <p class="mt-1 mb-0">@Model.Address</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Thông tin thanh toán</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold">Mã đơn hàng:</span>
+                            <span>#@Model.OrderId</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold">Ngày đặt hàng:</span>
+                            <span>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold">Phương thức thanh toán:</span>
+                            <span>
+                                @if (Model.PaymentMethod == "COD")
+                                {
+                                    <span>Thanh toán khi nhận hàng</span>
+                                }
+                                else
+                                {
+                                    <span>@Model.PaymentMethod</span>
+                                }
+                            </span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold">Tổng tiền:</span>
+                            <span class="fw-bold text-danger">@Model.TotalPrice.ToString("N0") đ</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold">Số tiền cần thu:</span>
+                            <span class="fw-bold text-danger">@amountToCollect.ToString("N0") đ</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mb-5">
+        <button id="btnAcceptOrder" class="btn btn-lg btn-success" data-order-id="@Model.OrderId">
+            <i class="fas fa-truck"></i> Nhận đơn hàng
+        </button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Xử lý nút nhận đơn hàng
+            $("#btnAcceptOrder").click(function () {
+                const orderId = $(this).data("order-id");
+
+                $.ajax({
+                    url: '@Url.Action("AcceptOrder", "Shipper")',
+                    type: 'POST',
+                    data: { id: orderId },
+                    success: function (result) {
+                        if (result.success) {
+                            toastr.success(result.message);
+
+                            // Thay nút "Nhận đơn hàng" thành "Đã giao hàng"
+                            $("#btnAcceptOrder")
+                                .removeClass("btn-success")
+                                .addClass("btn-primary")
+                                .html('<i class="fas fa-check-circle"></i> Đã giao hàng')
+                                .attr("id", "btnDeliverOrder");
+
+                            // Thêm xử lý cho nút "Đã giao hàng"
+                            $("#btnDeliverOrder").click(function() {
+                                $.ajax({
+                                    url: '@Url.Action("DeliverOrder", "Shipper")',
+                                    type: 'POST',
+                                    data: { id: orderId },
+                                    success: function(deliverResult) {
+                                        if (deliverResult.success) {
+                                            toastr.success(deliverResult.message);
+
+                                            // Chuyển về trang danh sách đơn hàng sau 2 giây
+                                            setTimeout(function() {
+                                                window.location.href = '@Url.Action("Index", "Shipper")';
+                                            }, 2000);
+                                        } else {
+                                            toastr.error(deliverResult.message);
+                                        }
+                                    },
+                                    error: function() {
+                                        toastr.error("Có lỗi xảy ra. Vui lòng thử lại.");
+                                    }
+                                });
+                            });
+
+                        } else {
+                            toastr.error(result.message);
+                        }
+                    },
+                    error: function () {
+                        toastr.error("Có lỗi xảy ra. Vui lòng thử lại.");
+                    }
+                });
+            });
+        });
+    </script>
+}

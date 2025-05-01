@@ -14,6 +14,7 @@ namespace Cloudzy.Services.Implementations
         {
             _repository = repository;
         }
+
         public async Task<IPagedList<ListViewModel>> GetAllAsync(int pageNumber, int pageSize)
         {
             var orders = await _repository.GetAllAsync();
@@ -29,6 +30,11 @@ namespace Cloudzy.Services.Implementations
                 Status = o.Status
             }).ToPagedList(pageNumber, pageSize);
             return pageOrder;
+        }
+
+        public async Task<bool> UpdateOrderStatusAsync(int orderId, string status)
+        {
+            return await _repository.UpdateOrderStatusAsync(orderId, status);
         }
     }
 }

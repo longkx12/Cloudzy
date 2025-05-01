@@ -1,0 +1,157 @@
+﻿@model Cloudzy.Models.ViewModels.AdminOrderDetail.DetailViewModel
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng #" + Model.OrderId;
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Chi tiết đơn hàng #@Model.OrderId</h6>
+            <a href="@Url.Action("Index", "AdminOrder")" class="btn btn-secondary">
+                <i class="mdi mdi-arrow-left"></i> Quay lại
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <h5 class="font-weight-bold">Danh sách sản phẩm</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">Ảnh</th>
+                                <th>Sản phẩm</th>
+                                <th>Kích thước</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderItems)
+                            {
+                                <tr>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.ProductImage))
+                                        {
+                                            <img src="@item.ProductImage" alt="@item.ProductName" style="width: 60px; height: 60px; object-fit: cover;">
+                                        }
+                                        else
+                                        {
+                                            <img src="/img/no-image.png" alt="No Image" style="width: 60px; height: 60px; object-fit: cover;">
+                                        }
+                                    </td>
+                                    <td>@item.ProductName</td>
+                                    <td>@item.SizeName</td>
+                                    <td>@item.Price.ToString("N0") đ</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@item.TotalPrice.ToString("N0") đ</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Thông tin đơn hàng</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <strong>Phương thức thanh toán:</strong>
+                                <span>@Model.PaymentMethod</span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Trạng thái đơn hàng:</strong>
+                                <span class="badge @(Model.Status == "Pending" ? "badge-warning" :
+                                                   Model.Status == "Processing" ? "badge-info" :
+                                                   Model.Status == "Shipping" ? "badge-primary" :
+                                                   Model.Status == "Delivered" ? "badge-success" :
+                                                   Model.Status == "Cancelled" ? "badge-danger" : "badge-secondary")">
+                                    @Model.Status
+                                </span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Ngày đặt hàng:</strong>
+                                <span>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                            </div>
+                            @if (Model.Status == "Pending")
+                            {
+                                <form asp-action="ConfirmOrder" asp-controller="AdminOrderDetail" method="post">
+                                    <input type="hidden" name="id" value="@Model.OrderId" />
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="mdi mdi-check"></i> Xác nhận đơn
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Thông tin giao hàng</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <strong>Tên khách hàng:</strong>
+                                <span>@Model.CustomerName</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>Số điện thoại:</strong>
+                                <span>@Model.PhoneNumber</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>Email:</strong>
+                                <span>@Model.Email</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>Địa chỉ giao hàng:</strong>
+                                <span>@Model.ShippingAddress</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Thông tin thanh toán</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tổng tiền hàng:</span>
+                            <span>@Model.Subtotal.ToString("N0") đ</span>
+                        </div>
+                        @if (Model.DiscountAmount > 0)
+                        {
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Mã giảm giá (@Model.VoucherCode):</span>
+                                <span>-@Model.DiscountAmount?.ToString("N0") đ</span>
+                            </div>
+                        }
+                        <div class="d-flex justify-content-between font-weight-bold">
+                            <span>Tổng thanh toán:</span>
+                            <span class="text-danger">@Model.TotalPrice.ToString("N0") đ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var message = '@Html.Raw(TempData["SuccessMessage"])';
+        if (message) {
+            showAlert(message);
+        }
+    });
+</script>
