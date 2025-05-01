@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="Models\Domain\" />
+    <Folder Include="Views\Review\" />
     <Folder Include="wwwroot\images\profiles\" />
 
   </ItemGroup>

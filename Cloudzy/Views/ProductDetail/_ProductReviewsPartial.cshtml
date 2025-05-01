@@ -1,0 +1,176 @@
+﻿@model List<Cloudzy.Models.ViewModels.ProductReview.ProductReviewViewModel>
+
+<div id="reviews-tab" class="tab-content p-4 bg-white">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="text-center p-4">
+                <h3>Sao trung bình</h3>
+                @if (Model.Any())
+                {
+                    <h2 class="text-success fw-bold" style="font-size: 3rem;">@(Math.Round(Model.Average(r => r.Rating), 1))</h2>
+                    <p>(@Model.Count lượt đánh giá)</p>
+                }
+                else
+                {
+                    <h2 class="text-success fw-bold" style="font-size: 3rem;">0</h2>
+                    <p>(Chưa có đánh giá)</p>
+                }
+            </div>
+        </div>
+        <div class="col-md-8">
+            @{
+                var ratingCounts = new int[5];
+                foreach (var review in Model)
+                {
+                    if (review.Rating >= 1 && review.Rating <= 5)
+                    {
+                        ratingCounts[review.Rating - 1]++;
+                    }
+                }
+            }
+            @for (int i = 5; i >= 1; i--)
+            {
+                <div class="mb-2">
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">@i</span>
+                        <div class="rating-stars me-2">
+                            @for (int j = 0; j < i; j++)
+                            {
+                                <i class="fas fa-star"></i>
+                            }
+                            @for (int j = i; j < 5; j++)
+                            {
+                                <i class="fas fa-star empty"></i>
+                            }
+                        </div>
+                        <span>Có @ratingCounts[i - 1] lượt đánh giá</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <hr>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <!-- Review Form -->
+        <div class="review-form mb-5">
+            <h4 class="mb-3">Viết đánh giá của bạn</h4>
+            <form id="reviewForm" method="post" action="/Review/AddReview">
+                <input type="hidden" name="ProductId" value="@ViewBag.ProductId" />
+                <textarea class="form-control mb-3" name="Comment" placeholder="Nhập đánh giá của bạn" required></textarea>
+                <div class="d-flex mb-3">
+                    <div class="me-auto rating-selector">
+                        <button type="button" class="btn btn-outline-secondary me-2 rating-btn" data-rating="1">
+                            <i class="far fa-star"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary me-2 rating-btn" data-rating="2">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary me-2 rating-btn" data-rating="3">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary me-2 rating-btn" data-rating="4">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary me-2 rating-btn" data-rating="5">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </button>
+                        <input type="hidden" name="Rating" id="selectedRating" value="5" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-share"></i> Gửi đánh giá
+                    </button>
+                </div>
+            </form>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            Vui lòng <a href="/User/Login?returnUrl=@Context.Request.Path">đăng nhập</a> để viết đánh giá.
+        </div>
+    }
+
+    @foreach (var review in Model)
+    {
+        <div class="review-item mb-3 border-bottom pb-3">
+            <div class="d-flex">
+                <img src="@(string.IsNullOrEmpty(review.UserImg) ? "/img/user/default-avatar.jpg" : review.UserImg)"
+                     alt="User Avatar" class="avatar me-3" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                <div>
+                    <h5>@review.UserName</h5>
+                    <div class="rating-stars mb-2">
+                        @for (int i = 0; i < review.Rating; i++)
+                        {
+                            <i class="fas fa-star"></i>
+                        }
+                        @for (int i = review.Rating; i < 5; i++)
+                        {
+                            <i class="fas fa-star empty"></i>
+                        }
+                        <small class="ms-2 text-muted">@review.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                    </div>
+                    <p>@review.Comment</p>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="text-center p-4">
+            <p>Chưa có đánh giá nào cho sản phẩm này.</p>
+        </div>
+    }
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ratingButtons = document.querySelectorAll('.rating-btn');
+        const selectedRatingInput = document.getElementById('selectedRating');
+
+        ratingButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                ratingButtons.forEach(btn => btn.classList.remove('active', 'btn-warning'));
+
+                button.classList.add('active', 'btn-warning');
+
+                const rating = button.getAttribute('data-rating');
+                selectedRatingInput.value = rating;
+
+                ratingButtons.forEach(btn => {
+                    const stars = btn.querySelectorAll('i');
+                    stars.forEach(star => {
+                        star.className = 'far fa-star';
+                    });
+                });
+
+                const activeStars = button.querySelectorAll('i');
+                activeStars.forEach(star => {
+                    star.className = 'fas fa-star';
+                });
+            });
+        });
+
+        const fiveStarButton = document.querySelector('.rating-btn[data-rating="5"]');
+        if (fiveStarButton) {
+            fiveStarButton.classList.add('active', 'btn-warning');
+            const stars = fiveStarButton.querySelectorAll('i');
+            stars.forEach(star => {
+                star.className = 'fas fa-star';
+            });
+        }
+    });
+</script>
