@@ -1,0 +1,310 @@
+﻿@using System.Globalization
+@model Cloudzy.Models.ViewModels.SalesReport.SalesReportViewModel
+@{
+    ViewData["Title"] = "Báo cáo doanh thu";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid">
+    <h2 class="mt-4">Báo cáo doanh thu</h2>
+
+    <!-- Bảng bộ lọc -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="mdi mdi-filter"></i>
+            Tùy chọn bộ lọc
+        </div>
+        <div class="card-body">
+            <form asp-action="Filter" method="post">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label class="control-label">Phạm vi ngày</label>
+                            <div class="input-group">
+                                <input name="StartDate" type="date" class="form-control" value="@Model.AppliedFilters.StartDate?.ToString("yyyy-MM-dd")" />
+                                <div class="input-group-text">tới</div>
+                                <input name="EndDate" type="date" class="form-control" value="@Model.AppliedFilters.EndDate?.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <div class="btn-group" role="group">
+                            <button type="submit" class="btn btn-primary">Áp dụng</button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">Reset</a>
+                            <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown">
+                                Bộ lọc nhanh
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" asp-action="CustomRange"
+                                   asp-route-startDate="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                   asp-route-endDate="@DateTime.Today.ToString("yyyy-MM-dd")">Hôm nay</a>
+                                <a class="dropdown-item" asp-action="CustomRange"
+                                   asp-route-startDate="@DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd")"
+                                   asp-route-endDate="@DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd")">Hôm qua</a>
+                                <a class="dropdown-item" asp-action="CustomRange"
+                                   asp-route-startDate="@(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).ToString("yyyy-MM-dd"))"
+                                   asp-route-endDate="@DateTime.Today.ToString("yyyy-MM-dd")">Tháng này</a>
+                                <a class="dropdown-item" asp-action="CustomRange"
+                                   asp-route-startDate="@(new DateTime(DateTime.Today.AddMonths(-1).Year, DateTime.Today.AddMonths(-1).Month, 1).ToString("yyyy-MM-dd"))"
+                                   asp-route-endDate="@(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddDays(-1).ToString("yyyy-MM-dd"))">Tháng trước</a>
+                                <a class="dropdown-item" asp-action="CustomRange"
+                                   asp-route-startDate="@(new DateTime(DateTime.Today.Year, 1, 1).ToString("yyyy-MM-dd"))"
+                                   asp-route-endDate="@DateTime.Today.ToString("yyyy-MM-dd")">Năm nay</a>
+                            </div>
+                            <a asp-action="ExportExcel"
+                               asp-route-StartDate="@Model.AppliedFilters.StartDate"
+                               asp-route-EndDate="@Model.AppliedFilters.EndDate"
+                               class="btn btn-success">
+                                Xuất sang file Excel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Thẻ tóm tắt -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <h5>Tổng doanh thu</h5>
+                    <h2>@Model.TotalRevenue.ToString("C", new CultureInfo("vi-VN"))</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <h5>Tổng số đơn hàng</h5>
+                    <h2>@Model.TotalOrders</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-warning text-white mb-4">
+                <div class="card-body">
+                    <h5>Tổng sản phẩm đã bán</h5>
+                    <h2>@Model.TotalProducts</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-info text-white mb-4">
+                <div class="card-body">
+                    <h5>Giá trị đơn hàng trung bình</h5>
+                    <h2>@Model.AverageOrderValue.ToString("C", new CultureInfo("vi-VN"))</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Biểu đồ hàng -->
+    <div class="row">
+        <div class="col-xl-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="mdi mdi-chart-pie me-1"></i>
+                    Doanh thu theo danh mục
+                </div>
+                <div class="card-body">
+                    <canvas id="categoryRevenueChart" width="100%" height="40"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="mdi mdi-chart-line me-1"></i>
+                    Biểu đồ doanh thu theo thời gian
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueTimelineChart" width="100%" height="40"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phân tích theo danh mục -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="mdi mdi-table me-1"></i>
+            Phân tích theo danh mục
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="categoryTable">
+                    <thead>
+                        <tr>
+                            <th>Danh mục</th>
+                            <th>Tổng doanh thu</th>
+                            <th>Sản phẩm đã bán</th>
+                            <th>Số lượng đơn hàng</th>
+                            <th>Tỷ lệ trên tổng doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var category in Model.CategorySales)
+                        {
+                            <tr>
+                                <td>@category.CategoryName</td>
+                                <td>@category.TotalRevenue.ToString("C", new CultureInfo("vi-VN"))</td>
+                                <td>@category.TotalProducts</td>
+                                <td>@category.TotalOrders</td>
+                                <td>@category.Percentage%</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bảng doanh số chi tiết -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="mdi mdi-table me-1"></i>
+            Báo cáo chi tiết
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="salesTable">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn hàng</th>
+                            <th>Ngày</th>
+                            <th>Tên khách hàng</th>
+                            <th>Tổng tiền</th>
+                            <th>Phương thức thanh toán</th>
+                            <th>Số lượng</th>
+                            <th>Danh mục</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var sale in Model.SalesDetails)
+                        {
+                            <tr>
+                                <td>@sale.OrderId</td>
+                                <td>@sale.OrderDate.ToString("dd-MM-yyyy")</td>
+                                <td>@sale.CustomerName</td>
+                                <td>@sale.OrderTotal.ToString("C", new CultureInfo("vi-VN"))</td>
+                                <td>@sale.PaymentMethod</td>
+                                <td>@sale.ProductCount</td>
+                                <td>@sale.Category</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var categoryChartCtx = document.getElementById('categoryRevenueChart');
+            var categoryLabels = [@Html.Raw(string.Join(",", Model.CategorySales.Select(c => $"'{c.CategoryName}'")))];
+            var categoryData = [@string.Join(",", Model.CategorySales.Select(c => c.TotalRevenue))];
+            var categoryColors = generateRandomColors(@Model.CategorySales.Count);
+
+            new Chart(categoryChartCtx, {
+                type: 'pie',
+                data: {
+                    labels: categoryLabels,
+                    datasets: [{
+                        data: categoryData,
+                        backgroundColor: categoryColors
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+
+            var timelineChartCtx = document.getElementById('revenueTimelineChart');
+            var timelineLabels = [@Html.Raw(string.Join(",", Model.TimePeriodSales.Select(t => $"'{t.Period}'")))];
+            var timelineData = [@string.Join(",", Model.TimePeriodSales.Select(t => t.Revenue))];
+            var orderCountData = [@string.Join(",", Model.TimePeriodSales.Select(t => t.OrderCount))];
+
+            new Chart(timelineChartCtx, {
+                type: 'line',
+                data: {
+                    labels: timelineLabels,
+                    datasets: [{
+                        label: 'Doanh thu',
+                        data: timelineData,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 2,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Số lượng đơn hàng',
+                        data: orderCountData,
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderWidth: 2,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Doanh thu'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Đơn hàng'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        // Tạo màu ngẫu nhiên cho biểu đồ
+        function generateRandomColors(count) {
+            var colors = [];
+            for (var i = 0; i < count; i++) {
+                var color = 'hsla(' + (i * 360 / count) + ', 70%, 60%, 0.8)';
+                colors.push(color);
+            }
+            return colors;
+        }
+
+        $(document).ready(function () {
+            $('#salesTable').DataTable({
+                order: [[1, 'desc']]
+            });
+
+            $('#categoryTable').DataTable({
+                order: [[1, 'desc']]
+            });
+        });
+    </script>
+}
