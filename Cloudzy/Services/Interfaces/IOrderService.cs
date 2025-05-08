@@ -6,6 +6,6 @@ namespace Cloudzy.Services.Interfaces
     public interface IOrderService
     {
         Task<IPagedList<ListViewModel>> GetAllAsync(int pageNumber, int pageSize);
-        Task<bool> UpdateOrderStatusAsync(int orderId, string status);
+        Task<bool> UpdateOrderStatusAndShipperAsync(int orderId, string status, int? shipperId);
     }
 }

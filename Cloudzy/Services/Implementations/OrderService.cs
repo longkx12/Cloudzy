@@ -32,9 +32,9 @@ namespace Cloudzy.Services.Implementations
             return pageOrder;
         }
 
-        public async Task<bool> UpdateOrderStatusAsync(int orderId, string status)
+        public async Task<bool> UpdateOrderStatusAndShipperAsync(int orderId, string status, int? shipperId)
         {
-            return await _repository.UpdateOrderStatusAsync(orderId, status);
+            return await _repository.UpdateOrderStatusAndShipperAsync(orderId, status, shipperId);
         }
     }
 }

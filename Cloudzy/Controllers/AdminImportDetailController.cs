@@ -14,11 +14,13 @@ namespace Cloudzy.Controllers
     {
         private readonly IImportDetailService _service;
         private readonly DbCloudzyContext _context;
-        public AdminImportDetailController(IImportDetailService service,DbCloudzyContext context)
+
+        public AdminImportDetailController(IImportDetailService service, DbCloudzyContext context)
         {
             _service = service;
             _context = context;
         }
+
         public IActionResult Index(int importId)
         {
             ViewBag.ImportId = importId;
@@ -31,7 +33,7 @@ namespace Cloudzy.Controllers
             var pageNumber = page ?? 1;
 
             var importDetails = await _service.GetAllAsync(importId, pageNumber, pageSize);
-            if (importDetails==null || !importDetails.Any())
+            if (importDetails == null || !importDetails.Any())
             {
                 return NotFound("Không có dữ liệu");
             }
@@ -43,7 +45,8 @@ namespace Cloudzy.Controllers
             var model = new CreateViewModel
             {
                 ImportId = importId,
-                Product = new SelectList(_context.Products, "ProductId", "ProductName")
+                Product = new SelectList(_context.Products, "ProductId", "ProductName"),
+                Sizes = new List<SelectListItem>() // Empty initially
             };
             ViewBag.ImportId = importId;
             return View(model);
@@ -55,9 +58,11 @@ namespace Cloudzy.Controllers
             if (!ModelState.IsValid)
             {
                 model.Product = new SelectList(_context.Products, "ProductId", "ProductName");
+                model.Sizes = await _service.GetSizesByProductIdAsync(model.ProductId);
                 ViewBag.ImportId = model.ImportId;
                 return View(model);
             }
+
             try
             {
                 await _service.AddAsync(model);
@@ -70,6 +75,7 @@ namespace Cloudzy.Controllers
                 TempData["ToastMessage"] = ex.Message;
                 TempData["ToastType"] = "error";
                 model.Product = new SelectList(_context.Products, "ProductId", "ProductName");
+                model.Sizes = await _service.GetSizesByProductIdAsync(model.ProductId);
                 ViewBag.ImportId = model.ImportId;
                 return View(model);
             }
@@ -81,6 +87,7 @@ namespace Cloudzy.Controllers
             if (detail == null) return NotFound();
 
             detail.Product = new SelectList(_context.Products, "ProductId", "ProductName", detail.ProductId);
+            detail.Sizes = await _service.GetSizesByProductIdAsync(detail.ProductId);
             ViewBag.ImportId = detail.ImportId;
             return View(detail);
         }
@@ -88,11 +95,10 @@ namespace Cloudzy.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(EditViewModel model)
         {
-            // Lấy dữ liệu dropdown
-            var products = new SelectList(_context.Products, "ProductId", "ProductName", model.ProductId);
             if (!ModelState.IsValid)
             {
-                model.Product = products;
+                model.Product = new SelectList(_context.Products, "ProductId", "ProductName", model.ProductId);
+                model.Sizes = await _service.GetSizesByProductIdAsync(model.ProductId);
                 return View(model);
             }
 
@@ -105,7 +111,8 @@ namespace Cloudzy.Controllers
             }
             catch (Exception ex)
             {
-                model.Product = products;
+                model.Product = new SelectList(_context.Products, "ProductId", "ProductName", model.ProductId);
+                model.Sizes = await _service.GetSizesByProductIdAsync(model.ProductId);
                 TempData["ToastMessage"] = ex.Message;
                 TempData["ToastType"] = "error";
             }
@@ -118,7 +125,6 @@ namespace Cloudzy.Controllers
         {
             try
             {
-                // Lấy importId của Detail trước khi xóa
                 var detail = await _context.ImportDetails.FindAsync(id);
                 int importId = detail?.ImportId ?? 0;
 
@@ -135,6 +141,13 @@ namespace Cloudzy.Controllers
 
                 return RedirectToAction("Index", new { importId = _context.ImportDetails.Find(id)?.ImportId ?? 0 });
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSizesByProduct(int productId)
+        {
+            var sizes = await _service.GetSizesByProductIdAsync(productId);
+            return Json(sizes);
         }
     }
 }

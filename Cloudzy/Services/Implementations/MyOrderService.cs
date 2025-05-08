@@ -138,5 +138,21 @@ namespace Cloudzy.Services.Implementations
             await _repository.UpdateOrderAsync(order);
             return true;
         }
+
+        public async Task<bool> MarkOrderAsDeliveredAsync(int orderId, int userId)
+        {
+            var order = await _repository.GetOrderByIdAsync(orderId);
+
+            if (order == null || order.UserId != userId || order.Status.ToLower() != "shipping")
+            {
+                return false;
+            }
+
+            order.Status = "Delivered";
+            order.UpdatedAt = DateTime.Now;
+
+            await _repository.UpdateOrderAsync(order);
+            return true;
+        }
     }
 }

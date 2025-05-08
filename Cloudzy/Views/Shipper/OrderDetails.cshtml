@@ -14,14 +14,33 @@
 <div class="container mt-4">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Shipper")">Danh sách đơn hàng</a></li>
+            @if (Model.Status == "Processing")
+            {
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Shipper")">Đơn hàng cần giao</a></li>
+            }
+            else if (Model.Status == "Shipping")
+            {
+                <li class="breadcrumb-item"><a href="@Url.Action("Shipping", "Shipper")">Đơn hàng đang giao</a></li>
+            }
+            else if (Model.Status == "Delivered")
+            {
+                <li class="breadcrumb-item"><a href="@Url.Action("Delivered", "Shipper")">Đơn hàng đã giao</a></li>
+            }
             <li class="breadcrumb-item active" aria-current="page">Chi tiết đơn hàng #@Model.OrderId</li>
         </ol>
     </nav>
 
     <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h4 class="mb-0">Chi tiết đơn hàng #@Model.OrderId</h4>
+            <div>
+                @if (Model.Status == "Shipping")
+                {
+                    <button id="btnDeliverOrder" class="btn btn-success" data-order-id="@Model.OrderId">
+                        <i class="fas fa-truck-loading"></i> Đã giao hàng
+                    </button>
+                }
+            </div>
         </div>
         <div class="card-body">
             <div class="row">
@@ -126,11 +145,90 @@
                             <span class="fw-bold">Số tiền cần thu:</span>
                             <span class="fw-bold text-danger">@amountToCollect.ToString("N0") đ</span>
                         </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="fw-bold">Trạng thái đơn hàng:</span>
+                            <span>
+                                @switch (Model.Status)
+                                {
+                                    case "Processing":
+                                        <span class="badge bg-info">Đang xử lý</span>
+                                        break;
+                                    case "Shipping":
+                                        <span class="badge bg-warning">Đang giao hàng</span>
+                                        break;
+                                    case "Delivered":
+                                        <span class="badge bg-success">Đã giao hàng</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-secondary">@Model.Status</span>
+                                        break;
+                                }
+                            </span>
+                        </li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
-
-    
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            if ('@TempData["SuccessMessage"]' != '') {
+                toastr.success('@TempData["SuccessMessage"]');
+            }
+            if ('@TempData["ErrorMessage"]' != '') {
+                toastr.error('@TempData["ErrorMessage"]');
+            }
+
+            $("#btnAcceptOrder").click(function () {
+                if (confirm("Bạn có chắc chắn muốn nhận đơn hàng này không?")) {
+                    var orderId = $(this).data("order-id");
+                    $.ajax({
+                        url: '@Url.Action("AcceptOrder", "Shipper")',
+                        type: 'POST',
+                        data: { id: orderId },
+                        success: function (result) {
+                            if (result.success) {
+                                toastr.success(result.message);
+                                setTimeout(function () {
+                                    window.location.href = '@Url.Action("Shipping", "Shipper")';
+                                }, 1500);
+                            } else {
+                                toastr.error(result.message);
+                            }
+                        },
+                        error: function () {
+                            toastr.error("Đã xảy ra lỗi. Vui lòng thử lại sau!");
+                        }
+                    });
+                }
+            });
+
+            $("#btnDeliverOrder").click(function () {
+                if (confirm("Xác nhận đã giao hàng thành công?")) {
+                    var orderId = $(this).data("order-id");
+                    $.ajax({
+                        url: '@Url.Action("DeliverOrder", "Shipper")',
+                        type: 'POST',
+                        data: { id: orderId },
+                        success: function (result) {
+                            if (result.success) {
+                                toastr.success(result.message);
+                                setTimeout(function () {
+                                    window.location.href = '@Url.Action("Delivered", "Shipper")';
+                                }, 1500);
+                            } else {
+                                toastr.error(result.message);
+                            }
+                        },
+                        error: function () {
+                            toastr.error("Đã xảy ra lỗi. Vui lòng thử lại sau!");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

@@ -8,11 +8,13 @@ namespace Cloudzy.Services.Implementations
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderDetailRepository _orderDetailRepository;
+        private readonly IShipperRepository _shipperRepository;
 
-        public OrderDetailService(IOrderRepository orderRepository, IOrderDetailRepository orderDetailRepository)
+        public OrderDetailService(IOrderRepository orderRepository, IOrderDetailRepository orderDetailRepository, IShipperRepository shipperRepository)
         {
             _orderRepository = orderRepository;
             _orderDetailRepository = orderDetailRepository;
+            _shipperRepository = shipperRepository;
         }
 
         public async Task<DetailViewModel> GetOrderDetailByIdAsync(int orderId)
@@ -55,6 +57,8 @@ namespace Cloudzy.Services.Implementations
                 }
             }
 
+            var availableShippers = await _shipperRepository.GetAllShippersAsync();
+
             var viewModel = new DetailViewModel
             {
                 OrderId = order.OrderId,
@@ -69,7 +73,10 @@ namespace Cloudzy.Services.Implementations
                 DiscountAmount = discountAmount,
                 Subtotal = subtotal,
                 TotalPrice = order.TotalPrice,
-                OrderItems = orderItems
+                OrderItems = orderItems,
+                ShipperId = order.ShipperId,
+                ShipperName = order.Shipper?.Fullname,
+                AvailableShippers = availableShippers
             };
 
             return viewModel;

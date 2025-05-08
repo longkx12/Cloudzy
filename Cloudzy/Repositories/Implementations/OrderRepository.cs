@@ -27,12 +27,13 @@ namespace Cloudzy.Repositories.Implementations
         {
             return await _context.Orders
                 .Include(o => o.User)
+                .Include(o => o.Shipper)
                 .Include(o => o.DiscountCode)
                 .Include(o => o.DiscountCode.VoucherType)
                 .FirstOrDefaultAsync(o => o.OrderId == orderId);
         }
 
-        public async Task<bool> UpdateOrderStatusAsync(int orderId, string status)
+        public async Task<bool> UpdateOrderStatusAndShipperAsync(int orderId, string status, int? shipperId)
         {
             var order = await _context.Orders.FindAsync(orderId);
             if (order == null)
@@ -42,6 +43,11 @@ namespace Cloudzy.Repositories.Implementations
 
             order.Status = status;
             order.UpdatedAt = DateTime.Now;
+
+            if (shipperId.HasValue)
+            {
+                order.ShipperId = shipperId;
+            }
 
             await _context.SaveChangesAsync();
             return true;

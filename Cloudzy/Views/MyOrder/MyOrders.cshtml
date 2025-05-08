@@ -2,135 +2,169 @@
 @{
     ViewData["Title"] = "Đơn mua";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var activeTab = Model.CurrentStatus ?? "all";
 }
 
-<main class="py-5 bg-light">
+<main>
     <div class="container">
         <div class="row">
+            <!-- Main Content -->
             <div class="col-md-9">
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white border-bottom-0 py-3">
-                        <div class="nav nav-tabs border-0" id="order-tabs">
-                            <a href="@Url.Action("MyOrders", new { status = "all" })"
-                               class="nav-link @(Model.CurrentStatus == "all" ? "active" : "") fw-medium px-3">
-                                Tất cả
+                <div class="card border-0 shadow-sm p-4">
+                    <h4 class="mb-4">Đơn mua của tôi</h4>
+
+                    <ul class="nav nav-tabs mb-4">
+                        <li class="nav-item">
+                            <a class="nav-link @(activeTab == "all" ? "active" : "")" href="@Url.Action("MyOrders", new { status = "all" })">
+                                <i class="fas fa-shopping-bag me-1"></i> Tất cả
                             </a>
-                            <a href="@Url.Action("MyOrders", new { status = "pending" })"
-                               class="nav-link @(Model.CurrentStatus == "pending" ? "active" : "") fw-medium px-3">
-                                Chờ xác nhận
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(activeTab == "pending" ? "active" : "")" href="@Url.Action("MyOrders", new { status = "pending" })">
+                                <i class="fas fa-clock me-1"></i> Chờ xác nhận
                             </a>
-                            <a href="@Url.Action("MyOrders", new { status = "processing" })"
-                               class="nav-link @(Model.CurrentStatus == "processing" ? "active" : "") fw-medium px-3">
-                                Đang xử lý
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(activeTab == "processing" ? "active" : "")" href="@Url.Action("MyOrders", new { status = "processing" })">
+                                <i class="fas fa-box me-1"></i> Đang xử lý
                             </a>
-                            <a href="@Url.Action("MyOrders", new { status = "shipping" })"
-                               class="nav-link @(Model.CurrentStatus == "shipping" ? "active" : "") fw-medium px-3">
-                                Đang giao hàng
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(activeTab == "shipping" ? "active" : "")" href="@Url.Action("MyOrders", new { status = "shipping" })">
+                                <i class="fas fa-truck me-1"></i> Đang giao hàng
                             </a>
-                            <a href="@Url.Action("MyOrders", new { status = "delivered" })"
-                               class="nav-link @(Model.CurrentStatus == "delivered" ? "active" : "") fw-medium px-3">
-                                Đã giao hàng
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(activeTab == "delivered" ? "active" : "")" href="@Url.Action("MyOrders", new { status = "delivered" })">
+                                <i class="fas fa-check-circle me-1"></i> Đã giao hàng
                             </a>
-                            <a href="@Url.Action("MyOrders", new { status = "cancelled" })"
-                               class="nav-link @(Model.CurrentStatus == "cancelled" ? "active" : "") fw-medium px-3">
-                                Đã hủy
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(activeTab == "cancelled" ? "active" : "")" href="@Url.Action("MyOrders", new { status = "cancelled" })">
+                                <i class="fas fa-ban me-1"></i> Đã hủy
                             </a>
+                        </li>
+                    </ul>
+
+                    @if (!Model.Orders.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-shopping-bag fa-4x text-muted mb-3"></i>
+                            <h5 class="text-muted">
+                                @switch (activeTab)
+                                {
+                                    case "all":
+                                        <text>Bạn chưa có đơn hàng nào.</text>
+                                        break;
+                                    case "pending":
+                                        <text>Hiện tại không có đơn hàng nào đang chờ xác nhận.</text>
+                                        break;
+                                    case "processing":
+                                        <text>Hiện tại không có đơn hàng nào đang xử lý.</text>
+                                        break;
+                                    case "shipping":
+                                        <text>Hiện tại không có đơn hàng nào đang giao.</text>
+                                        break;
+                                    case "delivered":
+                                        <text>Bạn chưa có đơn hàng nào đã giao.</text>
+                                        break;
+                                    case "cancelled":
+                                        <text>Bạn chưa có đơn hàng nào đã hủy.</text>
+                                        break;
+                                    default:
+                                        <text>Không có đơn hàng nào.</text>
+                                        break;
+                                }
+                            </h5>
                         </div>
-                    </div>
-
-                    <div class="card-body p-0">
-                        @if (Model.Orders.Any())
-                        {
-                            foreach (var order in Model.Orders)
-                            {
-                                <div class="order-container mb-4 pb-3 border-bottom">
-                                    <div class="d-flex justify-content-between p-3 bg-light">
-                                        <div>
-                                            <span class="badge bg-primary me-2">Cloudzy Shop</span>
-                                            <span class="text-muted small">Mã đơn hàng: #@order.OrderId</span>
-                                        </div>
-                                        <div class="text-end">
-                                            <span class="@GetStatusClass(order.Status) fw-medium">@GetStatusText(order.Status)</span>
-                                        </div>
-                                    </div>
-
-                                    @foreach (var item in order.Items)
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Mã đơn</th>
+                                        <th>Ngày đặt</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Hình thức thanh toán</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model.Orders)
                                     {
-                                        <div class="d-flex p-3 border-bottom">
-                                            <div class="me-3" style="width: 80px; height: 80px; overflow: hidden;">
-                                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                        <tr>
+                                            <td>#@order.OrderId</td>
+                                            <td>@order.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>@order.TotalPrice.ToString("N0") đ</td>
+                                            <td>
+                                                @if (order.PaymentMethod == "COD")
                                                 {
-                                                    <img src="@item.ImageUrl" alt="@item.ProductName" class="img-fluid rounded" style="width: 100%; height: 100%; object-fit: cover;">
+                                                    <span>Thanh toán khi nhận hàng</span>
                                                 }
                                                 else
                                                 {
-                                                    <img src="~/images/placeholder-product.png" alt="Product" class="img-fluid rounded" style="width: 100%; height: 100%; object-fit: cover;">
+                                                    <span>@order.PaymentMethod</span>
                                                 }
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <div class="fw-medium">@item.ProductName</div>
-                                                <div class="text-muted small">Phân loại: @item.Size</div>
-                                                <div class="small">@item.Quantity</div>
-                                            </div>
-                                            <div class="text-end align-self-center">
-                                                <div class="fw-medium text-danger">@item.Price.ToString("N0") VND</div>
-                                            </div>
-                                        </div>
+                                            </td>
+                                            <td>
+                                                @switch (order.Status.ToLower())
+                                                {
+                                                    case "pending":
+                                                        <span class="badge bg-warning">Chờ xác nhận</span>
+                                                        break;
+                                                    case "processing":
+                                                        <span class="badge bg-info">Đang xử lý</span>
+                                                        break;
+                                                    case "shipping":
+                                                        <span class="badge bg-warning">Đang giao hàng</span>
+                                                        break;
+                                                    case "delivered":
+                                                        <span class="badge bg-success">Đã giao hàng</span>
+                                                        break;
+                                                    case "cancelled":
+                                                        <span class="badge bg-danger">Đã hủy</span>
+                                                        break;
+                                                    default:
+                                                        <span class="badge bg-secondary">@order.Status</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("OrderDetail", new { id = order.OrderId })" class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-eye"></i> Xem chi tiết
+                                                </a>
+                                            </td>
+                                        </tr>
                                     }
-
-                                    <div class="d-flex justify-content-between align-items-center p-3">
-                                        <div>
-                                            <span class="text-muted small">@order.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
-                                        </div>
-                                        <div class="d-flex align-items-center">
-                                            <span class="me-2">Tổng tiền:</span>
-                                            <span class="fw-bold text-danger fs-5">@order.TotalPrice.ToString("N0") VND</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex justify-content-end px-3">
-                                        <a href="@Url.Action("OrderDetail", new { id = order.OrderId })" class="btn btn-outline-primary px-3">
-                                            Chi tiết đơn hàng
-                                        </a>
-                                    </div>
-                                </div>
-                            }
-                        }
-                        else
-                        {
-                            <div class="text-center py-5">
-                                <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
-                                <h5>Không có đơn hàng nào</h5>
-                                <p class="text-muted">Bạn chưa có đơn hàng nào trong mục này</p>
-                                <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-2">
-                                    Tiếp tục mua sắm
-                                </a>
-                            </div>
-                        }
-                    </div>
+                                </tbody>
+                            </table>
+                        </div>
+                    }
                 </div>
             </div>
-
             <!-- Sidebar -->
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm p-4">
-                    <h5 class="mb-3">Danh mục</h5>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item px-0 py-2 border-0">
-                            <a asp-controller="UserProfile" asp-action="Profile" class="text-decoration-none text-dark">
-                                <i class="fas fa-user text-secondary me-2"></i>
+            <div class="col-md-3 mb-4">
+                <div class="card sidebar-card border-0 shadow-sm p-4">
+                    <h5 class="mb-4 fw-bold">Danh mục quản lý</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="sidebar-menu-item">
+                            <a asp-controller="UserProfile" asp-action="Profile" class="text-decoration-none">
+                                <i class="fas fa-user me-2"></i>
                                 Tài khoản của tôi
                             </a>
                         </li>
-                        <li class="list-group-item px-0 py-2 border-0">
-                            <a asp-controller="UserProfile" asp-action="ChangePassword" class="text-decoration-none text-dark">
-                                <i class="fas fa-key text-secondary me-2"></i>
+                        <li class="sidebar-menu-item">
+                            <a asp-controller="UserProfile" asp-action="ChangePassword" class="text-decoration-none">
+                                <i class="fas fa-key me-2"></i>
                                 Đổi mật khẩu
                             </a>
                         </li>
-                        <li class="list-group-item px-0 py-2 border-0 active">
-                            <a asp-controller="Order" asp-action="MyOrders" class="text-decoration-none text-dark">
-                                <i class="fas fa-shopping-bag text-primary me-2"></i>
+                        <li class="sidebar-menu-item active">
+                            <a asp-controller="MyOrder" asp-action="MyOrders" class="text-decoration-none">
+                                <i class="fas fa-shopping-bag me-2"></i>
                                 Đơn mua
                             </a>
                         </li>
@@ -141,30 +175,15 @@
     </div>
 </main>
 
-@functions {
-    string GetStatusClass(string status)
-    {
-        return status.ToLower() switch
-        {
-            "pending" => "text-warning",
-            "processing" => "text-primary",
-            "shipping" => "text-info",
-            "delivered" => "text-success",
-            "cancelled" => "text-danger",
-            _ => "text-secondary"
-        };
-    }
-
-    string GetStatusText(string status)
-    {
-        return status.ToLower() switch
-        {
-            "pending" => "Chờ xác nhận",
-            "processing" => "Đang xử lý",
-            "shipping" => "Đang giao hàng",
-            "delivered" => "Đã giao hàng",
-            "cancelled" => "Đã hủy",
-            _ => status
-        };
-    }
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            if ('@TempData["SuccessMessage"]' != '') {
+                toastr.success('@TempData["SuccessMessage"]');
+            }
+            if ('@TempData["ErrorMessage"]' != '') {
+                toastr.error('@TempData["ErrorMessage"]');
+            }
+        });
+    </script>
 }

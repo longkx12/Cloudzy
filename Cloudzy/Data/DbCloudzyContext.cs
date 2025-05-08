@@ -148,6 +148,10 @@ public partial class DbCloudzyContext : DbContext
             entity.HasOne(d => d.Product).WithMany(p => p.ImportDetails)
                 .HasForeignKey(d => d.ProductId)
                 .HasConstraintName("FK_ImportDetail_Product");
+
+            entity.HasOne(d => d.Size).WithMany(p => p.ImportDetails)
+                .HasForeignKey(d => d.SizeId)
+                .HasConstraintName("FK_ImportDetail_Size");
         });
 
         modelBuilder.Entity<Order>(entity =>
@@ -161,6 +165,7 @@ public partial class DbCloudzyContext : DbContext
                 .HasColumnType("datetime");
             entity.Property(e => e.DiscountCodeId).HasColumnName("DiscountCodeID");
             entity.Property(e => e.PaymentMethod).HasMaxLength(50);
+            entity.Property(e => e.ShipperId).HasColumnName("ShipperID");
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.TotalPrice).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.UpdatedAt)
@@ -172,7 +177,11 @@ public partial class DbCloudzyContext : DbContext
                 .HasForeignKey(d => d.DiscountCodeId)
                 .HasConstraintName("FK__Orders__Discount__59FA5E80");
 
-            entity.HasOne(d => d.User).WithMany(p => p.Orders)
+            entity.HasOne(d => d.Shipper).WithMany(p => p.OrderShippers)
+                .HasForeignKey(d => d.ShipperId)
+                .HasConstraintName("FK_Orders_ShipperID");
+
+            entity.HasOne(d => d.User).WithMany(p => p.OrderUsers)
                 .HasForeignKey(d => d.UserId)
                 .HasConstraintName("FK__Orders__UserID__59063A47");
         });

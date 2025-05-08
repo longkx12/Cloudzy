@@ -78,6 +78,13 @@
                                 <strong>Ngày đặt hàng:</strong>
                                 <span>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
                             </div>
+                            @if (Model.ShipperId.HasValue)
+                            {
+                                <div class="mb-3">
+                                    <strong>Shipper:</strong>
+                                    <span>@Model.ShipperName</span>
+                                </div>
+                            }
                             <div id="orderActions">
                                 @if (Model.Status == "Pending")
                                 {
@@ -87,6 +94,19 @@
                                 }
                                 else if (Model.Status == "Processing")
                                 {
+                                    <div class="form-group mb-3">
+                                        <label for="shipperSelect">Chọn Shipper:</label>
+                                        <select id="shipperSelect" class="form-control">
+                                            <option value="">-- Chọn Shipper --</option>
+                                            @if (Model.AvailableShippers != null)
+                                            {
+                                                @foreach (var shipper in Model.AvailableShippers)
+                                                {
+                                                    <option value="@shipper.UserId">@shipper.Fullname</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
                                     <button type="button" id="btnConfirmShipping" class="btn btn-primary" data-order-id="@Model.OrderId" data-status="Shipping">
                                         <i class="mdi mdi-truck"></i> Xác nhận giao hàng
                                     </button>
@@ -151,16 +171,9 @@
     </div>
 </div>
 
-<!-- Add Toastr CSS link in head if not already included -->
-<!-- Link to Toastr CSS should be in the layout or added here -->
-<!-- <link href="~/lib/toastr/toastr.min.css" rel="stylesheet" /> -->
-
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
-<!-- Include Toastr JS if not already included in layout -->
-<!-- <script src="~/lib/toastr/toastr.min.js"></script> -->
 <script>
-    $(document).ready(function () {
-        // Configure Toastr
+        $(document).ready(function () {
         toastr.options = {
             "closeButton": true,
             "progressBar": true,
@@ -168,7 +181,6 @@
             "timeOut": "3000"
         };
 
-        // Show toast message if exists from TempData
         var toastMessage = '@Html.Raw(TempData["ToastMessage"])';
         var toastType = '@Html.Raw(TempData["ToastType"])';
         if (toastMessage.trim().length > 0) {
@@ -190,8 +202,7 @@
             }
         }
 
-        // Handle button clicks for status updates
-        $(document).on('click', '#btnConfirmOrder, #btnConfirmShipping', function () {
+        $(document).on('click', '#btnConfirmOrder', function () {
             var orderId = $(this).data('order-id');
             var status = $(this).data('status');
 
@@ -199,22 +210,72 @@
                 url: '@Url.Action("UpdateOrderStatusAjax", "AdminOrderDetail")',
                 type: 'POST',
                 data: { id: orderId, status: status },
+                dataType: 'json',
                 success: function (response) {
                     if (response.success) {
-                        // Update order status badge
                         updateOrderStatusBadge(response.newStatus);
 
-                        // Update action buttons
                         updateActionButtons(response.newStatus, orderId);
 
-                        // Show success message
                         showToastrMessage(response.message, 'success');
                     } else {
-                        // Show error message
                         showToastrMessage(response.message, 'error');
                     }
                 },
-                error: function () {
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", xhr, status, error);
+                    showToastrMessage('Đã xảy ra lỗi khi cập nhật trạng thái đơn hàng', 'error');
+                }
+            });
+        });
+
+        $(document).on('click', '#btnConfirmShipping', function () {
+            var orderId = $(this).data('order-id');
+            var status = $(this).data('status');
+            var shipperId = $('#shipperSelect').val();
+
+            if (!shipperId) {
+                showToastrMessage('Vui lòng chọn shipper trước khi xác nhận giao hàng', 'warning');
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("UpdateOrderStatusAjax", "AdminOrderDetail")',
+                type: 'POST',
+                data: { id: orderId, status: status, shipperId: shipperId },
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                success: function (response) {
+                    console.log("Response:", response);
+                    if (response && response.success) {
+                        updateOrderStatusBadge(response.newStatus);
+
+                        $('#orderActions').empty();
+
+                        var shipperInfo = $('<div class="mb-3"><strong>Shipper:</strong> <span>' +
+                                          $('#shipperSelect option:selected').text() + '</span></div>');
+                        if ($('#orderStatus').parent().next('.mb-3:contains("Shipper:")').length === 0) {
+                            $('#orderStatus').parent().after(shipperInfo);
+                        }
+
+                        showToastrMessage(response.message, 'success');
+                    } else {
+                        showToastrMessage(response.message || 'Không thể cập nhật trạng thái đơn hàng', 'error');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", xhr, status, error);
+
+                    try {
+                        var jsonResponse = JSON.parse(xhr.responseText);
+                        if (jsonResponse && jsonResponse.message) {
+                            showToastrMessage(jsonResponse.message, 'error');
+                            return;
+                        }
+                    } catch (e) {
+                        console.error("Error parsing JSON response:", e);
+                    }
+
                     showToastrMessage('Đã xảy ra lỗi khi cập nhật trạng thái đơn hàng', 'error');
                 }
             });
@@ -234,25 +295,52 @@
                          .text(status);
     }
 
-    // Update action buttons based on status
     function updateActionButtons(status, orderId) {
         const actionsContainer = $('#orderActions');
         actionsContainer.empty();
 
         if (status === 'Processing') {
-            actionsContainer.html(`
-                <button type="button" id="btnConfirmShipping" class="btn btn-primary" data-order-id="${orderId}" data-status="Shipping">
-                    <i class="mdi mdi-truck"></i> Xác nhận giao hàng
-                </button>
-            `);
-        } else if (status === 'Shipping') {
-            // No buttons for shipping status, but you could add "Mark as Delivered" button here if needed
-            showToastrMessage('Đơn hàng đã được chuyển cho shipper', 'success');
+            $.ajax({
+                url: '@Url.Action("GetShippers", "AdminOrderDetail")',
+                type: 'GET',
+                dataType: 'json',
+                success: function (shippers) {
+                    if (!Array.isArray(shippers)) {
+                        console.error("Expected array of shippers but received:", shippers);
+                        showToastrMessage('Đã xảy ra lỗi khi tải danh sách shipper', 'error');
+                        return;
+                    }
+
+                    let shipperOptions = '<option value="">-- Chọn Shipper --</option>';
+                    shippers.forEach(function(shipper) {
+                        shipperOptions += `<option value="${shipper.id}">${shipper.name}</option>`;
+                    });
+
+                    actionsContainer.html(`
+                        <div class="form-group mb-3">
+                            <label for="shipperSelect">Chọn Shipper:</label>
+                            <select id="shipperSelect" class="form-control">
+                                ${shipperOptions}
+                            </select>
+                        </div>
+                        <button type="button" id="btnConfirmShipping" class="btn btn-primary" data-order-id="${orderId}" data-status="Shipping">
+                            <i class="mdi mdi-truck"></i> Xác nhận giao hàng
+                        </button>
+                    `);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching shippers:", xhr, status, error);
+                    showToastrMessage('Đã xảy ra lỗi khi tải danh sách shipper', 'error');
+                }
+            });
         }
     }
 
-    // Show toastr notification
     function showToastrMessage(message, type) {
+        if (!message) {
+            message = 'Thông báo lỗi không xác định';
+        }
+
         switch (type) {
             case 'success':
                 toastr.success(message, "Thành công!");

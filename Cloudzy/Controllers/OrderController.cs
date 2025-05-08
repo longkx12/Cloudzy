@@ -285,7 +285,7 @@ namespace Cloudzy.Controllers
                     {
                         if (response.vnp_ResponseCode == "00" && response.vnp_TransactionStatus == "00")
                         {
-                            order.Status = "Paid";
+                            order.Status = "Pending";
                             order.UpdatedAt = DateTime.Now;
 
                             int userId = order.UserId ?? 0;

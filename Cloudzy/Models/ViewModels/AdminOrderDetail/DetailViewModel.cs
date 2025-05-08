@@ -1,4 +1,5 @@
-﻿using Cloudzy.Models.ViewModels.AdminOrderDetail;
+﻿using Cloudzy.Models.Domain;
+using Cloudzy.Models.ViewModels.AdminOrderDetail;
 
 namespace Cloudzy.Models.ViewModels.AdminOrderDetail
 {
@@ -16,6 +17,9 @@ namespace Cloudzy.Models.ViewModels.AdminOrderDetail
         public decimal? DiscountAmount { get; set; }
         public decimal Subtotal { get; set; }
         public decimal TotalPrice { get; set; }
+        public int? ShipperId { get; set; }
+        public string? ShipperName { get; set; }
+        public IEnumerable<User>? AvailableShippers { get; set; }
         public List<OrderItemViewModel> OrderItems { get; set; }
     }
 }

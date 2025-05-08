@@ -556,3 +556,73 @@ body {
     .tab-content.active {
         display: block;
     }
+
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Đảm bảo main chiếm tối thiểu phần còn lại của viewport */
+main {
+    flex: 1 0 auto;
+    min-height: calc(100vh - 200px); /* Điều chỉnh con số này tùy theo header và footer của bạn */
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+}
+/* Cải thiện sidebar */
+.sidebar-card {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.sidebar-menu-item {
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+    .sidebar-menu-item:hover {
+        background-color: #f8f9fa;
+        transform: translateX(5px);
+    }
+
+    .sidebar-menu-item.active {
+        background-color: #e9ecef;
+    }
+
+        .sidebar-menu-item.active a {
+            font-weight: 500;
+            color: #0d6efd !important;
+        }
+
+    .sidebar-menu-item a {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: #495057;
+    }
+
+        .sidebar-menu-item a:hover {
+            text-decoration: none;
+        }
+
+/* Cải thiện tab navigation */
+.nav-tabs .nav-link {
+    border: none;
+    padding: 0.75rem 1.25rem;
+    color: #6c757d;
+    border-bottom: 2px solid transparent;
+}
+
+    .nav-tabs .nav-link.active {
+        color: #0d6efd;
+        background-color: transparent;
+        border-bottom: 2px solid #0d6efd;
+    }
+
+    .nav-tabs .nav-link:hover:not(.active) {
+        border-bottom: 2px solid #dee2e6;
+    }

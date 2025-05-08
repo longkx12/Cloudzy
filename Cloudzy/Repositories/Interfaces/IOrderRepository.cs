@@ -6,6 +6,6 @@ namespace Cloudzy.Repositories.Interfaces
     {
         Task<IEnumerable<Order>> GetAllAsync();
         Task<Order> GetByIdAsync(int orderId);
-        Task<bool> UpdateOrderStatusAsync(int orderId, string status);
+        Task<bool> UpdateOrderStatusAndShipperAsync(int orderId, string status, int? shipperId);
     }
 }

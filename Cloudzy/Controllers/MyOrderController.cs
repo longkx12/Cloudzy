@@ -59,5 +59,27 @@ namespace Cloudzy.Controllers
             }
             return RedirectToAction("Login", "User");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> MarkAsDelivered(int id)
+        {
+            var userIdClaim = User.FindFirst("UserId");
+            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+            {
+                var result = await _service.MarkOrderAsDeliveredAsync(id, userId);
+                if (result)
+                {
+                    TempData["ToastMessage"] = "Đơn hàng đã được đánh dấu là đã giao thành công!";
+                    TempData["ToastType"] = "success";
+                }
+                else
+                {
+                    TempData["ToastMessage"] = "Không thể đánh dấu đơn hàng này là đã giao!";
+                    TempData["ToastType"] = "error";
+                }
+                return RedirectToAction("OrderDetail", new { id });
+            }
+            return RedirectToAction("Login", "User");
+        }
     }
 }
