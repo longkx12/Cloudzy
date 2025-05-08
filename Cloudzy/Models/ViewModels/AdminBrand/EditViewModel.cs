@@ -11,7 +11,6 @@ namespace Cloudzy.Models.ViewModels.AdminBrand
         [StringLength(50, ErrorMessage = "Tên không được vượt quá 50 ký tự")]
         public string BrandName { get; set; } = null!;
 
-        [Required(ErrorMessage = "Vui lòng chọn hình ảnh")]
         [AllowedExtensions(new string[] { ".png", ".jpg", ".jpeg", ".gif" })]
         public IFormFile? BrandImg { get; set; }
         public string? Description { get; set; }

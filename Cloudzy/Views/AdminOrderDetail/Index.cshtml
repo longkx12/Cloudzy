@@ -66,7 +66,7 @@
                             </div>
                             <div class="mb-3">
                                 <strong>Trạng thái đơn hàng:</strong>
-                                <span class="badge @(Model.Status == "Pending" ? "badge-warning" :
+                                <span id="orderStatus" class="badge @(Model.Status == "Pending" ? "badge-warning" :
                                                    Model.Status == "Processing" ? "badge-info" :
                                                    Model.Status == "Shipping" ? "badge-primary" :
                                                    Model.Status == "Delivered" ? "badge-success" :
@@ -78,15 +78,40 @@
                                 <strong>Ngày đặt hàng:</strong>
                                 <span>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
                             </div>
-                            @if (Model.Status == "Pending")
+                            @if (Model.ShipperId.HasValue)
                             {
-                                <form asp-action="ConfirmOrder" asp-controller="AdminOrderDetail" method="post">
-                                    <input type="hidden" name="id" value="@Model.OrderId" />
-                                    <button type="submit" class="btn btn-success">
+                                <div class="mb-3">
+                                    <strong>Shipper:</strong>
+                                    <span>@Model.ShipperName</span>
+                                </div>
+                            }
+                            <div id="orderActions">
+                                @if (Model.Status == "Pending")
+                                {
+                                    <button type="button" id="btnConfirmOrder" class="btn btn-success" data-order-id="@Model.OrderId" data-status="Processing">
                                         <i class="mdi mdi-check"></i> Xác nhận đơn
                                     </button>
-                                </form>
-                            }
+                                }
+                                else if (Model.Status == "Processing")
+                                {
+                                    <div class="form-group mb-3">
+                                        <label for="shipperSelect">Chọn Shipper:</label>
+                                        <select id="shipperSelect" class="form-control">
+                                            <option value="">-- Chọn Shipper --</option>
+                                            @if (Model.AvailableShippers != null)
+                                            {
+                                                @foreach (var shipper in Model.AvailableShippers)
+                                                {
+                                                    <option value="@shipper.UserId">@shipper.Fullname</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <button type="button" id="btnConfirmShipping" class="btn btn-primary" data-order-id="@Model.OrderId" data-status="Shipping">
+                                        <i class="mdi mdi-truck"></i> Xác nhận giao hàng
+                                    </button>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -148,10 +173,189 @@
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script>
-    $(document).ready(function () {
-        var message = '@Html.Raw(TempData["SuccessMessage"])';
-        if (message) {
-            showAlert(message);
+        $(document).ready(function () {
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "3000"
+        };
+
+        var toastMessage = '@Html.Raw(TempData["ToastMessage"])';
+        var toastType = '@Html.Raw(TempData["ToastType"])';
+        if (toastMessage.trim().length > 0) {
+            switch (toastType) {
+                case 'success':
+                    toastr.success(toastMessage, "Thành công!");
+                    break;
+                case 'error':
+                    toastr.error(toastMessage, "Lỗi!");
+                    break;
+                case 'warning':
+                    toastr.warning(toastMessage, "Cảnh báo!");
+                    break;
+                case 'info':
+                    toastr.info(toastMessage, "Thông tin!");
+                    break;
+                default:
+                    toastr.info(toastMessage);
+            }
         }
+
+        $(document).on('click', '#btnConfirmOrder', function () {
+            var orderId = $(this).data('order-id');
+            var status = $(this).data('status');
+
+            $.ajax({
+                url: '@Url.Action("UpdateOrderStatusAjax", "AdminOrderDetail")',
+                type: 'POST',
+                data: { id: orderId, status: status },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        updateOrderStatusBadge(response.newStatus);
+
+                        updateActionButtons(response.newStatus, orderId);
+
+                        showToastrMessage(response.message, 'success');
+                    } else {
+                        showToastrMessage(response.message, 'error');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", xhr, status, error);
+                    showToastrMessage('Đã xảy ra lỗi khi cập nhật trạng thái đơn hàng', 'error');
+                }
+            });
+        });
+
+        $(document).on('click', '#btnConfirmShipping', function () {
+            var orderId = $(this).data('order-id');
+            var status = $(this).data('status');
+            var shipperId = $('#shipperSelect').val();
+
+            if (!shipperId) {
+                showToastrMessage('Vui lòng chọn shipper trước khi xác nhận giao hàng', 'warning');
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("UpdateOrderStatusAjax", "AdminOrderDetail")',
+                type: 'POST',
+                data: { id: orderId, status: status, shipperId: shipperId },
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                success: function (response) {
+                    console.log("Response:", response);
+                    if (response && response.success) {
+                        updateOrderStatusBadge(response.newStatus);
+
+                        $('#orderActions').empty();
+
+                        var shipperInfo = $('<div class="mb-3"><strong>Shipper:</strong> <span>' +
+                                          $('#shipperSelect option:selected').text() + '</span></div>');
+                        if ($('#orderStatus').parent().next('.mb-3:contains("Shipper:")').length === 0) {
+                            $('#orderStatus').parent().after(shipperInfo);
+                        }
+
+                        showToastrMessage(response.message, 'success');
+                    } else {
+                        showToastrMessage(response.message || 'Không thể cập nhật trạng thái đơn hàng', 'error');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", xhr, status, error);
+
+                    try {
+                        var jsonResponse = JSON.parse(xhr.responseText);
+                        if (jsonResponse && jsonResponse.message) {
+                            showToastrMessage(jsonResponse.message, 'error');
+                            return;
+                        }
+                    } catch (e) {
+                        console.error("Error parsing JSON response:", e);
+                    }
+
+                    showToastrMessage('Đã xảy ra lỗi khi cập nhật trạng thái đơn hàng', 'error');
+                }
+            });
+        });
     });
+
+    // Update order status badge
+    function updateOrderStatusBadge(status) {
+        const badgeClass = status === 'Pending' ? 'badge-warning' :
+                          status === 'Processing' ? 'badge-info' :
+                          status === 'Shipping' ? 'badge-primary' :
+                          status === 'Delivered' ? 'badge-success' :
+                          status === 'Cancelled' ? 'badge-danger' : 'badge-secondary';
+
+        $('#orderStatus').removeClass('badge-warning badge-info badge-primary badge-success badge-danger badge-secondary')
+                         .addClass(badgeClass)
+                         .text(status);
+    }
+
+    function updateActionButtons(status, orderId) {
+        const actionsContainer = $('#orderActions');
+        actionsContainer.empty();
+
+        if (status === 'Processing') {
+            $.ajax({
+                url: '@Url.Action("GetShippers", "AdminOrderDetail")',
+                type: 'GET',
+                dataType: 'json',
+                success: function (shippers) {
+                    if (!Array.isArray(shippers)) {
+                        console.error("Expected array of shippers but received:", shippers);
+                        showToastrMessage('Đã xảy ra lỗi khi tải danh sách shipper', 'error');
+                        return;
+                    }
+
+                    let shipperOptions = '<option value="">-- Chọn Shipper --</option>';
+                    shippers.forEach(function(shipper) {
+                        shipperOptions += `<option value="${shipper.id}">${shipper.name}</option>`;
+                    });
+
+                    actionsContainer.html(`
+                        <div class="form-group mb-3">
+                            <label for="shipperSelect">Chọn Shipper:</label>
+                            <select id="shipperSelect" class="form-control">
+                                ${shipperOptions}
+                            </select>
+                        </div>
+                        <button type="button" id="btnConfirmShipping" class="btn btn-primary" data-order-id="${orderId}" data-status="Shipping">
+                            <i class="mdi mdi-truck"></i> Xác nhận giao hàng
+                        </button>
+                    `);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching shippers:", xhr, status, error);
+                    showToastrMessage('Đã xảy ra lỗi khi tải danh sách shipper', 'error');
+                }
+            });
+        }
+    }
+
+    function showToastrMessage(message, type) {
+        if (!message) {
+            message = 'Thông báo lỗi không xác định';
+        }
+
+        switch (type) {
+            case 'success':
+                toastr.success(message, "Thành công!");
+                break;
+            case 'error':
+                toastr.error(message, "Lỗi!");
+                break;
+            case 'warning':
+                toastr.warning(message, "Cảnh báo!");
+                break;
+            case 'info':
+                toastr.info(message, "Thông tin!");
+                break;
+            default:
+                toastr.info(message);
+        }
+    }
 </script>

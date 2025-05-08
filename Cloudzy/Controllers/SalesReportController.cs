@@ -37,12 +37,28 @@ namespace Cloudzy.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Filter(DateTime? StartDate, DateTime? EndDate)
         {
+            var now = DateTime.Now;
             var filter = new SalesReportFilterViewModel
             {
                 StartDate = StartDate,
                 EndDate = EndDate,
                 Categories = await _salesReportService.GetCategoriesAsync()
             };
+
+            if (StartDate.HasValue && EndDate.HasValue)
+            {
+                if (EndDate.Value < StartDate.Value)
+                {
+                    TempData["ToastrError"] = "Khoảng thời gian không hợp lệ: Ngày kết thúc không thể trước ngày bắt đầu.";
+                    return View("Index", new SalesReportViewModel { AppliedFilters = filter });
+                }
+
+                if (StartDate.Value > now || EndDate.Value > now)
+                {
+                    TempData["ToastrError"] = "Khoảng thời gian không hợp lệ: Không thể chọn ngày trong tương lai.";
+                    return View("Index", new SalesReportViewModel { AppliedFilters = filter });
+                }
+            }
 
             if (ModelState.IsValid)
             {
@@ -58,11 +74,26 @@ namespace Cloudzy.Controllers
 
         public async Task<IActionResult> CustomRange(DateTime startDate, DateTime endDate)
         {
+            var now = DateTime.Now;
             var filter = new SalesReportFilterViewModel
             {
                 StartDate = startDate,
                 EndDate = endDate
             };
+
+            if (endDate < startDate)
+            {
+                TempData["ToastrError"] = "Khoảng thời gian không hợp lệ: Ngày kết thúc không thể trước ngày bắt đầu.";
+                filter.Categories = await _salesReportService.GetCategoriesAsync();
+                return View("Index", new SalesReportViewModel { AppliedFilters = filter });
+            }
+
+            if (startDate > now || endDate > now)
+            {
+                TempData["ToastrError"] = "Khoảng thời gian không hợp lệ: Không thể chọn ngày trong tương lai.";
+                filter.Categories = await _salesReportService.GetCategoriesAsync();
+                return View("Index", new SalesReportViewModel { AppliedFilters = filter });
+            }
 
             var report = await _salesReportService.GenerateReportAsync(filter);
 
@@ -74,6 +105,23 @@ namespace Cloudzy.Controllers
 
         public async Task<IActionResult> ExportExcel(DateTime? startDate, DateTime? endDate)
         {
+            var now = DateTime.Now;
+
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                if (endDate.Value < startDate.Value)
+                {
+                    TempData["ToastrError"] = "Khoảng thời gian không hợp lệ: Ngày kết thúc không thể trước ngày bắt đầu.";
+                    return RedirectToAction("Index");
+                }
+
+                if (startDate.Value > now || endDate.Value > now)
+                {
+                    TempData["ToastrError"] = "Khoảng thời gian không hợp lệ: Không thể chọn ngày trong tương lai.";
+                    return RedirectToAction("Index");
+                }
+            }
+
             var filter = new SalesReportFilterViewModel
             {
                 StartDate = startDate,

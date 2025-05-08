@@ -1,8 +1,15 @@
 ﻿@if (Context.User.Identity.IsAuthenticated)
 {
-    @if (User.IsInRole("Admin")) {
+    @if (User.IsInRole("Admin"))
+    {
         <li>
             <a class="dropdown-item" href="@Url.Action("Index","AdminUser")">Quản trị</a>
+        </li>
+    }
+    @if (User.IsInRole("Shipper"))
+    {
+        <li>
+            <a class="dropdown-item" href="@Url.Action("Index","Shipper")">Quản lý giao hàng</a>
         </li>
     }
     <li>
@@ -12,7 +19,8 @@
         <a class="dropdown-item" href="@Url.Action("Logout","User")">Đăng xuất</a>
     </li>
 }
-else {
+else
+{
     <li>
         <a class="dropdown-item" href="@Url.Action("Login","User")">Đăng nhập</a>
     </li>

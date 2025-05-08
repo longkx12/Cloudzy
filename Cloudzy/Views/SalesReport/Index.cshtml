@@ -15,15 +15,15 @@
             Tùy chọn bộ lọc
         </div>
         <div class="card-body">
-            <form asp-action="Filter" method="post">
+            <form asp-action="Filter" method="post" id="filterForm">
                 <div class="row">
                     <div class="col-md-8">
                         <div class="form-group">
                             <label class="control-label">Phạm vi ngày</label>
                             <div class="input-group">
-                                <input name="StartDate" type="date" class="form-control" value="@Model.AppliedFilters.StartDate?.ToString("yyyy-MM-dd")" />
+                                <input name="StartDate" id="startDate" type="date" class="form-control" value="@Model.AppliedFilters.StartDate?.ToString("yyyy-MM-dd")" />
                                 <div class="input-group-text">tới</div>
-                                <input name="EndDate" type="date" class="form-control" value="@Model.AppliedFilters.EndDate?.ToString("yyyy-MM-dd")" />
+                                <input name="EndDate" id="endDate" type="date" class="form-control" value="@Model.AppliedFilters.EndDate?.ToString("yyyy-MM-dd")" />
                             </div>
                         </div>
                     </div>
@@ -31,7 +31,7 @@
                 <div class="row mt-3">
                     <div class="col-md-12">
                         <div class="btn-group" role="group">
-                            <button type="submit" class="btn btn-primary">Áp dụng</button>
+                            <button type="submit" class="btn btn-primary" id="applyBtn">Áp dụng</button>
                             <a asp-action="Index" class="btn btn-outline-secondary">Reset</a>
                             <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown">
                                 Bộ lọc nhanh
@@ -53,7 +53,7 @@
                                    asp-route-startDate="@(new DateTime(DateTime.Today.Year, 1, 1).ToString("yyyy-MM-dd"))"
                                    asp-route-endDate="@DateTime.Today.ToString("yyyy-MM-dd")">Năm nay</a>
                             </div>
-                            <a asp-action="ExportExcel"
+                            <a id="exportExcelBtn" asp-action="ExportExcel"
                                asp-route-StartDate="@Model.AppliedFilters.StartDate"
                                asp-route-EndDate="@Model.AppliedFilters.EndDate"
                                class="btn btn-success">
@@ -144,7 +144,7 @@
                             <th>Tổng doanh thu</th>
                             <th>Sản phẩm đã bán</th>
                             <th>Số lượng đơn hàng</th>
-                            <th>Tỷ lệ trên tổng doanh thu</th>
+                            <!--<th>Tỷ lệ trên tổng doanh thu</th>-->
                         </tr>
                     </thead>
                     <tbody>
@@ -155,7 +155,7 @@
                                 <td>@category.TotalRevenue.ToString("C", new CultureInfo("vi-VN"))</td>
                                 <td>@category.TotalProducts</td>
                                 <td>@category.TotalOrders</td>
-                                <td>@category.Percentage%</td>
+                                <!--<td>@category.Percentage%</td>-->
                             </tr>
                         }
                     </tbody>
@@ -206,8 +206,60 @@
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
+        @if (TempData["ToastrError"] != null)
+        {
+            <text>
+                    toastr.error('@TempData["ToastrError"]');
+            </text>
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('filterForm').addEventListener('submit', function(e) {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                const today = new Date().toISOString().split('T')[0];
+
+                if (startDate && endDate) {
+                    if (endDate < startDate) {
+                        e.preventDefault();
+                        toastr.error('Khoảng thời gian không hợp lệ: Ngày kết thúc không thể lớn hơn ngày bắt đầu.');
+                        return false;
+                    }
+
+                    if (startDate > today || endDate > today) {
+                        e.preventDefault();
+                        toastr.error('Khoảng thời gian không hợp lệ: Không thể chọn ngày trong tương lai.');
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            document.getElementById('exportExcelBtn').addEventListener('click', function(e) {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                const today = new Date().toISOString().split('T')[0];
+
+                if (startDate && endDate) {
+                    if (endDate < startDate) {
+                        e.preventDefault();
+                        toastr.error('Khoảng thời gian không hợp lệ: Ngày kết thúc không thể trước ngày bắt đầu.');
+                        return false;
+                    }
+
+                    if (startDate > today || endDate > today) {
+                        e.preventDefault();
+                        toastr.error('Khoảng thời gian không hợp lệ: Không thể chọn ngày trong tương lai.');
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
             var categoryChartCtx = document.getElementById('categoryRevenueChart');
             var categoryLabels = [@Html.Raw(string.Join(",", Model.CategorySales.Select(c => $"'{c.CategoryName}'")))];
             var categoryData = [@string.Join(",", Model.CategorySales.Select(c => c.TotalRevenue))];

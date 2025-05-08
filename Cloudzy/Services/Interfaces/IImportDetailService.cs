@@ -1,4 +1,5 @@
 ﻿using Cloudzy.Models.ViewModels.AdminImportDetail;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using X.PagedList;
 
 namespace Cloudzy.Services.Interfaces
@@ -10,5 +11,6 @@ namespace Cloudzy.Services.Interfaces
         Task AddAsync(CreateViewModel model);
         Task UpdateAsync(EditViewModel model);
         Task DeleteAsync(int id);
+        Task<List<SelectListItem>> GetSizesByProductIdAsync(int productId);
     }
 }

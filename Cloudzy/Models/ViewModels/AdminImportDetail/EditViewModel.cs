@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
-
 namespace Cloudzy.Models.ViewModels.AdminImportDetail
 {
     public class EditViewModel
@@ -7,8 +6,10 @@ namespace Cloudzy.Models.ViewModels.AdminImportDetail
         public int ImportDetailId { get; set; }
         public int ImportId { get; set; }
         public int ProductId { get; set; }
+        public int SizeId { get; set; }
         public int Quantity { get; set; }
         public decimal Price { get; set; }
         public IEnumerable<SelectListItem> Product { get; set; } = new List<SelectListItem>();
+        public IEnumerable<SelectListItem> Sizes { get; set; } = new List<SelectListItem>();
     }
 }

@@ -1,16 +1,47 @@
 ﻿@model IEnumerable<Cloudzy.Models.Domain.Order>
 @{
     ViewData["Title"] = "Quản lý giao hàng";
-    Layout = "~/Views/Shared/_ShipperLayout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var activeTab = ViewData["ActiveTab"] as string ?? "processing";
 }
 
-<div class="container mt-4">
-    <h2 class="mb-4">Danh sách đơn hàng cần giao</h2>
+<div class="container mt-4">    
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a class="nav-link @(activeTab == "processing" ? "active" : "")" href="@Url.Action("Index", "Shipper")">
+                <i class="fas fa-box"></i> Đơn hàng cần giao
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(activeTab == "shipping" ? "active" : "")" href="@Url.Action("Shipping", "Shipper")">
+                <i class="fas fa-truck"></i> Đơn hàng đang giao
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(activeTab == "delivered" ? "active" : "")" href="@Url.Action("Delivered", "Shipper")">
+                <i class="fas fa-check-circle"></i> Đơn hàng đã giao
+            </a>
+        </li>
+    </ul>
 
     @if (!Model.Any())
     {
         <div class="alert alert-info">
-            Hiện tại không có đơn hàng nào cần giao.
+            @switch (activeTab)
+            {
+                case "processing":
+                    <text>Hiện tại không có đơn hàng nào cần giao.</text>
+                    break;
+                case "shipping":
+                    <text>Hiện tại không có đơn hàng nào đang giao.</text>
+                    break;
+                case "delivered":
+                    <text>Bạn chưa giao xong đơn hàng nào.</text>
+                    break;
+                default:
+                    <text>Không có đơn hàng nào.</text>
+                    break;
+            }
         </div>
     }
     else
@@ -47,7 +78,21 @@
                                 }
                             </td>
                             <td>
-                                <span class="badge bg-info">Đang xử lý</span>
+                                @switch (order.Status)
+                                {
+                                    case "Processing":
+                                        <span class="badge bg-danger">Đang xử lý</span>
+                                        break;
+                                    case "Shipping":
+                                        <span class="badge bg-danger">Đang giao hàng</span>
+                                        break;
+                                    case "Delivered":
+                                        <span class="badge bg-success">Đã giao hàng</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-secondary">@order.Status</span>
+                                        break;
+                                }
                             </td>
                             <td>
                                 <a href="@Url.Action("OrderDetails", "Shipper", new { id = order.OrderId })" class="btn btn-primary btn-sm">
@@ -65,7 +110,6 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            // Hiển thị thông báo nếu có
             if ('@TempData["SuccessMessage"]' != '') {
                 toastr.success('@TempData["SuccessMessage"]');
             }

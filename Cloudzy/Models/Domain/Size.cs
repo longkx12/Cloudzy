@@ -17,5 +17,7 @@ public partial class Size
 
     public decimal WeightMax { get; set; }
 
+    public virtual ICollection<ImportDetail> ImportDetails { get; set; } = new List<ImportDetail>();
+
     public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
 }
