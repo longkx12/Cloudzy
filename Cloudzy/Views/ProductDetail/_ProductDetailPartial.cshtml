@@ -96,7 +96,7 @@
                 <div class="d-flex align-items-center mb-4">
                     <div class="me-3">
                         <label class="me-2">Số lượng</label>
-                        <input type="number" id="quantity" class="form-control quantity-input" value="1" min="1" max="@firstVariant.Stock" />
+                        <input type="text" id="quantity" class="form-control quantity-input" value="1" />
                     </div>
                 </div>
 
@@ -157,27 +157,46 @@
         });
 
         document.querySelectorAll('.size-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const variantId = parseInt(this.dataset.variantId);
-            const selectedVariant = productVariants.find(v => v.VariantId === variantId);
+            btn.addEventListener('click', function () {
+                const variantId = parseInt(this.dataset.variantId);
+                const selectedVariant = productVariants.find(v => v.VariantId === variantId);
 
                 if (selectedVariant) {
                     document.getElementById('height-range').innerText = selectedVariant.HeightRange;
                     document.getElementById('weight-range').innerText = selectedVariant.WeightRange;
                     document.getElementById('stock-count').innerText = selectedVariant.Stock;
                     document.getElementById('stock-status').innerText = selectedVariant.Stock > 0 ? "Còn hàng" : "Hết hàng";
-                    document.getElementById('quantity').max = selectedVariant.Stock;
                 }
 
-             document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('btn-secondary'));
-             this.classList.add('btn-secondary');
+                document.querySelectorAll('.size-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.classList.remove('btn-secondary');
+                });
+                this.classList.add('active');
+                this.classList.add('btn-secondary');
             });
         });
 
-        // Thêm xử lý cho nút "THÊM VÀO GIỎ"
+        const quantityInput = document.getElementById('quantity');
+        quantityInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^\d.]/g, '');
+
+            const decimalPoints = this.value.match(/\./g);
+            if (decimalPoints && decimalPoints.length > 1) {
+                this.value = this.value.slice(0, this.value.lastIndexOf('.'));
+            }
+
+            if (this.value.startsWith('00')) {
+                this.value = '0';
+            }
+
+            if (this.value === '') {
+                this.value = '1';
+            }
+        });
+
         document.querySelector('.btn-add-cart').addEventListener('click', async function() {
             try {
-                // Lấy variant ID đã chọn
                 const selectedVariantBtn = document.querySelector('.size-btn.active') || document.querySelector('.size-btn.btn-secondary');
                 if (!selectedVariantBtn) {
                     toastr.warning('Vui lòng chọn size trước khi thêm vào giỏ');
@@ -185,23 +204,39 @@
                 }
 
                 const variantId = parseInt(selectedVariantBtn.dataset.variantId);
-                const quantity = parseInt(document.getElementById('quantity').value);
+                const quantityValue = document.getElementById('quantity').value;
 
-                // Kiểm tra số lượng hợp lệ
+                if (quantityValue.includes('.')) {
+                    toastr.error('Số lượng phải là số nguyên', 'Lỗi');
+                    return;
+                }
+
+                if (!/^\d+$/.test(quantityValue)) {
+                    toastr.error('Số lượng không hợp lệ');
+                    return;
+                }
+
+                const quantity = parseInt(quantityValue);
+
+                const selectedVariant = productVariants.find(v => v.VariantId === variantId);
+                const maxStock = selectedVariant ? selectedVariant.Stock : 0;
+
                 if (quantity <= 0) {
                     toastr.warning('Số lượng phải lớn hơn 0');
                     return;
                 }
 
-                // Kiểm tra người dùng đã đăng nhập chưa
-                const isAuthenticated = @Json.Serialize(User.Identity.IsAuthenticated);
-                if (!isAuthenticated) {
-                    toastr.warning('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng',"Cảnh báo");
-                    // Có thể thêm chuyển hướng đến trang đăng nhập ở đây
+                if (quantity > maxStock) {
+                    toastr.warning(`Số lượng không được vượt quá ${maxStock}`);
                     return;
                 }
 
-                // Gửi yêu cầu thêm vào giỏ hàng
+                const isAuthenticated = @Json.Serialize(User.Identity.IsAuthenticated);
+                if (!isAuthenticated) {
+                    toastr.warning('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng',"Cảnh báo");
+                    return;
+                }
+
                 const response = await fetch('/api/Cart/AddToCart', {
                     method: 'POST',
                     headers: {
@@ -219,7 +254,6 @@
                 if (data.success) {
                     toastr.success(data.message);
 
-                    // Cập nhật số lượng trên biểu tượng giỏ hàng
                     document.querySelector('.cart-badge').textContent = data.totalItems;
                 } else {
                     toastr.error(data.message);

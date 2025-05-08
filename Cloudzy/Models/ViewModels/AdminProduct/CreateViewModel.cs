@@ -29,6 +29,7 @@ namespace Cloudzy.Models.ViewModels.AdminProduct
 
         [Required(ErrorMessage = "Giá khuyến mãi không được để trống")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Giá khuyến mãi phải lớn hơn 0")]
+        [DiscountLessThanPrice("Price", ErrorMessage = "Giá khuyến mãi phải nhỏ hơn giá gốc")]
         public decimal? DiscountPrice { get; set; }
 
         public string? ProductDescription { get; set; }

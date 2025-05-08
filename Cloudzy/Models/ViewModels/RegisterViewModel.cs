@@ -4,12 +4,17 @@ namespace Cloudzy.Models.ViewModels
 {
     public class RegisterViewModel
     {
+        [Required(ErrorMessage = "Họ tên không được để trống")]
+        [StringLength(100, ErrorMessage = "Tên gì mà dài thế!")]
         public string Fullname { get; set; }
 
         [Required(ErrorMessage = "Email không được để trống")]
         [EmailAddress(ErrorMessage = "Email không hợp lệ")]
         [StringLength(255, ErrorMessage = "Email quá dài!")]
         public string Email { get; set; }
+
+        [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
+        [RegularExpression(@"^0\d{9}$", ErrorMessage = "SDT phải bắt đầu bằng 0 và có 10 chữ số")]
         public string PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Mật khẩu không được để trống")]
