@@ -5,9 +5,12 @@
 }
 
 <h2>Thêm chi tiết nhập hàng</h2>
+<div class="mb-3">
+    <strong>Nhà cung cấp:</strong> @ViewBag.SupplierName
+</div>
+
 <form asp-action="Create" method="post">
     <input type="hidden" asp-for="ImportId" />
-
     <div class="row">
         <div class="mb-3 col-lg-6">
             <label asp-for="ProductId" class="form-label">Tên sản phẩm</label>
@@ -16,7 +19,6 @@
             </select>
             <span asp-validation-for="ProductId" class="text-danger"></span>
         </div>
-
         <div class="mb-3 col-lg-6">
             <label asp-for="SizeId" class="form-label">Size</label>
             <select asp-for="SizeId" asp-items="Model.Sizes" class="form-control" id="sizeSelect">
@@ -24,20 +26,17 @@
             </select>
             <span asp-validation-for="SizeId" class="text-danger"></span>
         </div>
-
         <div class="mb-3 col-lg-6">
             <label asp-for="Quantity" class="form-label">Số lượng</label>
             <input asp-for="Quantity" class="form-control" type="number" min="1" />
             <span asp-validation-for="Quantity" class="text-danger"></span>
         </div>
-
         <div class="mb-3 col-lg-6">
-            <label asp-for="Price" class="form-label">Giá</label>
+            <label asp-for="Price" class="form-label">Giá nhập</label>
             <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" />
             <span asp-validation-for="Price" class="text-danger"></span>
         </div>
     </div>
-
     <button type="submit" class="btn btn-primary mt-3">Thêm chi tiết</button>
     <a asp-action="Index" asp-route-importId="@ViewBag.ImportId" class="btn btn-secondary mt-3">Quay lại</a>
 </form>
@@ -57,7 +56,6 @@
                             var sizeSelect = $('#sizeSelect');
                             sizeSelect.empty();
                             sizeSelect.append('<option value="">-- Chọn size --</option>');
-
                             $.each(data, function(i, size) {
                                 sizeSelect.append($('<option></option>').val(size.value).text(size.text));
                             });
