@@ -54,7 +54,7 @@ body {
 
 .search-box {
     max-width: 400px;
-    margin: 0 auto; /* căn giữa nếu cần */
+    margin: 0 auto; 
 }
 
     .search-box input {
@@ -566,14 +566,13 @@ body {
     flex-direction: column;
 }
 
-/* Đảm bảo main chiếm tối thiểu phần còn lại của viewport */
 main {
     flex: 1 0 auto;
-    min-height: calc(100vh - 200px); /* Điều chỉnh con số này tùy theo header và footer của bạn */
+    min-height: calc(100vh - 200px);
     padding-top: 2rem;
     padding-bottom: 3rem;
 }
-/* Cải thiện sidebar */
+
 .sidebar-card {
     border-radius: 10px;
     transition: all 0.3s ease;
@@ -609,7 +608,6 @@ main {
             text-decoration: none;
         }
 
-/* Cải thiện tab navigation */
 .nav-tabs .nav-link {
     border: none;
     padding: 0.75rem 1.25rem;

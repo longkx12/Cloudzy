@@ -1,7 +1,6 @@
 ﻿using Cloudzy.Repositories.Interfaces;
 using Cloudzy.Models.ViewModels.AdminOrderDetail;
 using Cloudzy.Services.Interfaces;
-
 namespace Cloudzy.Services.Implementations
 {
     public class OrderDetailService : IOrderDetailService
@@ -9,14 +8,12 @@ namespace Cloudzy.Services.Implementations
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderDetailRepository _orderDetailRepository;
         private readonly IShipperRepository _shipperRepository;
-
         public OrderDetailService(IOrderRepository orderRepository, IOrderDetailRepository orderDetailRepository, IShipperRepository shipperRepository)
         {
             _orderRepository = orderRepository;
             _orderDetailRepository = orderDetailRepository;
             _shipperRepository = shipperRepository;
         }
-
         public async Task<DetailViewModel> GetOrderDetailByIdAsync(int orderId)
         {
             var order = await _orderRepository.GetByIdAsync(orderId);
@@ -24,13 +21,11 @@ namespace Cloudzy.Services.Implementations
             {
                 return null;
             }
-
             var orderDetails = await _orderDetailRepository.GetByOrderIdAsync(orderId);
             if (orderDetails == null || !orderDetails.Any())
             {
                 return null;
             }
-
             var orderItems = orderDetails.Select(od => new OrderItemViewModel
             {
                 OrderDetailId = od.OrderDetailId,
@@ -40,10 +35,8 @@ namespace Cloudzy.Services.Implementations
                 Quantity = od.Quantity,
                 Price = od.Price
             }).ToList();
-
             decimal subtotal = orderItems.Sum(item => item.TotalPrice);
             decimal discountAmount = 0;
-
             if (order.DiscountCode?.VoucherType != null)
             {
                 var voucherType = order.DiscountCode.VoucherType;
@@ -56,9 +49,7 @@ namespace Cloudzy.Services.Implementations
                     discountAmount = subtotal * voucherType.Value / 100;
                 }
             }
-
             var availableShippers = await _shipperRepository.GetAllShippersAsync();
-
             var viewModel = new DetailViewModel
             {
                 OrderId = order.OrderId,
@@ -76,9 +67,9 @@ namespace Cloudzy.Services.Implementations
                 OrderItems = orderItems,
                 ShipperId = order.ShipperId,
                 ShipperName = order.Shipper?.Fullname,
-                AvailableShippers = availableShippers
+                AvailableShippers = availableShippers,
+                ReturnReason = order.ReturnReason
             };
-
             return viewModel;
         }
     }

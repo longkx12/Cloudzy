@@ -34,6 +34,14 @@
                         </div>
                     </div>
 
+                    @if (Model.Order.Status.ToLower() == "returned" && !string.IsNullOrEmpty(Model.Order.ReturnReason))
+                    {
+                        <div class="alert alert-info mb-4">
+                            <h6 class="mb-2"><i class="fas fa-info-circle me-2"></i>Lý do hoàn trả</h6>
+                            <p class="mb-0">@Model.Order.ReturnReason</p>
+                        </div>
+                    }
+
                     <h5 class="mb-3"><i class="fas fa-box me-2"></i>Sản phẩm</h5>
                     <div class="table-responsive mb-4">
                         <table class="table table-striped">
@@ -101,10 +109,16 @@
                                 <i class="fas fa-times-circle me-2"></i> Hủy đơn hàng
                             </button>
                         }
-                        @if (Model.Order.Status.ToLower() == "shipping")
+                        <!--@if (Model.Order.Status.ToLower() == "shipping")
                         {
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#markDeliveredModal">
-                                <i class="fas fa-check-circle me-2"></i> Đã nhận được hàng
+                                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#markDeliveredModal">
+                                        <i class="fas fa-check-circle me-2"></i> Đã nhận được hàng
+                                    </button>
+                        }-->
+                        @if (Model.Order.Status.ToLower() == "delivered")
+                        {
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#returnOrderModal">
+                                <i class="fas fa-undo-alt me-2"></i> Hoàn trả hàng
                             </button>
                         }
                     </div>
@@ -129,7 +143,7 @@
                             </a>
                         </li>
                         <li class="sidebar-menu-item active">
-                            <a asp-controller="Order" asp-action="MyOrders" class="text-decoration-none">
+                            <a asp-controller="MyOrder" asp-action="MyOrders" class="text-decoration-none">
                                 <i class="fas fa-shopping-bag me-2"></i>
                                 Đơn mua
                             </a>
@@ -189,17 +203,31 @@
     </div>
 }
 
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            if ('@TempData["SuccessMessage"]' != '') {
-                toastr.success('@TempData["SuccessMessage"]');
-            }
-            if ('@TempData["ErrorMessage"]' != '') {
-                toastr.error('@TempData["ErrorMessage"]');
-            }
-        });
-    </script>
+@if (Model.Order.Status.ToLower() == "delivered")
+{
+    <div class="modal fade" id="returnOrderModal" tabindex="-1" aria-labelledby="returnOrderModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="returnOrderModalLabel">Hoàn trả đơn hàng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn muốn hoàn trả đơn hàng #@Model.Order.OrderId?</p>
+                    <form asp-action="ReturnOrder" asp-route-id="@Model.Order.OrderId" method="post" id="returnOrderForm">
+                        <div class="mb-3">
+                            <label for="returnReason" class="form-label">Lý do hoàn trả <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="returnReason" name="returnReason" rows="3" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-warning" onclick="document.getElementById('returnOrderForm').submit();">Xác nhận hoàn trả</button>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 
 @functions {
@@ -212,6 +240,7 @@
             "shipping" => "badge bg-warning",
             "delivered" => "badge bg-success",
             "cancelled" => "badge bg-danger",
+            "returned" => "badge bg-secondary",
             _ => "badge bg-secondary"
         };
     }
@@ -225,6 +254,7 @@
             "shipping" => "Đang giao hàng",
             "delivered" => "Đã giao hàng",
             "cancelled" => "Đã hủy",
+            "returned" => "Đã hoàn trả",
             _ => status
         };
     }

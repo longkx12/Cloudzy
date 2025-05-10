@@ -165,6 +165,7 @@ public partial class DbCloudzyContext : DbContext
                 .HasColumnType("datetime");
             entity.Property(e => e.DiscountCodeId).HasColumnName("DiscountCodeID");
             entity.Property(e => e.PaymentMethod).HasMaxLength(50);
+            entity.Property(e => e.ReturnReason).HasMaxLength(255);
             entity.Property(e => e.ShipperId).HasColumnName("ShipperID");
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.TotalPrice).HasColumnType("decimal(10, 2)");

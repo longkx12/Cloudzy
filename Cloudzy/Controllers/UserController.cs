@@ -45,6 +45,9 @@ namespace Cloudzy.Controllers
                 return View(model);
             }
 
+            TempData["ToastMessage"] = "Đăng nhập thành công!";
+            TempData["ToastType"] = "success";
+
             return user.Role?.RoleName == "Admin" ? RedirectToAction("Index", "AdminUser") : RedirectToAction("Index", "Home");
         }
 
