@@ -9,6 +9,6 @@ namespace Cloudzy.Services.Interfaces
         Task<EditViewModel?> GetUserByIdAsync(int id);
         Task AddUserAsync(CreateViewModel model);
         Task UpdateUserAsync(EditViewModel model);
-        Task DeleteUserAsync(int id);
+        Task LockUnlockUserAsync(int id);
     }
 }

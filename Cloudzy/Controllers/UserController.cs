@@ -28,7 +28,7 @@ namespace Cloudzy.Controllers
             return View();
         }
 
-        [HttpPost]        
+        [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
@@ -36,7 +36,15 @@ namespace Cloudzy.Controllers
                 return View(model);
             }
 
-            var user = await _accountService.LoginAsync(model);
+            var user = await _accountService.GetUserByEmailAsync(model.Email);
+            if (user != null && user.IsLocked)
+            {
+                TempData["ToastMessage"] = "Tài khoản này đã bị khóa";
+                TempData["ToastType"] = "error";
+                return View(model);
+            }
+
+            user = await _accountService.LoginAsync(model);
 
             if (user == null)
             {
@@ -81,7 +89,7 @@ namespace Cloudzy.Controllers
                     return View(model);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 TempData["ToastMessage"] = ex.Message;
                 TempData["ToastType"] = "error";
@@ -117,6 +125,13 @@ namespace Cloudzy.Controllers
                 return View();
             }
 
+            if (user.IsLocked)
+            {
+                TempData["ToastMessage"] = "Tài khoản này đã bị khóa. Không thể đặt lại mật khẩu.";
+                TempData["ToastType"] = "error";
+                return View();
+            }
+
             var token = Guid.NewGuid().ToString();
             user.ResetPasswordToken = token;
             user.ResetPasswordExpiry = DateTime.UtcNow.AddHours(1); // Hạn token 1 tiếng
@@ -142,10 +157,8 @@ namespace Cloudzy.Controllers
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
-            if (!ModelState.IsValid || model.NewPassword != model.ConfirmPassword)
+            if (!ModelState.IsValid)
             {
-                TempData["ToastMessage"] = "Xác nhận mật khẩu không khớp!";
-                TempData["ToastType"] = "error";
                 return View(model);
             }
 
@@ -157,6 +170,13 @@ namespace Cloudzy.Controllers
                 return RedirectToAction("ForgotPassword");
             }
 
+            if (user.IsLocked)
+            {
+                TempData["ToastMessage"] = "Tài khoản này đã bị khóa. Không thể đặt lại mật khẩu.";
+                TempData["ToastType"] = "error";
+                return RedirectToAction("Login");
+            }
+
             user.Password = new PasswordHasher<User>().HashPassword(user, model.NewPassword);
             user.ResetPasswordToken = null;
             user.ResetPasswordExpiry = null;
@@ -166,6 +186,5 @@ namespace Cloudzy.Controllers
             TempData["ToastType"] = "success";
             return RedirectToAction("Login");
         }
-
     }
 }

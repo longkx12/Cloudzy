@@ -1,7 +1,6 @@
 ﻿@using X.PagedList
 @using X.PagedList.Mvc.Core
 @model IPagedList<Cloudzy.Models.ViewModels.AdminUser.ListViewModel>
-
 <div class="table-responsive">
     <table class="table table-bordered">
         <thead>
@@ -28,17 +27,16 @@
                     <td>
                         <div class="d-flex gap-2">
                             <a href="@Url.Action("Edit", "AdminUser", new { id = user.UserId })" class="btn btn-warning">Sửa</a>
-                            <form asp-action="Delete" asp-controller="AdminUser" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa không?')">
-                                <input type="hidden" name="id" value="@user.UserId" />
-                                <button type="submit" class="btn btn-danger">Xóa</button>
-                            </form>
+
+                            <button onclick="lockUnlockUser(@user.UserId, this)" class="btn @(user.IsLocked ? "btn-success" : "btn-danger")">
+                                @(user.IsLocked ? "Mở khóa" : "Khóa")
+                            </button>
                         </div>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-
     <!-- Phân trang bằng AJAX -->
     <div class="text-center d-flex justify-content-center mt-3">
         @Html.PagedListPager(Model, page => "javascript:load(" + page + ")", new PagedListRenderOptions
@@ -47,5 +45,30 @@
        PageClasses = new[] { "page-link" }
    })
     </div>
-
 </div>
+
+<script>
+    function lockUnlockUser(userId, button) {
+        $.ajax({
+            url: '/AdminUser/LockUnlock',
+            type: 'POST',
+            data: { id: userId },
+            success: function (result) {
+                if (result.success) {
+                    toastr.success(result.message, "Thành công!");
+
+                    if (result.isLocked) {
+                        $(button).text('Mở khóa');
+                        $(button).removeClass('btn-danger').addClass('btn-success');
+                    } else {
+                        $(button).text('Khóa');
+                        $(button).removeClass('btn-success').addClass('btn-danger');
+                    }
+                }
+            },
+            error: function () {
+                toastr.error("Có lỗi xảy ra khi thực hiện thao tác.", "Lỗi!");
+            }
+        });
+    }
+</script>
