@@ -1,4 +1,5 @@
 ﻿@model List<Cloudzy.Models.ViewModels.ProductReview.ProductReviewViewModel>
+@inject Cloudzy.Services.Interfaces.IReviewService ReviewService
 
 <div id="reviews-tab" class="tab-content p-4 bg-white">
     <div class="row">
@@ -54,47 +55,61 @@
 
     @if (User.Identity.IsAuthenticated)
     {
-        <!-- Review Form -->
-        <div class="review-form mb-5">
-            <h4 class="mb-3">Viết đánh giá của bạn</h4>
-            <form id="reviewForm" method="post" action="/Review/AddReview">
-                <input type="hidden" name="ProductId" value="@ViewBag.ProductId" />
-                <textarea class="form-control mb-3" name="Comment" placeholder="Nhập đánh giá của bạn" required></textarea>
-                <div class="d-flex mb-3">
-                    <div class="me-auto rating-selector">
-                        <button type="button" class="btn btn-outline-secondary me-2 rating-btn" data-rating="1">
-                            <i class="far fa-star"></i>
+        var userIdClaim = User.FindFirst("UserId");
+        int userId = 0;
+        int.TryParse(userIdClaim?.Value, out userId);
+        var canReview = userId > 0 ? await ReviewService.CanUserReviewProduct(userId, ViewBag.ProductId) : false;
+
+        if (canReview)
+        {
+            <!-- Review Form -->
+            <div class="review-form mb-5">
+                <h4 class="mb-3">Viết đánh giá của bạn</h4>
+                <form id="reviewForm" method="post" action="/Review/AddReview">
+                    <input type="hidden" name="ProductId" value="@ViewBag.ProductId" />
+                    <textarea class="form-control mb-3" name="Comment" placeholder="Nhập đánh giá của bạn" required></textarea>
+                    <div class="d-flex mb-3">
+                        <div class="me-auto rating-selector">
+                            <button type="button" class="btn btn-outline-secondary me-2 rating-btn" data-rating="1">
+                                <i class="far fa-star"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary me-2 rating-btn" data-rating="2">
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary me-2 rating-btn" data-rating="3">
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary me-2 rating-btn" data-rating="4">
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary me-2 rating-btn" data-rating="5">
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </button>
+                            <input type="hidden" name="Rating" id="selectedRating" value="5" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-share"></i> Gửi đánh giá
                         </button>
-                        <button type="button" class="btn btn-outline-secondary me-2 rating-btn" data-rating="2">
-                            <i class="far fa-star"></i>
-                            <i class="far fa-star"></i>
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary me-2 rating-btn" data-rating="3">
-                            <i class="far fa-star"></i>
-                            <i class="far fa-star"></i>
-                            <i class="far fa-star"></i>
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary me-2 rating-btn" data-rating="4">
-                            <i class="far fa-star"></i>
-                            <i class="far fa-star"></i>
-                            <i class="far fa-star"></i>
-                            <i class="far fa-star"></i>
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary me-2 rating-btn" data-rating="5">
-                            <i class="far fa-star"></i>
-                            <i class="far fa-star"></i>
-                            <i class="far fa-star"></i>
-                            <i class="far fa-star"></i>
-                            <i class="far fa-star"></i>
-                        </button>
-                        <input type="hidden" name="Rating" id="selectedRating" value="5" />
                     </div>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-share"></i> Gửi đánh giá
-                    </button>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning mb-4">
+                <i class="fas fa-exclamation-circle me-2"></i> Bạn cần mua sản phẩm này trước khi có thể đánh giá.
+            </div>
+        }
     }
     else
     {

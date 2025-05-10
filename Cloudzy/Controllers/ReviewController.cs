@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cloudzy.Controllers
 {
+    [Authorize]
     public class ReviewController : Controller
     {
         private readonly IReviewService _reviewService;
@@ -14,7 +15,6 @@ namespace Cloudzy.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> AddReview(int productId, int rating, string comment)
         {
             if (string.IsNullOrWhiteSpace(comment) || rating < 1 || rating > 5)
@@ -30,8 +30,14 @@ namespace Cloudzy.Controllers
                 return RedirectToAction("Login", "User");
             }
 
-            var result = await _reviewService.AddReviewAsync(productId, userId, rating, comment);
+            if (!await _reviewService.CanUserReviewProduct(userId, productId))
+            {
+                TempData["ToastMessage"] = "Bạn cần mua sản phẩm này trước khi đánh giá!";
+                TempData["ToastType"] = "error";
+                return RedirectToAction("Index", "ProductDetail", new { productId });
+            }
 
+            var result = await _reviewService.AddReviewAsync(productId, userId, rating, comment);
             if (result)
             {
                 TempData["ToastMessage"] = "Đánh giá của bạn đã được gửi thành công!";
@@ -47,7 +53,6 @@ namespace Cloudzy.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> DeleteReview(int reviewId, int productId)
         {
             var userIdClaim = User.FindFirst("UserId");
@@ -57,7 +62,6 @@ namespace Cloudzy.Controllers
             }
 
             var result = await _reviewService.DeleteReviewAsync(reviewId, userId);
-
             if (result)
             {
                 TempData["ToastMessage"] = "Đã xóa đánh giá thành công!";
