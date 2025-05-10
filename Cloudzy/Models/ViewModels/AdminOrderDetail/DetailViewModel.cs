@@ -19,6 +19,7 @@ namespace Cloudzy.Models.ViewModels.AdminOrderDetail
         public decimal TotalPrice { get; set; }
         public int? ShipperId { get; set; }
         public string? ShipperName { get; set; }
+        public string ReturnReason { get; set; }
         public IEnumerable<User>? AvailableShippers { get; set; }
         public List<OrderItemViewModel> OrderItems { get; set; }
     }

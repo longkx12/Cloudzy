@@ -7,6 +7,7 @@ namespace Cloudzy.Services.Interfaces
         Task<ListViewModel> GetOrdersByUserIdAsync(int userId, string status = "all");
         Task<DetailViewModel> GetOrderDetailByIdAsync(int orderId, int userId);
         Task<bool> CancelOrderAsync(int orderId, int userId);
-        Task<bool> MarkOrderAsDeliveredAsync(int orderId, int userId); // New method
+        Task<bool> MarkOrderAsDeliveredAsync(int orderId, int userId);
+        Task<bool> ReturnOrderAsync(int orderId, int userId, string returnReason);
     }
 }

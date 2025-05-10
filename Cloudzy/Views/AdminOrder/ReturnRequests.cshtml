@@ -1,39 +1,39 @@
 ﻿@{
-    ViewData["Title"] = "Danh sách đơn hàng";
+    ViewData["Title"] = "Yêu cầu hoàn trả hàng";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<!-- Danh sách đơn hàng -->
+<!-- Danh sách yêu cầu hoàn trả hàng -->
 <div class="card-title">
-    <h4>Danh sách đơn hàng</h4>
+    <h4>Yêu cầu hoàn trả hàng</h4>
 </div>
 
-<div id="orderList">
+<div id="returnRequestsList">
     <p>Đang tải dữ liệu...</p>
 </div>
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
-        load(1);
+        loadReturnRequests(1);
         var message = '@Html.Raw(TempData["SuccessMessage"])';
         if (message) {
             showAlert(message);
         }
     });
 
-    function load(page) {
+    function loadReturnRequests(page) {
         $.ajax({
-            url: '/AdminOrder/Load?page=' + page,
+            url: '/AdminOrder/LoadReturnRequests?page=' + page,
             type: 'GET',
             success: function (data) {
-                $('#orderList').html(data);
+                $('#returnRequestsList').html(data);
             },
             error: function (xhr) {
                 if (xhr.status === 404) {
-                    $('#orderList').html('<p class="text-warning">Không có đơn hàng nào.</p>');
+                    $('#returnRequestsList').html('<p class="text-warning">Không có yêu cầu hoàn trả nào.</p>');
                 } else {
-                    $('#orderList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
+                    $('#returnRequestsList').html('<p class="text-danger">Không thể tải dữ liệu.</p>');
                 }
             }
         });

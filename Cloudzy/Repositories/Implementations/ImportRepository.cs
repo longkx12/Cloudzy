@@ -13,7 +13,9 @@ namespace Cloudzy.Repositories.Implementations
 
         public override async Task<IEnumerable<Import>> GetAllAsync()
         {
-            return await _dbSet.Include(i => i.Supplier).ToListAsync();
+            return await _dbSet.Include(i => i.Supplier)
+                .OrderByDescending(i => i.ImportDate)
+                .ToListAsync();
         }
     }
 }

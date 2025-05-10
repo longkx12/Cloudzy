@@ -189,11 +189,24 @@
                     </li>-->
                     <li class="nav-item">
                         <a class="nav-link ajax-link"
-                           asp-controller="AdminOrder"
-                           asp-action="Index">
-                            <i class="menu-icon mdi mdi-cart-outline"></i>
+                           data-bs-toggle="collapse"
+                           href="#order-management"
+                           aria-expanded="false"
+                           aria-controls="order-management">
+                            <i class="menu-icon mdi mdi-clipboard-text-outline"></i>
                             <span class="menu-title">Quản lý đơn hàng</span>
+                            <i class="menu-arrow"></i>
                         </a>
+                        <div class="collapse" id="order-management">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="@Url.Action("Index","AdminOrder")">Danh sách đơn hàng</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="@Url.Action("ReturnRequests","AdminOrder")">Yêu cầu hoàn trả</a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link ajax-link"
@@ -307,24 +320,6 @@
                         toastr.info(toastMessage);
                 }
             }
-
-            // $(document).on('click', '.ajax-link', function (e) {
-            //     e.preventDefault();
-
-            //     var url = $(this).attr('href');
-
-            //     $.ajax({
-            //         url: url,
-            //         type: 'GET',
-            //         success: function (data) {
-            //             $('#ajax-content').html($(data).find('#ajax-content').html());
-            //             window.history.pushState({}, '', url);
-            //         },
-            //         error: function () {
-            //             alert("Có lỗi xảy ra khi tải nội dung.");
-            //         }
-            //     });
-            // });
         });
     </script>
     @await RenderSectionAsync("Scripts", required: false)

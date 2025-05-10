@@ -29,6 +29,25 @@ namespace Cloudzy.Services.Implementations
                 PaymentMethod = o.PaymentMethod,
                 Status = o.Status
             }).ToPagedList(pageNumber, pageSize);
+
+            return pageOrder;
+        }
+
+        public async Task<IPagedList<ListViewModel>> GetReturnRequestsAsync(int pageNumber, int pageSize)
+        {
+            var returnOrders = await _repository.GetReturnRequestsAsync();
+            var pageOrder = returnOrders.Select((o, index) => new ListViewModel
+            {
+                STT = index + 1,
+                OrderId = o.OrderId,
+                PhoneNumber = o.User?.PhoneNumber,
+                Email = o.User?.Email,
+                CreatedAt = o.CreatedAt,
+                VoucherCode = o.DiscountCode?.Code,
+                PaymentMethod = o.PaymentMethod,
+                Status = o.Status
+            }).ToPagedList(pageNumber, pageSize);
+
             return pageOrder;
         }
 

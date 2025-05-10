@@ -1,14 +1,12 @@
 ﻿using Cloudzy.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 namespace Cloudzy.Controllers
 {
     [Authorize]
     public class MyOrderController : Controller
     {
         private readonly IMyOrderService _service;
-
         public MyOrderController(IMyOrderService service)
         {
             _service = service;
@@ -75,6 +73,28 @@ namespace Cloudzy.Controllers
                 else
                 {
                     TempData["ToastMessage"] = "Không thể đánh dấu đơn hàng này là đã giao!";
+                    TempData["ToastType"] = "error";
+                }
+                return RedirectToAction("OrderDetail", new { id });
+            }
+            return RedirectToAction("Login", "User");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ReturnOrder(int id, string returnReason)
+        {
+            var userIdClaim = User.FindFirst("UserId");
+            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+            {
+                var result = await _service.ReturnOrderAsync(id, userId, returnReason);
+                if (result)
+                {
+                    TempData["ToastMessage"] = "Yêu cầu hoàn trả đơn hàng đã được gửi thành công!";
+                    TempData["ToastType"] = "success";
+                }
+                else
+                {
+                    TempData["ToastMessage"] = "Không thể hoàn trả đơn hàng này!";
                     TempData["ToastType"] = "error";
                 }
                 return RedirectToAction("OrderDetail", new { id });

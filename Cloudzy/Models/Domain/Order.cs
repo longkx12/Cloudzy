@@ -25,6 +25,8 @@ public partial class Order
 
     public int? ShipperId { get; set; }
 
+    public string? ReturnReason { get; set; }
+
     public virtual DiscountCode? DiscountCode { get; set; }
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();

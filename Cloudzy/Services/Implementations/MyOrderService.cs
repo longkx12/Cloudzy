@@ -88,6 +88,7 @@ namespace Cloudzy.Services.Implementations
                 PaymentMethod = order.PaymentMethod,
                 Address = order.Address,
                 DiscountCode = order.DiscountCode?.Code,
+                ReturnReason = order.ReturnReason,
                 Items = new List<ItemViewModel>()
             };
 
@@ -150,6 +151,31 @@ namespace Cloudzy.Services.Implementations
 
             order.Status = "Delivered";
             order.UpdatedAt = DateTime.Now;
+
+            await _repository.UpdateOrderAsync(order);
+            return true;
+        }
+
+        public async Task<bool> ReturnOrderAsync(int orderId, int userId, string returnReason)
+        {
+            var order = await _repository.GetOrderByIdAsync(orderId);
+
+            if (order == null || order.UserId != userId || order.Status.ToLower() != "delivered")
+            {
+                return false;
+            }
+
+            order.Status = "Returned";
+            order.ReturnReason = returnReason;
+            order.UpdatedAt = DateTime.Now;
+
+            foreach (var detail in order.OrderDetails)
+            {
+                if (detail.Variant != null)
+                {
+                    detail.Variant.Stock += detail.Quantity;
+                }
+            }
 
             await _repository.UpdateOrderAsync(order);
             return true;

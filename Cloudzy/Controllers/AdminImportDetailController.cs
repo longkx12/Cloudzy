@@ -40,15 +40,29 @@ namespace Cloudzy.Controllers
             return PartialView("_ImportDetailListPartial", importDetails);
         }
 
-        public IActionResult Create(int importId)
+        public async Task<IActionResult> Create(int importId)
         {
+            var import = await _context.Imports
+                .Include(i => i.Supplier)
+                .FirstOrDefaultAsync(i => i.ImportId == importId);
+
+            if (import == null)
+                return NotFound("Không tìm thấy phiếu nhập hàng");
+
+            var products = await _context.Products
+                .Where(p => p.SupplierId == import.SupplierId)
+                .ToListAsync();
+
             var model = new CreateViewModel
             {
                 ImportId = importId,
-                Product = new SelectList(_context.Products, "ProductId", "ProductName"),
-                Sizes = new List<SelectListItem>() // Empty initially
+                Product = new SelectList(products, "ProductId", "ProductName"),
+                Sizes = new List<SelectListItem>() 
             };
+
             ViewBag.ImportId = importId;
+            ViewBag.SupplierName = import.Supplier?.SupplierName ?? "Không xác định";
+
             return View(model);
         }
 
@@ -57,7 +71,17 @@ namespace Cloudzy.Controllers
         {
             if (!ModelState.IsValid)
             {
-                model.Product = new SelectList(_context.Products, "ProductId", "ProductName");
+                var import = await _context.Imports
+                    .FirstOrDefaultAsync(i => i.ImportId == model.ImportId);
+
+                if (import == null)
+                    return NotFound("Không tìm thấy phiếu nhập hàng");
+
+                var products = await _context.Products
+                    .Where(p => p.SupplierId == import.SupplierId)
+                    .ToListAsync();
+
+                model.Product = new SelectList(products, "ProductId", "ProductName");
                 model.Sizes = await _service.GetSizesByProductIdAsync(model.ProductId);
                 ViewBag.ImportId = model.ImportId;
                 return View(model);
@@ -74,7 +98,18 @@ namespace Cloudzy.Controllers
             {
                 TempData["ToastMessage"] = ex.Message;
                 TempData["ToastType"] = "error";
-                model.Product = new SelectList(_context.Products, "ProductId", "ProductName");
+
+                var import = await _context.Imports
+                    .FirstOrDefaultAsync(i => i.ImportId == model.ImportId);
+
+                if (import == null)
+                    return NotFound("Không tìm thấy phiếu nhập hàng");
+
+                var products = await _context.Products
+                    .Where(p => p.SupplierId == import.SupplierId)
+                    .ToListAsync();
+
+                model.Product = new SelectList(products, "ProductId", "ProductName");
                 model.Sizes = await _service.GetSizesByProductIdAsync(model.ProductId);
                 ViewBag.ImportId = model.ImportId;
                 return View(model);
@@ -86,7 +121,17 @@ namespace Cloudzy.Controllers
             var detail = await _service.GetByIdAsync(id);
             if (detail == null) return NotFound();
 
-            detail.Product = new SelectList(_context.Products, "ProductId", "ProductName", detail.ProductId);
+            var import = await _context.Imports
+                .FirstOrDefaultAsync(i => i.ImportId == detail.ImportId);
+
+            if (import == null)
+                return NotFound("Không tìm thấy phiếu nhập hàng");
+
+            var products = await _context.Products
+                .Where(p => p.SupplierId == import.SupplierId)
+                .ToListAsync();
+
+            detail.Product = new SelectList(products, "ProductId", "ProductName", detail.ProductId);
             detail.Sizes = await _service.GetSizesByProductIdAsync(detail.ProductId);
             ViewBag.ImportId = detail.ImportId;
             return View(detail);
@@ -97,7 +142,17 @@ namespace Cloudzy.Controllers
         {
             if (!ModelState.IsValid)
             {
-                model.Product = new SelectList(_context.Products, "ProductId", "ProductName", model.ProductId);
+                var import = await _context.Imports
+                    .FirstOrDefaultAsync(i => i.ImportId == model.ImportId);
+
+                if (import == null)
+                    return NotFound("Không tìm thấy phiếu nhập hàng");
+
+                var products = await _context.Products
+                    .Where(p => p.SupplierId == import.SupplierId)
+                    .ToListAsync();
+
+                model.Product = new SelectList(products, "ProductId", "ProductName", model.ProductId);
                 model.Sizes = await _service.GetSizesByProductIdAsync(model.ProductId);
                 return View(model);
             }
@@ -111,7 +166,17 @@ namespace Cloudzy.Controllers
             }
             catch (Exception ex)
             {
-                model.Product = new SelectList(_context.Products, "ProductId", "ProductName", model.ProductId);
+                var import = await _context.Imports
+                    .FirstOrDefaultAsync(i => i.ImportId == model.ImportId);
+
+                if (import == null)
+                    return NotFound("Không tìm thấy phiếu nhập hàng");
+
+                var products = await _context.Products
+                    .Where(p => p.SupplierId == import.SupplierId)
+                    .ToListAsync();
+
+                model.Product = new SelectList(products, "ProductId", "ProductName", model.ProductId);
                 model.Sizes = await _service.GetSizesByProductIdAsync(model.ProductId);
                 TempData["ToastMessage"] = ex.Message;
                 TempData["ToastType"] = "error";
