@@ -19,17 +19,16 @@ namespace Cloudzy.Controllers
             _userService = userService;
             _context = context;
         }
-        
+
         public IActionResult Index()
         {
             return View();
         }
-        
+
         public async Task<IActionResult> Load(int? page)
         {
             int pageSize = 5;
             int pageNumber = page ?? 1;
-
             var users = await _userService.GetAllUsersAsync(pageNumber, pageSize);
 
             if (users == null || !users.Any())
@@ -39,16 +38,17 @@ namespace Cloudzy.Controllers
 
             return PartialView("_UserListPartial", users);
         }
-        
+
         public IActionResult Create()
         {
             var model = new CreateViewModel
             {
                 Roles = new SelectList(_context.Roles, "RoleId", "RoleName")
             };
+
             return View(model);
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> Create(CreateViewModel model)
         {
@@ -61,15 +61,16 @@ namespace Cloudzy.Controllers
                     TempData["ToastType"] = "success";
                     return RedirectToAction("Index");
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     TempData["ToastMessage"] = ex.Message;
                     TempData["ToastType"] = "error";
                 }
             }
+
             return View(model);
         }
-        
+
         public async Task<IActionResult> Edit(int id)
         {
             var model = await _userService.GetUserByIdAsync(id);
@@ -77,7 +78,7 @@ namespace Cloudzy.Controllers
 
             return View(model);
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> Edit(EditViewModel model)
         {
@@ -85,19 +86,27 @@ namespace Cloudzy.Controllers
             {
                 await _userService.UpdateUserAsync(model);
                 TempData["ToastMessage"] = "Cập nhật thành công!";
-                TempData["ToastType"] = "success"; ;
+                TempData["ToastType"] = "success";
                 return RedirectToAction("Index");
             }
+
             return View(model);
         }
-        
+
         [HttpPost]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> LockUnlock(int id)
         {
-            await _userService.DeleteUserAsync(id);
-            TempData["ToastMessage"] = "Xóa thành công!";
-            TempData["ToastType"] = "success"; ;
-            return RedirectToAction("Index");
+            var user = await _context.Users.FindAsync(id);
+            if (user == null) return NotFound();
+
+            bool currentLockStatus = user.IsLocked;
+
+            await _userService.LockUnlockUserAsync(id);
+
+            bool newLockStatus = !currentLockStatus;
+            string message = newLockStatus ? "Khóa tài khoản thành công" : "Mở khóa tài khoản thành công";
+
+            return Json(new { success = true, message, isLocked = newLockStatus });
         }
     }
 }

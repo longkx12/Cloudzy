@@ -32,7 +32,8 @@ namespace Cloudzy.Services.Implementations
                 Fullname = u.Fullname,
                 PhoneNumber = u.PhoneNumber,
                 Address = u.Address,
-                RoleName = u.Role?.RoleName ?? "N/A"
+                RoleName = u.Role?.RoleName ?? "N/A",
+                IsLocked = u.IsLocked
             }).ToPagedList(pageNumber, pageSize);
 
             return pagedUsers;
@@ -57,9 +58,9 @@ namespace Cloudzy.Services.Implementations
 
         public async Task AddUserAsync(CreateViewModel model)
         {
-            //Kiểm tra email đã tồn tại
             var existingEmail = (await _userRepository.GetAllUsersAsync())
                 .FirstOrDefault(u => u.Email == model.Email);
+
             if (existingEmail != null)
             {
                 throw new Exception("Email đã tồn tại!");
@@ -92,9 +93,14 @@ namespace Cloudzy.Services.Implementations
             await _userRepository.UpdateUserAsync(user);
         }
 
-        public async Task DeleteUserAsync(int id)
+        public async Task LockUnlockUserAsync(int id)
         {
-            await _userRepository.DeleteUserAsync(id);
+            var user = await _userRepository.GetUserByIdAsync(id);
+            if (user == null) return;
+
+            bool newLockStatus = !user.IsLocked;
+
+            await _userRepository.LockUserAsync(id, newLockStatus);
         }
     }
 }

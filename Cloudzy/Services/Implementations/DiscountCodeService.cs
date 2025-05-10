@@ -3,6 +3,7 @@ using Cloudzy.Models.Domain;
 using Cloudzy.Models.ViewModels.AdminDiscountCode;
 using Cloudzy.Repositories.Interfaces;
 using Cloudzy.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using X.PagedList;
 using X.PagedList.Extensions;
 
@@ -38,6 +39,12 @@ namespace Cloudzy.Services.Implementations
 
         public async Task DeleteAsync(int id)
         {
+            var isUsed = await _context.Orders.AnyAsync(o => o.DiscountCodeId == id);
+            if (isUsed)
+            {
+                throw new Exception("Không thể xóa voucher đang được sử dụng");
+            }
+
             await _discountCodeRepository.DeleteAsync(id);
         }
 

@@ -7,5 +7,6 @@ namespace Cloudzy.Services.Interfaces
         Task<List<ProductReviewViewModel>> GetProductReviewsAsync(int productId);
         Task<bool> AddReviewAsync(int productId, int userId, int rating, string comment);
         Task<bool> DeleteReviewAsync(int reviewId, int userId);
+        Task<bool> CanUserReviewProduct(int userId, int productId);
     }
 }

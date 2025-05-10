@@ -471,31 +471,45 @@ body {
     color: #fff;
     transition: all 0.3s ease;
 }
-
 .pulse {
     animation: pulse-animation 0.5s;
 }
-
 @keyframes pulse-animation {
     0% {
         transform: scale(1);
     }
-
     25% {
         transform: scale(1.3);
     }
-
     50% {
         transform: scale(1);
     }
-
     75% {
         transform: scale(1.3);
     }
-
     100% {
         transform: scale(1);
     }
+}
+.total-section .d-flex {
+    display: flex;
+    justify-content: space-between;
+    max-width: 300px;
+    width: 100%;
+}
+
+.total-section h5.mb-0 {
+}
+
+.total-section #total {
+    min-width: 120px;
+    text-align: right;
+}
+
+.checkout-section {
+    width: 100%;
+    max-width: 600px;
+    padding: 15px;
 }
 
 /*Pay*/

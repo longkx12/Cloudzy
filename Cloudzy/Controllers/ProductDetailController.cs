@@ -24,7 +24,6 @@ namespace Cloudzy.Controllers
         {
             ViewBag.ProductId = productId;
             var productVariants = await _productVariantService.GetDetailAsync(productId);
-
             ViewBag.ProductReviews = await _reviewService.GetProductReviewsAsync(productId);
 
             return View(productVariants);

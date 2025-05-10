@@ -31,6 +31,9 @@ namespace Cloudzy.Services.Implementations
             if (user == null)
                 return null;
 
+            if (user.IsLocked)
+                return null;
+
             var result = _passwordHasher.VerifyHashedPassword(user, user.Password, model.Password);
             if (result != PasswordVerificationResult.Success)
                 return null;
@@ -82,7 +85,8 @@ namespace Cloudzy.Services.Implementations
                 Fullname = model.Fullname,
                 Email = model.Email,
                 PhoneNumber = model.PhoneNumber,
-                RoleId = 2
+                RoleId = 2,
+                IsLocked = false
             };
 
             user.Password = _passwordHasher.HashPassword(user, model.Password);
@@ -158,6 +162,12 @@ namespace Cloudzy.Services.Implementations
             {
                 await smtp.SendMailAsync(message);
             }
+        }
+
+        public async Task<bool> IsUserLockedAsync(string email)
+        {
+            var user = await _accountRepository.GetUserByEmailAsync(email);
+            return user?.IsLocked ?? false;
         }
     }
 }

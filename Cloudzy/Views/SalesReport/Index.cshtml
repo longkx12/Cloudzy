@@ -224,7 +224,7 @@
                 if (startDate && endDate) {
                     if (endDate < startDate) {
                         e.preventDefault();
-                        toastr.error('Khoảng thời gian không hợp lệ: Ngày kết thúc không thể lớn hơn ngày bắt đầu.');
+                        toastr.error('Khoảng thời gian không hợp lệ: Ngày bắt đầu không thể lớn hơn ngày kết thúc.');
                         return false;
                     }
 

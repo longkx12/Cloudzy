@@ -25,6 +25,8 @@ public partial class User
 
     public DateTime? ResetPasswordExpiry { get; set; }
 
+    public bool IsLocked { get; set; }
+
     public virtual ICollection<Order> OrderShippers { get; set; } = new List<Order>();
 
     public virtual ICollection<Order> OrderUsers { get; set; } = new List<Order>();

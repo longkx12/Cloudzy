@@ -1,23 +1,28 @@
-﻿using Cloudzy.Models.Domain;
+﻿using Cloudzy.Data;
+using Cloudzy.Models.Domain;
 using Cloudzy.Models.ViewModels.ProductReview;
 using Cloudzy.Repositories.Interfaces;
 using Cloudzy.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cloudzy.Services.Implementations
 {
     public class ReviewService : IReviewService
     {
         private readonly IReviewRepository _reviewRepository;
+        private readonly DbCloudzyContext _context;
 
-        public ReviewService(IReviewRepository reviewRepository)
+        public ReviewService(
+            IReviewRepository reviewRepository,
+            DbCloudzyContext context)
         {
             _reviewRepository = reviewRepository;
+            _context = context;
         }
 
         public async Task<List<ProductReviewViewModel>> GetProductReviewsAsync(int productId)
         {
             var reviews = await _reviewRepository.GetProductReviewsAsync(productId);
-
             return reviews.Select(r => new ProductReviewViewModel
             {
                 ReviewId = r.ReviewId,
@@ -36,6 +41,10 @@ namespace Cloudzy.Services.Implementations
             if (rating < 1 || rating > 5)
                 return false;
 
+            bool hasPurchased = await HasUserPurchasedProduct(userId, productId);
+            if (!hasPurchased)
+                return false;
+
             var review = new Review
             {
                 ProductId = productId,
@@ -51,11 +60,34 @@ namespace Cloudzy.Services.Implementations
         public async Task<bool> DeleteReviewAsync(int reviewId, int userId)
         {
             var review = await _reviewRepository.GetReviewByIdAsync(reviewId);
-
             if (review == null || review.UserId != userId)
                 return false;
 
             return await _reviewRepository.DeleteReviewAsync(reviewId);
+        }
+
+        private async Task<bool> HasUserPurchasedProduct(int userId, int productId)
+        {
+            var variantIds = await _context.ProductVariants
+                .Where(pv => pv.ProductId == productId)
+                .Select(pv => pv.VariantId)
+                .ToListAsync();
+
+            if (!variantIds.Any())
+                return false;
+
+            return await _context.Orders
+                .Where(o => o.UserId == userId && o.Status == "Delivered")
+                .Join(_context.OrderDetails,
+                    order => order.OrderId,
+                    detail => detail.OrderId,
+                    (order, detail) => new { Order = order, Detail = detail })
+                .AnyAsync(x => variantIds.Contains(x.Detail.VariantId ?? 0));
+        }
+
+        public async Task<bool> CanUserReviewProduct(int userId, int productId)
+        {
+            return await HasUserPurchasedProduct(userId, productId);
         }
     }
 }

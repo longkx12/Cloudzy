@@ -1,6 +1,5 @@
 ﻿using Cloudzy.Data;
 using Cloudzy.Models.ViewModels.AdminDiscountCode;
-using Cloudzy.Models.ViewModels.AdminUser;
 using Cloudzy.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +38,7 @@ namespace Cloudzy.Controllers
 
         public IActionResult Create()
         {
-            var model = new Models.ViewModels.AdminDiscountCode.CreateViewModel
+            var model = new CreateViewModel
             {
                 VoucherTypes = new SelectList(_context.VoucherTypes, "VoucherTypeId", "VoucherTypeName")
             };
@@ -47,7 +46,7 @@ namespace Cloudzy.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Models.ViewModels.AdminDiscountCode.CreateViewModel model)
+        public async Task<IActionResult> Create(CreateViewModel model)
         {
             // Nếu có lỗi, cần gán lại dữ liệu dropdown
             if (!ModelState.IsValid)
@@ -82,7 +81,7 @@ namespace Cloudzy.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Models.ViewModels.AdminDiscountCode.EditViewModel model)
+        public async Task<IActionResult> Edit(EditViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -105,9 +104,17 @@ namespace Cloudzy.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            await _discountCodeService.DeleteAsync(id);
-            TempData["ToastMessage"] = "Xóa thành công!";
-            TempData["ToastType"] = "success";
+            try
+            {
+                await _discountCodeService.DeleteAsync(id);
+                TempData["ToastMessage"] = "Xóa thành công!";
+                TempData["ToastType"] = "success";
+            }
+            catch (Exception ex)
+            {
+                TempData["ToastMessage"] = ex.Message;
+                TempData["ToastType"] = "error";
+            }
             return RedirectToAction("Index");
         }
     }
