@@ -31,10 +31,10 @@
                             </div>
                         </div>
 
-                        <div class="mt-3">
+                        <div class="mt-3" id="addresses-container">
                             @foreach (var address in Model.Addresses)
                             {
-                                <div class="form-check mb-2 address-option" data-address="@address.Address">
+                                <div class="form-check mb-2 address-option" data-address="@address.Address" data-id="@address.Id">
                                     <input class="form-check-input" type="radio" name="addressOption" id="address@(address.Id)" @(address.IsDefault ? "checked" : "")>
                                     <label class="form-check-label" for="address@(address.Id)">
                                         <strong>@address.FullName (@address.PhoneNumber)</strong> @address.Address
@@ -173,18 +173,18 @@
                 <form id="newAddressForm">
                     <div class="mb-3">
                         <label for="fullName" class="form-label">Họ và tên</label>
-                        <input type="text" class="form-control" id="fullName" value="@Model.FullName" required>
+                        <input type="text" class="form-control" id="fullName" name="FullName" value="@Model.FullName" required>
                     </div>
                     <div class="mb-3">
                         <label for="phoneNumber" class="form-label">Số điện thoại</label>
-                        <input type="tel" class="form-control" id="phoneNumber" value="@Model.PhoneNumber" required>
+                        <input type="tel" class="form-control" id="phoneNumber" name="PhoneNumber" value="@Model.PhoneNumber" required>
                     </div>
                     <div class="mb-3">
                         <label for="addressLine" class="form-label">Địa chỉ chi tiết</label>
-                        <textarea class="form-control" id="addressLine" rows="3" required>@Model.Address</textarea>
+                        <textarea class="form-control" id="addressLine" name="Address" rows="3" required>@Model.Address</textarea>
                     </div>
                     <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="defaultAddress">
+                        <input class="form-check-input" type="checkbox" id="defaultAddress" name="IsDefault">
                         <label class="form-check-label" for="defaultAddress">
                             Đặt làm địa chỉ mặc định
                         </label>
@@ -202,14 +202,17 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
+            // Xử lý địa chỉ mặc định ban đầu
             const defaultAddress = $('.address-option input:checked').closest('.address-option').data('address');
             $('#selectedAddress').val(defaultAddress);
 
+            // Xử lý khi chọn địa chỉ
             $('.address-option input').on('change', function() {
                 const selectedAddress = $(this).closest('.address-option').data('address');
                 $('#selectedAddress').val(selectedAddress);
             });
 
+            // Xử lý khi chọn phương thức thanh toán
             $('.payment-option').on('click', function() {
                 $('.payment-option').removeClass('active');
                 $(this).addClass('active');
@@ -218,6 +221,7 @@
                 $('#selectedPaymentMethod').val(paymentMethod);
             });
 
+            // Xử lý thêm địa chỉ mới
             $('#saveAddressBtn').on('click', function() {
                 const form = document.getElementById('newAddressForm');
                 if (!form.checkValidity()) {
@@ -225,41 +229,77 @@
                     return;
                 }
 
+                // Thu thập dữ liệu từ form
                 const fullName = $('#fullName').val();
                 const phoneNumber = $('#phoneNumber').val();
                 const address = $('#addressLine').val();
                 const isDefault = $('#defaultAddress').is(':checked');
 
-                const newAddressId = $('.address-option').length + 1;
-                const newAddressHtml = `
-                    <div class="form-check mb-2 address-option" data-address="${address}">
-                        <input class="form-check-input" type="radio" name="addressOption" id="address${newAddressId}" ${isDefault ? 'checked' : ''}>
-                        <label class="form-check-label" for="address${newAddressId}">
-                            <strong>${fullName} (${phoneNumber})</strong> ${address}
-                        </label>
-                        ${isDefault ? '<span class="badge bg-secondary float-end">Mặc định</span>' : ''}
-                    </div>
-                `;
+                // Gửi AJAX request để lưu địa chỉ mới vào database
+                $.ajax({
+                    url: '/Address/AddAddress',
+                    type: 'POST',
+                    data: {
+                        FullName: fullName,
+                        PhoneNumber: phoneNumber,
+                        Address: address,
+                        IsDefault: isDefault
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Tạo HTML cho địa chỉ mới
+                            const newAddressHtml = `
+                                <div class="form-check mb-2 address-option" data-address="${response.address}" data-id="${response.addressId}">
+                                    <input class="form-check-input" type="radio" name="addressOption" id="address${response.addressId}" ${isDefault ? 'checked' : ''}>
+                                    <label class="form-check-label" for="address${response.addressId}">
+                                        <strong>${response.fullName} (${response.phoneNumber})</strong> ${response.address}
+                                    </label>
+                                    ${isDefault ? '<span class="badge bg-secondary float-end">Mặc định</span>' : ''}
+                                </div>
+                            `;
 
-                if (isDefault) {
-                    $('.address-option input').prop('checked', false);
-                    $('.address-option .badge').remove();
-                }
+                            // Nếu đây là địa chỉ mặc định, bỏ mặc định khỏi các địa chỉ khác
+                            if (isDefault) {
+                                $('.address-option input').prop('checked', false);
+                                $('.address-option .badge').remove();
+                                $('#selectedAddress').val(response.address);
+                            }
 
-                $('.address-option').last().after(newAddressHtml);
+                            // Thêm địa chỉ mới vào container
+                            $('#addresses-container').append(newAddressHtml);
 
-                if (isDefault) {
-                    $('#selectedAddress').val(address);
-                }
+                            // Cập nhật sự kiện click cho địa chỉ mới
+                            $(`#address${response.addressId}`).on('change', function() {
+                                const selectedAddress = $(this).closest('.address-option').data('address');
+                                $('#selectedAddress').val(selectedAddress);
+                            });
 
-                $(`#address${newAddressId}`).on('change', function() {
-                    const selectedAddress = $(this).closest('.address-option').data('address');
-                    $('#selectedAddress').val(selectedAddress);
+                            // Đóng modal
+                            $('#newAddressModal').modal('hide');
+
+                            // Hiển thị thông báo thành công
+                            if (typeof showToast === 'function') {
+                                showToast('success', 'Đã thêm địa chỉ mới thành công');
+                            }
+                        } else {
+                            if (typeof showToast === 'function') {
+                                showToast('error', 'Có lỗi xảy ra khi thêm địa chỉ');
+                            } else {
+                                alert('Có lỗi xảy ra khi thêm địa chỉ');
+                            }
+                        }
+                    },
+                    error: function() {
+                        if (typeof showToast === 'function') {
+                            showToast('error', 'Có lỗi xảy ra khi thêm địa chỉ');
+                        } else {
+                            alert('Có lỗi xảy ra khi thêm địa chỉ');
+                        }
+                    }
                 });
-
-                $('#newAddressModal').modal('hide');
             });
 
+            // Kiểm tra form trước khi submit
             $('#orderForm').on('submit', function(e) {
                 const selectedAddress = $('#selectedAddress').val();
                 if (!selectedAddress) {

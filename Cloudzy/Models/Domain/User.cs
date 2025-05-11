@@ -36,4 +36,6 @@ public partial class User
     public virtual Role? Role { get; set; }
 
     public virtual ICollection<ShoppingCart> ShoppingCarts { get; set; } = new List<ShoppingCart>();
+
+    public virtual ICollection<UserAddress> UserAddresses { get; set; } = new List<UserAddress>();
 }

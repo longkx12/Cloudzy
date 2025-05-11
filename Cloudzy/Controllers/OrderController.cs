@@ -1,5 +1,6 @@
 ﻿using Cloudzy.Data;
 using Cloudzy.Models.Domain;
+using Cloudzy.Models.ViewModels.Address;
 using Cloudzy.Models.ViewModels.Order;
 using Cloudzy.Utilities;
 using Microsoft.AspNetCore.Authorization;
@@ -54,6 +55,42 @@ namespace Cloudzy.Controllers
                 .Where(ci => ci.CartId == cart.CartId)
                 .ToListAsync();
 
+            // Get user addresses from database
+            var userAddresses = await _context.UserAddresses
+                .Where(ua => ua.UserId == userId)
+                .OrderByDescending(ua => ua.IsDefault)
+                .ThenByDescending(ua => ua.CreatedAt)
+                .ToListAsync();
+
+            // If no addresses exist, create a default one from user profile
+            if (!userAddresses.Any() && !string.IsNullOrEmpty(user.Address))
+            {
+                var defaultAddress = new UserAddress
+                {
+                    UserId = userId,
+                    FullName = user.Fullname,
+                    PhoneNumber = user.PhoneNumber ?? "",
+                    Address = user.Address,
+                    IsDefault = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+
+                await _context.UserAddresses.AddAsync(defaultAddress);
+                await _context.SaveChangesAsync();
+
+                userAddresses = new List<UserAddress> { defaultAddress };
+            }
+
+            var addressViewModels = userAddresses.Select(ua => new UserAddressViewModel
+            {
+                Id = ua.AddressId,
+                FullName = ua.FullName,
+                PhoneNumber = ua.PhoneNumber,
+                Address = ua.Address,
+                IsDefault = ua.IsDefault
+            }).ToList();
+
             var viewModel = new CheckoutViewModel
             {
                 UserId = userId,
@@ -71,7 +108,8 @@ namespace Cloudzy.Controllers
                     Quantity = ci.Quantity,
                     TotalPrice = (ci.Variant.Product.DiscountPrice ?? 0) * ci.Quantity,
                     VariantId = ci.VariantId ?? 0
-                }).ToList()
+                }).ToList(),
+                Addresses = addressViewModels
             };
 
             // Tính tổng tiền
@@ -90,18 +128,6 @@ namespace Cloudzy.Controllers
             }
 
             viewModel.Total = viewModel.SubTotal - viewModel.VoucherDiscount;
-
-            viewModel.Addresses = new List<UserAddressViewModel>
-            {
-                new UserAddressViewModel
-                {
-                    Id = 1,
-                    FullName = user.Fullname,
-                    PhoneNumber = user.PhoneNumber ?? "",
-                    Address = user.Address ?? "",
-                    IsDefault = true
-                }
-            };
 
             return View(viewModel);
         }
