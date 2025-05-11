@@ -202,17 +202,14 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            // Xử lý địa chỉ mặc định ban đầu
             const defaultAddress = $('.address-option input:checked').closest('.address-option').data('address');
             $('#selectedAddress').val(defaultAddress);
 
-            // Xử lý khi chọn địa chỉ
             $('.address-option input').on('change', function() {
                 const selectedAddress = $(this).closest('.address-option').data('address');
                 $('#selectedAddress').val(selectedAddress);
             });
 
-            // Xử lý khi chọn phương thức thanh toán
             $('.payment-option').on('click', function() {
                 $('.payment-option').removeClass('active');
                 $(this).addClass('active');
@@ -221,7 +218,6 @@
                 $('#selectedPaymentMethod').val(paymentMethod);
             });
 
-            // Xử lý thêm địa chỉ mới
             $('#saveAddressBtn').on('click', function() {
                 const form = document.getElementById('newAddressForm');
                 if (!form.checkValidity()) {
@@ -229,13 +225,11 @@
                     return;
                 }
 
-                // Thu thập dữ liệu từ form
                 const fullName = $('#fullName').val();
                 const phoneNumber = $('#phoneNumber').val();
                 const address = $('#addressLine').val();
                 const isDefault = $('#defaultAddress').is(':checked');
 
-                // Gửi AJAX request để lưu địa chỉ mới vào database
                 $.ajax({
                     url: '/Address/AddAddress',
                     type: 'POST',
@@ -247,7 +241,6 @@
                     },
                     success: function(response) {
                         if (response.success) {
-                            // Tạo HTML cho địa chỉ mới
                             const newAddressHtml = `
                                 <div class="form-check mb-2 address-option" data-address="${response.address}" data-id="${response.addressId}">
                                     <input class="form-check-input" type="radio" name="addressOption" id="address${response.addressId}" ${isDefault ? 'checked' : ''}>
@@ -258,26 +251,21 @@
                                 </div>
                             `;
 
-                            // Nếu đây là địa chỉ mặc định, bỏ mặc định khỏi các địa chỉ khác
                             if (isDefault) {
                                 $('.address-option input').prop('checked', false);
                                 $('.address-option .badge').remove();
                                 $('#selectedAddress').val(response.address);
                             }
 
-                            // Thêm địa chỉ mới vào container
                             $('#addresses-container').append(newAddressHtml);
 
-                            // Cập nhật sự kiện click cho địa chỉ mới
                             $(`#address${response.addressId}`).on('change', function() {
                                 const selectedAddress = $(this).closest('.address-option').data('address');
                                 $('#selectedAddress').val(selectedAddress);
                             });
 
-                            // Đóng modal
                             $('#newAddressModal').modal('hide');
 
-                            // Hiển thị thông báo thành công
                             if (typeof showToast === 'function') {
                                 showToast('success', 'Đã thêm địa chỉ mới thành công');
                             }
@@ -299,7 +287,6 @@
                 });
             });
 
-            // Kiểm tra form trước khi submit
             $('#orderForm').on('submit', function(e) {
                 const selectedAddress = $('#selectedAddress').val();
                 if (!selectedAddress) {

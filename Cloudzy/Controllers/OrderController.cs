@@ -55,14 +55,12 @@ namespace Cloudzy.Controllers
                 .Where(ci => ci.CartId == cart.CartId)
                 .ToListAsync();
 
-            // Get user addresses from database
             var userAddresses = await _context.UserAddresses
                 .Where(ua => ua.UserId == userId)
                 .OrderByDescending(ua => ua.IsDefault)
                 .ThenByDescending(ua => ua.CreatedAt)
                 .ToListAsync();
 
-            // If no addresses exist, create a default one from user profile
             if (!userAddresses.Any() && !string.IsNullOrEmpty(user.Address))
             {
                 var defaultAddress = new UserAddress
@@ -112,7 +110,6 @@ namespace Cloudzy.Controllers
                 Addresses = addressViewModels
             };
 
-            // Tính tổng tiền
             viewModel.SubTotal = viewModel.OrderItems.Sum(item => item.TotalPrice);
 
             // Kiểm tra voucher trong session

@@ -34,7 +34,6 @@ namespace Cloudzy.Controllers
 
             var userId = int.Parse(userIdClaim);
 
-            // If this is going to be the default address, unset any existing default
             if (model.IsDefault)
             {
                 var defaultAddresses = await _context.UserAddresses
@@ -47,7 +46,6 @@ namespace Cloudzy.Controllers
                     _context.UserAddresses.Update(address);
                 }
             }
-            // If this is the first address, make it default automatically
             else if (!await _context.UserAddresses.AnyAsync(a => a.UserId == userId))
             {
                 model.IsDefault = true;
@@ -94,7 +92,6 @@ namespace Cloudzy.Controllers
 
             var userId = int.Parse(userIdClaim);
 
-            // Find the address and verify it belongs to the user
             var address = await _context.UserAddresses
                 .FirstOrDefaultAsync(a => a.AddressId == addressId && a.UserId == userId);
 
@@ -103,7 +100,6 @@ namespace Cloudzy.Controllers
                 return NotFound();
             }
 
-            // Unset any existing default address
             var defaultAddresses = await _context.UserAddresses
                 .Where(a => a.UserId == userId && a.IsDefault)
                 .ToListAsync();
