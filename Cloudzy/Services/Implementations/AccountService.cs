@@ -38,12 +38,19 @@ namespace Cloudzy.Services.Implementations
             if (result != PasswordVerificationResult.Success)
                 return null;
 
+            if (string.IsNullOrEmpty(user.LoginProvider))
+            {
+                user.LoginProvider = "Local";
+                await _accountRepository.UpdateUserAsync(user);
+            }
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Fullname),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim("UserId", user.UserId.ToString()),
-                new Claim(ClaimTypes.Role, user.Role?.RoleName ?? "User")
+                new Claim(ClaimTypes.Role, user.Role?.RoleName ?? "User"),
+                new Claim("LoginProvider", user.LoginProvider ?? "Local")
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -86,7 +93,8 @@ namespace Cloudzy.Services.Implementations
                 Email = model.Email,
                 PhoneNumber = model.PhoneNumber,
                 RoleId = 2,
-                IsLocked = false
+                IsLocked = false,
+                LoginProvider = "Local"
             };
 
             user.Password = _passwordHasher.HashPassword(user, model.Password);
@@ -97,7 +105,8 @@ namespace Cloudzy.Services.Implementations
                 new Claim(ClaimTypes.Name, user.Fullname),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim("UserId", user.UserId.ToString()),
-                new Claim(ClaimTypes.Role, user.Role?.RoleName ?? "User")
+                new Claim(ClaimTypes.Role, user.Role?.RoleName ?? "User"),
+                new Claim("LoginProvider", user.LoginProvider)
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -131,7 +140,7 @@ namespace Cloudzy.Services.Implementations
 
             var fromAddress = new MailAddress("cloudzyshopvn@gmail.com", "Cloudzy");
             var toAddress = new MailAddress(toEmail);
-            const string fromPassword = "gpetipqrfuljksjq"; 
+            const string fromPassword = "gpetipqrfuljksjq";
             const string subject = "Đặt lại mật khẩu Cloudzy Shop";
             string body = $@"
                 <p>Xin chào <strong>{fullName}</strong>,</p>
@@ -168,6 +177,25 @@ namespace Cloudzy.Services.Implementations
         {
             var user = await _accountRepository.GetUserByEmailAsync(email);
             return user?.IsLocked ?? false;
+        }
+
+        public async Task<User> AddGoogleUserAsync(User user)
+        {
+            var existingUser = await _accountRepository.GetUserByEmailAsync(user.Email);
+            if (existingUser != null)
+            {
+                if (string.IsNullOrEmpty(existingUser.LoginProvider))
+                {
+                    existingUser.LoginProvider = "Google";
+                    await _accountRepository.UpdateUserAsync(existingUser);
+                }
+                return existingUser;
+            }
+
+            user.LoginProvider = "Google";
+            await _accountRepository.AddUserAsync(user);
+
+            return await _accountRepository.GetUserByEmailAsync(user.Email);
         }
     }
 }

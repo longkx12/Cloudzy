@@ -72,9 +72,15 @@ namespace Cloudzy.Controllers
         public IActionResult ChangePassword()
         {
             var userIdClaim = User.FindFirst("UserId");
+            var loginProviderClaim = User.FindFirst("LoginProvider");
             if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
             {
-                var model = new ChangePasswordViewModel { UserId = userId };
+                var model = new ChangePasswordViewModel
+                {
+                    UserId = userId,
+                    IsOAuthAccount = loginProviderClaim?.Value == "Google",
+                    LoginProvider = loginProviderClaim?.Value
+                };
                 return View(model);
             }
             return RedirectToAction("Login", "User");
@@ -83,39 +89,71 @@ namespace Cloudzy.Controllers
         [HttpPost]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
-            if (!ModelState.IsValid)
+            if (model.IsOAuthAccount)
             {
-                return View(model);
-            }
-
-            var userIdClaim = User.FindFirst("UserId");
-            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
-            {
-                model.UserId = userId;
-                try
+                if (string.IsNullOrEmpty(model.NewPassword) || model.NewPassword != model.ConfirmPassword)
                 {
-                    var result = await _service.ChangePasswordAsync(userId, model.CurrentPassword, model.NewPassword);
-                    if (result)
+                    TempData["ToastMessage"] = "Mật khẩu mới không hợp lệ hoặc không khớp!";
+                    TempData["ToastType"] = "error";
+                    return View(model);
+                }
+
+                var userIdClaim = User.FindFirst("UserId");
+                if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+                {
+                    model.UserId = userId;
+                    try
                     {
+                        var result = await _service.ChangePasswordAsync(userId, null, model.NewPassword);
                         TempData["ToastMessage"] = "Đổi mật khẩu thành công!";
                         TempData["ToastType"] = "success";
                         return RedirectToAction("Profile");
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        TempData["ToastMessage"] = "Mật khẩu hiện tại không chính xác!";
+                        TempData["ToastMessage"] = ex.Message;
                         TempData["ToastType"] = "error";
                         return View(model);
                     }
                 }
-                catch (Exception ex)
+                return RedirectToAction("Login", "User");
+            }
+            else
+            {
+                if (!ModelState.IsValid)
                 {
-                    TempData["ToastMessage"] = ex.Message;
-                    TempData["ToastType"] = "error";
                     return View(model);
                 }
+
+                var userIdClaim = User.FindFirst("UserId");
+                if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+                {
+                    model.UserId = userId;
+                    try
+                    {
+                        var result = await _service.ChangePasswordAsync(userId, model.CurrentPassword, model.NewPassword);
+                        if (result)
+                        {
+                            TempData["ToastMessage"] = "Đổi mật khẩu thành công!";
+                            TempData["ToastType"] = "success";
+                            return RedirectToAction("Profile");
+                        }
+                        else
+                        {
+                            TempData["ToastMessage"] = "Mật khẩu hiện tại không chính xác!";
+                            TempData["ToastType"] = "error";
+                            return View(model);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        TempData["ToastMessage"] = ex.Message;
+                        TempData["ToastType"] = "error";
+                        return View(model);
+                    }
+                }
+                return RedirectToAction("Login", "User");
             }
-            return RedirectToAction("Login", "User");
         }
     }
 }

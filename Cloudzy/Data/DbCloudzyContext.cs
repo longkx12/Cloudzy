@@ -346,6 +346,7 @@ public partial class DbCloudzyContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.Fullname).HasMaxLength(100);
+            entity.Property(e => e.LoginProvider).HasMaxLength(50);
             entity.Property(e => e.Password)
                 .HasMaxLength(256)
                 .IsUnicode(false);

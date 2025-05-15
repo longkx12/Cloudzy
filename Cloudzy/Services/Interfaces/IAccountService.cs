@@ -12,5 +12,6 @@ namespace Cloudzy.Services.Interfaces
         Task UpdateUserAsync(User user);
         Task SendResetPasswordEmailAsync(string toEmail, string resetLink);
         Task<bool> IsUserLockedAsync(string email);
+        Task<User> AddGoogleUserAsync(User user);
     }
 }
