@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Cloudzy.Models.Domain;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Cloudzy.Controllers
 {
@@ -23,7 +26,7 @@ namespace Cloudzy.Controllers
             {
                 var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
                 return role == "Admin" ? RedirectToAction("Index", "AdminUser")
-                    : RedirectToAction("Home", "Home");
+                    : RedirectToAction("Index", "Home");
             }
             return View();
         }
@@ -185,6 +188,92 @@ namespace Cloudzy.Controllers
             TempData["ToastMessage"] = "Đổi mật khẩu thành công!";
             TempData["ToastType"] = "success";
             return RedirectToAction("Login");
+        }
+
+        [HttpGet]
+        public IActionResult GoogleLogin()
+        {
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("GoogleResponse")
+            };
+
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GoogleResponse()
+        {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            if (!result.Succeeded)
+            {
+                TempData["ToastMessage"] = "Đăng nhập Google thất bại";
+                TempData["ToastType"] = "error";
+                return RedirectToAction("Login");
+            }
+
+            // Lấy thông tin từ Google
+            var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
+            var name = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
+
+            var user = await _accountService.GetUserByEmailAsync(email);
+
+            if (user == null)
+            {
+                var newUser = new User
+                {
+                    Email = email,
+                    Fullname = name,
+                    RoleId = 2,
+                    IsLocked = false,
+                    LoginProvider = "Google"
+                };
+
+                var passwordHasher = new PasswordHasher<User>();
+                var randomPassword = Guid.NewGuid().ToString();
+                newUser.Password = passwordHasher.HashPassword(newUser, randomPassword);
+
+                await _accountService.AddGoogleUserAsync(newUser);
+
+                user = newUser;
+            }
+            else if (user.IsLocked)
+            {
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                TempData["ToastMessage"] = "Tài khoản này đã bị khóa";
+                TempData["ToastType"] = "error";
+                return RedirectToAction("Login");
+            }
+            else if (string.IsNullOrEmpty(user.LoginProvider))
+            {
+                user.LoginProvider = "Google";
+                await _accountService.UpdateUserAsync(user);
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Fullname),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim("UserId", user.UserId.ToString()),
+                new Claim(ClaimTypes.Role, user.Role?.RoleName ?? "User"),
+                new Claim("LoginProvider", user.LoginProvider ?? "Google")
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
+            };
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity), authProperties);
+
+            TempData["ToastMessage"] = "Đăng nhập Google thành công!";
+            TempData["ToastType"] = "success";
+
+            return user.Role?.RoleName == "Admin" ? RedirectToAction("Index", "AdminUser") : RedirectToAction("Index", "Home");
         }
     }
 }

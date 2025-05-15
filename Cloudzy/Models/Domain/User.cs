@@ -27,6 +27,8 @@ public partial class User
 
     public bool IsLocked { get; set; }
 
+    public string? LoginProvider { get; set; }
+
     public virtual ICollection<Order> OrderShippers { get; set; } = new List<Order>();
 
     public virtual ICollection<Order> OrderUsers { get; set; } = new List<Order>();

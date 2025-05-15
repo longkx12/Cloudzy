@@ -22,6 +22,10 @@ namespace Cloudzy.Models.ViewModels.UserProfile
         [DataType(DataType.Password)]
         [Compare("NewPassword", ErrorMessage = "Mật khẩu mới và xác nhận mật khẩu không trùng khớp.")]
         public string ConfirmPassword { get; set; }
+
+        public bool IsOAuthAccount { get; set; }
+
+        public string LoginProvider { get; set; }
         public string? ExistingImg { get; set; }
     }
 }

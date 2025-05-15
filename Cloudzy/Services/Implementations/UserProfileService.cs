@@ -87,14 +87,25 @@ namespace Cloudzy.Services.Implementations
             if (user == null)
                 throw new Exception("Không tìm thấy người dùng!");
 
-            var verifyResult = _passwordHasher.VerifyHashedPassword(user, user.Password, currentPassword);
-            if (verifyResult != PasswordVerificationResult.Success)
-                return false;
+            if (user.LoginProvider == "Google")
+            {
+                user.Password = _passwordHasher.HashPassword(user, newPassword);
+                await _repository.UpdateUserAsync(user);
+                return true;
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(currentPassword))
+                    return false;
 
-            user.Password = _passwordHasher.HashPassword(user, newPassword);
+                var verifyResult = _passwordHasher.VerifyHashedPassword(user, user.Password, currentPassword);
+                if (verifyResult != PasswordVerificationResult.Success)
+                    return false;
 
-            await _repository.UpdateUserAsync(user);
-            return true;
+                user.Password = _passwordHasher.HashPassword(user, newPassword);
+                await _repository.UpdateUserAsync(user);
+                return true;
+            }
         }
     }
 }
